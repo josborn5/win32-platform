@@ -10,15 +10,15 @@ namespace render
 		return val;
 	}
 
-	static void PlotPixel(RenderBuffer* renderBuffer, uint32_t color, int x, int y)
+	static void PlotPixel(const RenderBuffer &renderBuffer, uint32_t color, int x, int y)
 	{
-		int positionStartOfRow = renderBuffer->width * y;
+		int positionStartOfRow = renderBuffer.width * y;
 		int positionStartOfX0InRow = positionStartOfRow + x;
-		uint32_t* pixel = renderBuffer->pixels + positionStartOfX0InRow;
+		uint32_t* pixel = renderBuffer.pixels + positionStartOfX0InRow;
 		*pixel = color;
 	}
 
-	static void DrawVerticalLineInPixels(RenderBuffer* renderBuffer, uint32_t color, int x, int y0, int y1)
+	static void DrawVerticalLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, int x, int y0, int y1)
 	{
 		int yDiff = y1 - y0;
 		int yDiffMod = (yDiff < 0) ? -1 * yDiff : yDiff;
@@ -31,7 +31,7 @@ namespace render
 		}
 	}
 
-	static void DrawHorizontalLineInPixels(RenderBuffer* renderBuffer, uint32_t color, int x0, int x1, int y)
+	static void DrawHorizontalLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, int x0, int x1, int y)
 	{
 		int xDiff = x1 - x0;
 		int xDiffMod = (xDiff < 0) ? -1 * xDiff : xDiff;
@@ -50,13 +50,13 @@ namespace render
 	 *	  1   2   3		pixel ordinals
 	 */
 	// Implemented with Bresenham's algorithm
-	static void DrawLineInPixels(RenderBuffer* renderBuffer, uint32_t color, math::Vec2<int> p0, math::Vec2<int> p1)
+	static void DrawLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec2<int> &p0, const math::Vec2<int> &p1)
 	{
 		// Make sure writing to the render buffer does not escape its bounds
-		int x0 = ClampInt(1, p0.x, renderBuffer->xMax);
-		int y0 = ClampInt(1, p0.y, renderBuffer->yMax);
-		int x1 = ClampInt(1, p1.x, renderBuffer->xMax);
-		int y1 = ClampInt(1, p1.y, renderBuffer->yMax);
+		int x0 = ClampInt(1, p0.x, renderBuffer.xMax);
+		int y0 = ClampInt(1, p0.y, renderBuffer.yMax);
+		int x1 = ClampInt(1, p1.x, renderBuffer.xMax);
+		int y1 = ClampInt(1, p1.y, renderBuffer.yMax);
 		
 		int xDiff = x1 - x0;
 		if (xDiff == 0)

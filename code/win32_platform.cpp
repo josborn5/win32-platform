@@ -7,7 +7,7 @@
 
 #include "platform.hpp"
 
-void GameUpdateAndRender(GameMemory *gameMemory, Input *input, RenderBuffer *renderBuffer, float dt);
+void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const RenderBuffer &renderBuffer, float dt);
 
 namespace platform
 {
@@ -313,7 +313,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 				gameInput.mouse.y = platform::renderBuffer.height - mousePointer.y;
 
 
-				GameUpdateAndRender(&GameMemory, &gameInput, &platform::renderBuffer, lastDt);
+				GameUpdateAndRender(GameMemory, gameInput, platform::renderBuffer, lastDt);
 
 
 				platform::ResetButtons(&gameInput);
