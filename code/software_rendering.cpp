@@ -141,4 +141,18 @@ namespace render
 			PlotPixel(renderBuffer, color, x0, y0);
 		}
 	}
+
+	void ClearScreen(const RenderBuffer &renderBuffer, int x0, int y0, int x1, int y1, uint32_t color)
+	{
+		uint32_t *pixel = renderBuffer.pixels;
+
+		for (int y = y0; y < y1; y += 1)
+		{
+			for (int x = x0; x< x1; x += 1)
+			{
+				*pixel = color;
+				pixel++;
+			}
+		}
+	}
 }

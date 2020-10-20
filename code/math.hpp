@@ -8,12 +8,6 @@ namespace math
 	{
 		T x;
 		T y;
-
-		Vec2(T valX, T valY)
-		{
-			x = valX;
-			y = valY;
-		}
 	};
 
 	template<typename T>
@@ -22,13 +16,6 @@ namespace math
 		T x;
 		T y;
 		T z;
-
-		Vec3(T valX, T valY, T valZ)
-		{
-			x = valX;
-			y = valY;
-			z = valZ;
-		}
 	};
 }
 
