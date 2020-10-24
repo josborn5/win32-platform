@@ -1,5 +1,6 @@
 #include "platform.hpp"
 #include "math.hpp"
+#include "geometry.hpp"
 
 namespace render
 {
@@ -10,6 +11,14 @@ namespace render
 		return val;
 	}
 
+	/**
+	 *	|---|---|---|
+	 *	| 0 | 1 | 2 |	pixel ordinals
+	 *	|---|---|---|
+	 *	0   1   2   3	position ordinals
+	 *
+	 * x & y parameters are the pixel and NOT the position ordinals
+	 */
 	static void PlotPixel(const RenderBuffer &renderBuffer, uint32_t color, int x, int y)
 	{
 		int positionStartOfRow = renderBuffer.width * y;
@@ -18,45 +27,63 @@ namespace render
 		*pixel = color;
 	}
 
+	/**
+	 *	|---|---|---|
+	 *	| 0 | 1 | 2 |	pixel ordinals
+	 *	|---|---|---|
+	 *	0   1   2   3	position ordinals
+	 *
+	 * x, y0 & y1 parameters are the pixel and NOT the position ordinals
+	 */
 	static void DrawVerticalLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, int x, int y0, int y1)
 	{
 		int yDiff = y1 - y0;
 		int yDiffMod = (yDiff < 0) ? -1 * yDiff : yDiff;
 		int yIncrement = (yDiff < 0) ? -1 : 1;
-		PlotPixel(renderBuffer, color, x, y0);
 		for (int i = 0; i <= yDiffMod; i += 1)
 		{
-			y0 += yIncrement;
 			PlotPixel(renderBuffer, color, x, y0);
-		}
-	}
-
-	static void DrawHorizontalLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, int x0, int x1, int y)
-	{
-		int xDiff = x1 - x0;
-		int xDiffMod = (xDiff < 0) ? -1 * xDiff : xDiff;
-		int xIncrement = (xDiff < 0) ? -1 : 1;
-		PlotPixel(renderBuffer, color, x0, y);
-		for (int i = 0; i < xDiffMod; i += 1)
-		{
-			x0 += xIncrement;
-			PlotPixel(renderBuffer, color, x0, y);
+			y0 += yIncrement;
 		}
 	}
 
 	/**
 	 *	|---|---|---|
+	 *	| 0 | 1 | 2 |	pixel ordinals
+	 *	|---|---|---|
 	 *	0   1   2   3	position ordinals
-	 *	  1   2   3		pixel ordinals
+	 *
+	 * x1, x2 & y parameters are the pixel and NOT the position ordinals
+	 */
+	static void DrawHorizontalLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, int x0, int x1, int y)
+	{
+		int xDiff = x1 - x0;
+		int xDiffMod = (xDiff < 0) ? -1 * xDiff : xDiff;
+		int xIncrement = (xDiff < 0) ? -1 : 1;
+
+		for (int i = 0; i <= xDiffMod; i += 1)
+		{
+			PlotPixel(renderBuffer, color, x0, y);
+			x0 += xIncrement;
+		}
+	}
+
+	/**
+	 *	|---|---|---|
+	 *	| 0 | 1 | 2 |	pixel ordinals
+	 *	|---|---|---|
+	 *	0   1   2   3	position ordinals
+	 *
+	 * p0 & p1 are pixel and NOT position ordinals
 	 */
 	// Implemented with Bresenham's algorithm
 	static void DrawLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec2<int> &p0, const math::Vec2<int> &p1)
 	{
 		// Make sure writing to the render buffer does not escape its bounds
-		int x0 = ClampInt(1, p0.x, renderBuffer.xMax);
-		int y0 = ClampInt(1, p0.y, renderBuffer.yMax);
-		int x1 = ClampInt(1, p1.x, renderBuffer.xMax);
-		int y1 = ClampInt(1, p1.y, renderBuffer.yMax);
+		int x0 = ClampInt(0, p0.x, renderBuffer.width - 1);
+		int y0 = ClampInt(0, p0.y, renderBuffer.height - 1);
+		int x1 = ClampInt(0, p1.x, renderBuffer.width - 1);
+		int y1 = ClampInt(0, p1.y, renderBuffer.height - 1);
 		
 		int xDiff = x1 - x0;
 		if (xDiff == 0)
@@ -78,15 +105,14 @@ namespace render
 		int xIncrement = (xDiff < 0) ? -1 : 1;
 		int yIncrement = (yDiff < 0) ? -1 : 1;
 
-		PlotPixel(renderBuffer, color, x0, y0);
 		// If the gradient is 1 simply increment both X & Y at on every iteration
 		if (modDiff == 0)
 		{
-			for (int i = 0; i < xDiffMod; ++i)
+			for (int i = 0; i <= xDiffMod; ++i)
 			{
+				PlotPixel(renderBuffer, color, x0, y0);
 				x0 += xIncrement;
 				y0 += yIncrement;
-				PlotPixel(renderBuffer, color, x0, y0);
 			}
 			return;
 		}
@@ -105,7 +131,7 @@ namespace render
 		{
 			longDimensionDiff = xDiffMod;
 			longDimensionVar = &x0;
-;			longDimensionIncrement = xIncrement;
+			longDimensionIncrement = xIncrement;
 
 			shortDimensionDiff = yDiffMod;
 			shortDimensionVar = &y0;
@@ -126,8 +152,9 @@ namespace render
 		int negativePIncrement = 2 * shortDimensionDiff;
 		int positivePIncrement = negativePIncrement - (2 * longDimensionDiff);
 
-		for (int i = 1; i < longDimensionDiff; i += 1)
+		for (int i = 1; i <= longDimensionDiff; i += 1)
 		{
+			PlotPixel(renderBuffer, color, x0, y0);
 			*longDimensionVar += longDimensionIncrement;
 			if (p < 0)
 			{
@@ -138,8 +165,14 @@ namespace render
 				p += positivePIncrement;
 				*shortDimensionVar += shortDimensionIncrement;
 			}
-			PlotPixel(renderBuffer, color, x0, y0);
 		}
+	}
+
+	void DrawTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec2<int> &p0, const math::Vec2<int> &p1, const math::Vec2<int> &p2)
+	{
+		DrawLineInPixels(renderBuffer, color, p0, p1);
+		DrawLineInPixels(renderBuffer, color, p1, p2);
+		DrawLineInPixels(renderBuffer, color, p2, p0);
 	}
 
 	void ClearScreen(const RenderBuffer &renderBuffer, int x0, int y0, int x1, int y1, uint32_t color)

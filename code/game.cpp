@@ -3,6 +3,10 @@
 
 #include "math.hpp"
 
+void GameInitialize()
+{
+}
+
 void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const RenderBuffer &renderBuffer, float dt)
 {
 	const uint32_t TEXT_COLOR = 0x00FF00;

@@ -7,6 +7,7 @@
 
 #include "platform.hpp"
 
+void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuffer);
 void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const RenderBuffer &renderBuffer, float dt);
 
 namespace platform
@@ -42,8 +43,6 @@ static void Win32_SizeRenderBufferToCurrentWindow(HWND window)
 	renderBuffer.width = clientRect.right - clientRect.left;
 	renderBuffer.height = clientRect.bottom - clientRect.top;
 	renderBuffer.bytesPerPixel = 4;
-	renderBuffer.xMax = renderBuffer.width - 1;
-	renderBuffer.yMax = renderBuffer.height - 1;
 
 	if (renderBuffer.pixels)
 	{
@@ -299,6 +298,8 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 			float lastDt = targetSecondsPerFrame;
 			LARGE_INTEGER LastCounter = platform::Win32_GetWallClock();
 			int64_t LastCycleCount = __rdtsc();
+
+			GameInitialize(GameMemory, platform::renderBuffer);
 
 			// Main loop
 			while (successfulMemoryAllocation && platform::IsRunning)

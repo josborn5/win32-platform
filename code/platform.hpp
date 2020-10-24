@@ -19,43 +19,41 @@ enum KEY
 	BUTTON_COUNT
 };
 
-struct
+struct RenderBuffer
 {
 	uint32_t* pixels;
 	int width;
 	int height;
 	int pitch;
 	int bytesPerPixel; // = 4;
-	int xMax;
-	int yMax;
-} typedef RenderBuffer;
+};
 
-struct
+struct Button
 {
 	bool isDown;
 	bool wasDown;
 	bool keyUp;
-} typedef Button;
+};
 
-struct
+struct Position
 {
 	int x;
 	int y;
-} typedef Position;
+};
 
-struct
+struct Input
 {
 	Position mouse;
 	Button buttons[BUTTON_COUNT];
-} typedef Input;
+};
 
-struct
+struct GameMemory
 {
 	bool IsInitialized;
 	uint64_t PermanentStorageSpace;
 	uint64_t TransientStorageSpace;
 	void* PermanentStorage;
 	void* TransientStorage;
-} typedef GameMemory;
+};
 
 #endif

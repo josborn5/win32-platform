@@ -22,6 +22,8 @@ REM cl %COMMON_COMPILER_FLAGS% ..\code\win32_platform.cpp /link -subsystem:windo
 
 
 REM 64-bit build
-cl %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\game.cpp /link %COMMON_LINKER_FLAGS%
+cl %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\unit_tests.cpp /link %COMMON_LINKER_FLAGS%
+
+REM cl %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\game.cpp /link %COMMON_LINKER_FLAGS%
 
 popd
