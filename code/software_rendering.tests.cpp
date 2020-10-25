@@ -94,7 +94,7 @@ void RunSoftwareRenderingTests()
 	 *	3 | O |   |   |   |
 	 *	  |---|---|---|---|
 	 */
-	 ClearPixels(pixelArray);
+	ClearPixels(pixelArray);
 	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 0, 0 });
 
 	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
@@ -135,7 +135,7 @@ void RunSoftwareRenderingTests()
 	 *	3 |   |   |   | O |
 	 *	  |---|---|---|---|
 	 */
-	 ClearPixels(pixelArray);
+	ClearPixels(pixelArray);
 	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 0, 0 }, math::Vec2<int>{ 3, 3 });
 
 	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
@@ -159,6 +159,88 @@ void RunSoftwareRenderingTests()
 	assert(pixelArray[14] == EMPTY);
 	assert(pixelArray[15] == EMPTY);
 	assert(pixelArray[16] == FILLED);
+
+	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
+
+	/**
+	 * DIAGONAL LINE OUTSIDE OF VERTICAL BOUNDARIES WITH STEEP GRADIENT
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 |   | O |   |   |
+	 *	  |---|---|---|---|
+	 *	1 |   | x |   |   |
+	 *	  |---|---|---|---|
+	 *	2 |   |   | x |   |
+	 *	  |---|---|---|---|
+	 *	3 |   |   | O |   |
+	 *	  |---|---|---|---|
+	 */
+	ClearPixels(pixelArray);
+	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 1, -5 }, math::Vec2<int>{ 2, 25 });
+
+	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
+
+	assert(pixelArray[1] == EMPTY);
+	assert(pixelArray[2] == FILLED);
+	assert(pixelArray[3] == EMPTY);
+	assert(pixelArray[4] == EMPTY);
+
+	assert(pixelArray[5] == EMPTY);
+	assert(pixelArray[6] == FILLED);
+	assert(pixelArray[7] == EMPTY);
+	assert(pixelArray[8] == EMPTY);
+
+	assert(pixelArray[9] == EMPTY);
+	assert(pixelArray[10] == EMPTY);
+	assert(pixelArray[11] == FILLED);
+	assert(pixelArray[12] == EMPTY);
+
+	assert(pixelArray[13] == EMPTY);
+	assert(pixelArray[14] == EMPTY);
+	assert(pixelArray[15] == FILLED);
+	assert(pixelArray[16] == EMPTY);
+
+	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
+
+	/**
+	 * DIAGONAL LINE OUTSIDE OF VERTICAL BOUNDARIES WITH SHALLOW GRADIENT
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 |   |   |   |   |
+	 *	  |---|---|---|---|
+	 *	1 |   |   |   |   |
+	 *	  |---|---|---|---|
+	 *	2 |   |   | x | O |
+	 *	  |---|---|---|---|
+	 *	3 | O | x |   |   |
+	 *	  |---|---|---|---|
+	 */
+	ClearPixels(pixelArray);
+	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ -5, 3 }, math::Vec2<int>{ 25, 2 });
+
+	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
+
+	assert(pixelArray[1] == EMPTY);
+	assert(pixelArray[2] == EMPTY);
+	assert(pixelArray[3] == EMPTY);
+	assert(pixelArray[4] == EMPTY);
+
+	assert(pixelArray[5] == EMPTY);
+	assert(pixelArray[6] == EMPTY);
+	assert(pixelArray[7] == EMPTY);
+	assert(pixelArray[8] == EMPTY);
+
+	assert(pixelArray[9] == EMPTY);
+	assert(pixelArray[10] == EMPTY);
+	assert(pixelArray[11] == FILLED);
+	assert(pixelArray[12] == FILLED);
+
+	assert(pixelArray[13] == FILLED);
+	assert(pixelArray[14] == EMPTY);
+	assert(pixelArray[15] == EMPTY);
+	assert(pixelArray[16] == EMPTY);
 
 	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
 }

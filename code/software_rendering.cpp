@@ -4,12 +4,12 @@
 
 namespace render
 {
-	static int ClampInt(int min, int val, int max)
+	/*static int ClampInt(int min, int val, int max)
 	{
 		if (val < min) return min;
 		if (val > max) return max;
 		return val;
-	}
+	}*/
 
 	/**
 	 *	|---|---|---|
@@ -21,6 +21,12 @@ namespace render
 	 */
 	static void PlotPixel(const RenderBuffer &renderBuffer, uint32_t color, int x, int y)
 	{
+		// Make sure writing to the render buffer does not escape its bounds
+		if (x < 0 || x >(renderBuffer.width - 1) || y < 0 || y >(renderBuffer.height - 1))
+		{
+			return;
+		}
+
 		int positionStartOfRow = renderBuffer.width * y;
 		int positionStartOfX0InRow = positionStartOfRow + x;
 		uint32_t* pixel = renderBuffer.pixels + positionStartOfX0InRow;
@@ -80,10 +86,10 @@ namespace render
 	static void DrawLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec2<int> &p0, const math::Vec2<int> &p1)
 	{
 		// Make sure writing to the render buffer does not escape its bounds
-		int x0 = ClampInt(0, p0.x, renderBuffer.width - 1);
-		int y0 = ClampInt(0, p0.y, renderBuffer.height - 1);
-		int x1 = ClampInt(0, p1.x, renderBuffer.width - 1);
-		int y1 = ClampInt(0, p1.y, renderBuffer.height - 1);
+		int x0 = p0.x;
+		int y0 = p0.y;
+		int x1 = p1.x;
+		int y1 = p1.y;
 		
 		int xDiff = x1 - x0;
 		if (xDiff == 0)
@@ -152,7 +158,7 @@ namespace render
 		int negativePIncrement = 2 * shortDimensionDiff;
 		int positivePIncrement = negativePIncrement - (2 * longDimensionDiff);
 
-		for (int i = 1; i <= longDimensionDiff; i += 1)
+		for (int i = 0; i <= longDimensionDiff; i += 1)
 		{
 			PlotPixel(renderBuffer, color, x0, y0);
 			*longDimensionVar += longDimensionIncrement;
