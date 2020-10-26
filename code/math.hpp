@@ -21,7 +21,13 @@ namespace math
 	};
 
 	template<typename T>
-	T dot_product(const Vec3<T> &v1, const Vec3<T> &v2)
+	Vec3<T> SubtractVectors(const Vec3<T> &v1, const Vec3<T> &v2)
+	{
+		return Vec3<T>{v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
+	}
+
+	template<typename T>
+	T DotProduct(const Vec3<T> &v1, const Vec3<T> &v2)
 	{
 		return
 			(v1.x * v2.x) +

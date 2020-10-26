@@ -5,6 +5,7 @@
 #include "math.hpp"
 #include "geometry.hpp"
 
+math::Vec3<float> camera = {0};
 Mesh mesh;
 math::Matrix4x4<float> projectionMatrix;
 
@@ -126,7 +127,10 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 		normal = math::UnitVector(math::CrossProduct(line1, line2));
 
-		if (normal.z <= 0)
+		math::Vec3<float> fromCameraToTriangle = math::SubtractVectors(translate.p[0], camera);
+		float dot = DotProduct(normal, fromCameraToTriangle);
+
+		if (dot < 0.0f)
 		{
 			// Project each triangle in 3D space onto the 2D space triangle to render
 			math::ProjectVec3ToVec2(translate.p[0], projected.p[0], projectionMatrix);
