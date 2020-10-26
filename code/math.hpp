@@ -1,6 +1,8 @@
 #ifndef MATH_H
 #define MATH_H
 
+#include <math.h>
+
 namespace math
 {
 	template<typename T>
@@ -28,13 +30,26 @@ namespace math
 	}
 
 	template<typename T>
-	Vec3<T> cross_product(const Vec3<T> &v1, const Vec3<T> &v2)
+	Vec3<T> CrossProduct(const Vec3<T> &v1, const Vec3<T> &v2)
 	{
-		return Vec3<T>(
+		return Vec3<T>{
 			(v1.y * v2.z) - (v1.z * v2.y),
 			(v1.z * v2.x) - (v1.x * v2.z),
 			(v1.x * v2.y) - (v1.y * v2.x)
-		);
+		};
+	}
+
+	template<typename T>
+	float Length(const Vec3<T> &in)
+	{
+		return std::sqrtf((in.x * in.x) + (in.y * in.y) + (in.z * in.z));
+	}
+
+	template<typename T>
+	Vec3<float> UnitVector(const Vec3<T> &in)
+	{
+		float length = Length(in);
+		return Vec3<float> { in.x / length, in.y / length, in.z / length } ;
 	}
 
 	template<typename T>

@@ -12,6 +12,7 @@ float theta = 0.0f;
 
 void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuffer)
 {
+	// Using a clockwise winding convention
 	mesh.triangles = {
 		// SOUTH
 		{ 0.0f, 0.0f, 0.0f,		0.0f, 1.0f, 0.0f,		1.0f, 1.0f, 0.0f },
@@ -27,11 +28,15 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 
 		// WEST
 		{ 0.0f, 0.0f, 1.0f,		0.0f, 1.0f, 1.0f,		0.0f, 1.0f, 0.0f },
-		{ 0.0f, 0.0f, 1.0f,		0.0f, 1.0f, 1.0f,		0.0f, 0.0f, 0.0f }
+		{ 0.0f, 0.0f, 1.0f,		0.0f, 1.0f, 0.0f,		0.0f, 0.0f, 0.0f },
 
 		// TOP
+		{ 0.0f, 1.0f, 0.0f,		0.0f, 1.0f, 1.0f,		1.0f, 1.0f, 1.0f },
+		{ 0.0f, 1.0f, 0.0f,		1.0f, 1.0f, 1.0f,		1.0f, 1.0f, 0.0f },
 
 		// BOTTOM
+		{ 1.0f, 0.0f, 1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 0.0f, 0.0f },
+		{ 1.0f, 0.0f, 1.0f,		0.0f, 0.0f, 1.0f,		0.0f, 0.0f, 0.0f }
 	};
 
 	// Initialize the projection matrix
@@ -108,31 +113,47 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 		translate.p[1].z += zOffset;
 		translate.p[2].z += zOffset;
 
-		// Project each triangle in 3D space onto the 2D space triangle to render
-		math::ProjectVec3ToVec2(translate.p[0], projected.p[0], projectionMatrix);
-		math::ProjectVec3ToVec2(translate.p[1], projected.p[1], projectionMatrix);
-		math::ProjectVec3ToVec2(translate.p[2], projected.p[2], projectionMatrix);
+		math::Vec3<float> normal;
+		math::Vec3<float> line1;
+		math::Vec3<float> line2;
+		line1.x = translate.p[1].x - translate.p[0].x;
+		line1.y = translate.p[1].y - translate.p[0].y;
+		line1.z = translate.p[1].z - translate.p[0].z;
 
-		// Scale to view
-		const float sf = 500.0f;
-		Triangle2d triToRender = projected;
-		triToRender.p[0].x *= sf;
-		triToRender.p[0].y *= sf;
-		triToRender.p[1].x *= sf;
-		triToRender.p[1].y *= sf;
-		triToRender.p[2].x *= sf;
-		triToRender.p[2].y *= sf;
+		line2.x = translate.p[2].x - translate.p[0].x;
+		line2.y = translate.p[2].y - translate.p[0].y;
+		line2.z = translate.p[2].z - translate.p[0].z;
 
-		const float translateX = 0.5f * (float)renderBuffer.width;
-		const float translateY = 0.5f * (float)renderBuffer.height;
-		triToRender.p[0].x += translateX; triToRender.p[0].y += translateY;
-		triToRender.p[1].x += translateX; triToRender.p[1].y += translateY;
-		triToRender.p[2].x += translateX; triToRender.p[2].y += translateY;
+		normal = math::UnitVector(math::CrossProduct(line1, line2));
 
-		math::Vec2<int> p0Int = { (int)triToRender.p[0].x, (int)triToRender.p[0].y };
-		math::Vec2<int> p1Int = { (int)triToRender.p[1].x, (int)triToRender.p[1].y };
-		math::Vec2<int> p2Int = { (int)triToRender.p[2].x, (int)triToRender.p[2].y };
+		if (normal.z <= 0)
+		{
+			// Project each triangle in 3D space onto the 2D space triangle to render
+			math::ProjectVec3ToVec2(translate.p[0], projected.p[0], projectionMatrix);
+			math::ProjectVec3ToVec2(translate.p[1], projected.p[1], projectionMatrix);
+			math::ProjectVec3ToVec2(translate.p[2], projected.p[2], projectionMatrix);
 
-		render::DrawTriangleInPixels(renderBuffer, TEXT_COLOR, p0Int, p1Int, p2Int);
+			// Scale to view
+			const float sf = 500.0f;
+			Triangle2d triToRender = projected;
+			triToRender.p[0].x *= sf;
+			triToRender.p[0].y *= sf;
+			triToRender.p[1].x *= sf;
+			triToRender.p[1].y *= sf;
+			triToRender.p[2].x *= sf;
+			triToRender.p[2].y *= sf;
+
+			const float translateX = 0.5f * (float)renderBuffer.width;
+			const float translateY = 0.5f * (float)renderBuffer.height;
+			triToRender.p[0].x += translateX; triToRender.p[0].y += translateY;
+			triToRender.p[1].x += translateX; triToRender.p[1].y += translateY;
+			triToRender.p[2].x += translateX; triToRender.p[2].y += translateY;
+
+			math::Vec2<int> p0Int = { (int)triToRender.p[0].x, (int)triToRender.p[0].y };
+			math::Vec2<int> p1Int = { (int)triToRender.p[1].x, (int)triToRender.p[1].y };
+			math::Vec2<int> p2Int = { (int)triToRender.p[2].x, (int)triToRender.p[2].y };
+
+			render::DrawTriangleInPixels(renderBuffer, TEXT_COLOR, p0Int, p1Int, p2Int);
+		}
 	}
 }
