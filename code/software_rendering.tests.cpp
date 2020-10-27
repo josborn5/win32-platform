@@ -123,6 +123,7 @@ void RunSoftwareRenderingTests()
 
 	/**
 	 * DIAGONAL LINE TO BOUNDARY OF BUFFER
+	 * X +VE INCREMENT, Y +VE INCREMENT
 	 *
 	 *	    0   1   2   3
 	 *	  |---|---|---|---|
@@ -163,7 +164,49 @@ void RunSoftwareRenderingTests()
 	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
 
 	/**
-	 * DIAGONAL LINE OUTSIDE OF VERTICAL BOUNDARIES WITH STEEP GRADIENT
+	 * DIAGONAL LINE TO BOUNDARY OF BUFFER
+	 * X +VE INCREMENT, Y -VE INCREMENT
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 |   |   |   | O |
+	 *	  |---|---|---|---|
+	 *	1 |   |   | x |   |
+	 *	  |---|---|---|---|
+	 *	2 |   | x |   |   |
+	 *	  |---|---|---|---|
+	 *	3 | O |   |   |   |
+	 *	  |---|---|---|---|
+	 */
+	ClearPixels(pixelArray);
+	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 3, 0 });
+
+	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
+
+	assert(pixelArray[1] == EMPTY);
+	assert(pixelArray[2] == EMPTY);
+	assert(pixelArray[3] == EMPTY);
+	assert(pixelArray[4] == FILLED);
+
+	assert(pixelArray[5] == EMPTY);
+	assert(pixelArray[6] == EMPTY);
+	assert(pixelArray[7] == FILLED);
+	assert(pixelArray[8] == EMPTY);
+
+	assert(pixelArray[9] == EMPTY);
+	assert(pixelArray[10] == FILLED);
+	assert(pixelArray[11] == EMPTY);
+	assert(pixelArray[12] == EMPTY);
+
+	assert(pixelArray[13] == FILLED);
+	assert(pixelArray[14] == EMPTY);
+	assert(pixelArray[15] == EMPTY);
+	assert(pixelArray[16] == EMPTY);
+
+	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
+
+	/**
+	 * STEEP GRADIENT, X +VE INCREMENT, Y +VE INCREMENT
 	 *
 	 *	    0   1   2   3
 	 *	  |---|---|---|---|
@@ -177,7 +220,7 @@ void RunSoftwareRenderingTests()
 	 *	  |---|---|---|---|
 	 */
 	ClearPixels(pixelArray);
-	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 1, -5 }, math::Vec2<int>{ 2, 25 });
+	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 1, 0 }, math::Vec2<int>{ 2, 3 });
 
 	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
 
@@ -204,7 +247,48 @@ void RunSoftwareRenderingTests()
 	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
 
 	/**
-	 * DIAGONAL LINE OUTSIDE OF VERTICAL BOUNDARIES WITH SHALLOW GRADIENT
+	 * SHALLOW GRADIENT, X +VE INCREMENT, Y +VE INCREMENT
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 |   |   |   |   |
+	 *	  |---|---|---|---|
+	 *	1 | O | x |   |   |
+	 *	  |---|---|---|---|
+	 *	2 |   |   | x | O |
+	 *	  |---|---|---|---|
+	 *	3 |   |   |   |   |
+	 *	  |---|---|---|---|
+	 */
+	ClearPixels(pixelArray);
+	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 0, 1 }, math::Vec2<int>{ 3, 2 });
+
+	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
+
+	assert(pixelArray[1] == EMPTY);
+	assert(pixelArray[2] == EMPTY);
+	assert(pixelArray[3] == EMPTY);
+	assert(pixelArray[4] == EMPTY);
+
+	assert(pixelArray[5] == FILLED);
+	assert(pixelArray[6] == FILLED);
+	assert(pixelArray[7] == EMPTY);
+	assert(pixelArray[8] == EMPTY);
+
+	assert(pixelArray[9] == EMPTY);
+	assert(pixelArray[10] == EMPTY);
+	assert(pixelArray[11] == FILLED);
+	assert(pixelArray[12] == FILLED);
+
+	assert(pixelArray[13] == EMPTY);
+	assert(pixelArray[14] == EMPTY);
+	assert(pixelArray[15] == EMPTY);
+	assert(pixelArray[16] == EMPTY);
+
+	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
+
+		/**
+	 * SHALLOW GRADIENT, X +VE INCREMENT, Y -VE INCREMENT
 	 *
 	 *	    0   1   2   3
 	 *	  |---|---|---|---|
@@ -218,7 +302,7 @@ void RunSoftwareRenderingTests()
 	 *	  |---|---|---|---|
 	 */
 	ClearPixels(pixelArray);
-	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ -5, 3 }, math::Vec2<int>{ 25, 2 });
+	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 3, 2 });
 
 	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
 
@@ -238,7 +322,7 @@ void RunSoftwareRenderingTests()
 	assert(pixelArray[12] == FILLED);
 
 	assert(pixelArray[13] == FILLED);
-	assert(pixelArray[14] == EMPTY);
+	assert(pixelArray[14] == FILLED);
 	assert(pixelArray[15] == EMPTY);
 	assert(pixelArray[16] == EMPTY);
 
