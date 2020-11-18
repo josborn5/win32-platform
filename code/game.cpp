@@ -60,7 +60,9 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 
 void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const RenderBuffer &renderBuffer, float dt)
 {
-	const uint32_t TEXT_COLOR = 0x00FF00;
+	const int RED = 0;
+	const int GREEN = 255;
+	const int BLUE = 0;
 	const uint32_t BACKGROUND_COLOR = 0x000000;
 
 	render::ClearScreen(renderBuffer, 0, 0, renderBuffer.width, renderBuffer.height, BACKGROUND_COLOR);
@@ -132,6 +134,26 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 		if (dot < 0.0f)
 		{
+			math::Vec3<float> lightDirection = { 0.0f, 0.0f, -1.0f };
+			math::Vec3<float> normalizedLightDirection = UnitVector(lightDirection);
+			float shade = math::DotProduct(normal, normalizedLightDirection);
+			// Use bitwise operators to construct a single uint32_t value from three 0-255 RGB values.
+			// There are 32 bits to fill up.
+			// Each 0-255 value is a single byte, or 8 bits. So the 32 bits will be split into 4 segments (32 bits / 8 bits = 4).
+			// |--1--|--2--|--3--|--4--|	bytes
+			// 1     8     16    24    32	bits
+			//
+			// So the 0xRRGGBB value is made by constructing:
+			// 1. the RR value and shifting it 16 places to the left
+			//		|00|00|00|RR|	--> |00|RR|00|00|
+			// 2. the GG value and shifting it 8 places to the left
+			//		|00|00|00|GG|	-->	|00|00|GG|00|
+			// 3. the BB value
+			//							|00|00|00|BB|
+			// Adding these together gives us the 0xRRGGBB value:
+			//		|0x|00|00|00| + |00|RR|00|00| + |00|00|GG|00| + |00|00|00|BB| = |0x|RR|GG|BB|
+			uint32_t triangleColor = (uint32_t)(0x000000 + (int(RED * shade) << 16) + (int(GREEN * shade) << 8) + int(BLUE * shade));
+			
 			// Project each triangle in 3D space onto the 2D space triangle to render
 			math::ProjectVec3ToVec2(translate.p[0], projected.p[0], projectionMatrix);
 			math::ProjectVec3ToVec2(translate.p[1], projected.p[1], projectionMatrix);
@@ -157,7 +179,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 			math::Vec2<int> p1Int = { (int)triToRender.p[1].x, (int)triToRender.p[1].y };
 			math::Vec2<int> p2Int = { (int)triToRender.p[2].x, (int)triToRender.p[2].y };
 
-			render::DrawTriangleInPixels(renderBuffer, TEXT_COLOR, p0Int, p1Int, p2Int);
+			render::DrawTriangleInPixels(renderBuffer, triangleColor, p0Int, p1Int, p2Int);
 		}
 	}
 }
