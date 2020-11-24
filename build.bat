@@ -1,4 +1,6 @@
-REM https://youtu.be/XgMWc6LumG4?t=1112
+REM https://youtu.be/XgMWc6LumG4?t=2052
+REM https://www.youtube.com/watch?v=HyVc0X9JKpg
+REM https://people.sc.fsu.edu/~jburkardt/data/obj/obj.html
 
 REM VS 2015:
 REM call "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x64

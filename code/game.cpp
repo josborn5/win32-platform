@@ -5,6 +5,8 @@
 #include "math.hpp"
 #include "geometry.hpp"
 
+#include "obj_file_reader.cpp"
+
 math::Vec3<float> camera = {0};
 Mesh mesh;
 math::Matrix4x4<float> projectionMatrix;
@@ -14,7 +16,7 @@ float theta = 0.0f;
 void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuffer)
 {
 	// Using a clockwise winding convention
-	mesh.triangles = {
+	/*mesh.triangles = {
 		// SOUTH
 		{ 0.0f, 0.0f, 0.0f,		0.0f, 1.0f, 0.0f,		1.0f, 1.0f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f,		1.0f, 1.0f, 0.0f,		1.0f, 0.0f, 0.0f },
@@ -38,7 +40,9 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 		// BOTTOM
 		{ 1.0f, 0.0f, 1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 0.0f, 0.0f },
 		{ 1.0f, 0.0f, 1.0f,		0.0f, 0.0f, 1.0f,		0.0f, 0.0f, 0.0f }
-	};
+	};*/
+
+	ReadObjFileToVec3("teapot.obj", mesh.triangles);
 
 	// Initialize the projection matrix
 	float nearPlane = 0.1f;
@@ -111,7 +115,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 		// Push back away from the camera which is implicitly located at z: 0. This ensures we're not trying to render trinagles behind the camera
 		translate = rotatedZX;
-		float zOffset = 3.0f;
+		float zOffset = 150.0f;
 		translate.p[0].z += zOffset;
 		translate.p[1].z += zOffset;
 		translate.p[2].z += zOffset;
@@ -132,7 +136,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 		math::Vec3<float> fromCameraToTriangle = math::SubtractVectors(translate.p[0], camera);
 		float dot = DotProduct(normal, fromCameraToTriangle);
 
-		if (dot < 0.0f)
+		if (dot > 0.0f)
 		{
 			math::Vec3<float> lightDirection = { 0.0f, 0.0f, -1.0f };
 			math::Vec3<float> normalizedLightDirection = UnitVector(lightDirection);
