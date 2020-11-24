@@ -115,10 +115,10 @@ static void Win32_ProcessKeyboardMessage(Input* input, int isDown, int wasDown, 
 {
 	if (vkCode == vkButton)
 	{
-		Button button = input->buttons[key];
-		button.isDown = (isDown != 0);
-		button.wasDown = (wasDown != 0);
-		button.keyUp = (!button.isDown && button.wasDown);
+		Button* button = &input->buttons[key];
+		button->isDown = (isDown != 0);
+		button->wasDown = (wasDown != 0);
+		button->keyUp = (!button->isDown && button->wasDown);
 	}
 }
 
