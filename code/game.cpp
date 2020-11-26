@@ -4,6 +4,7 @@
 
 #include "math.hpp"
 #include "geometry.hpp"
+#include "geometry.cpp"
 
 #include "obj_file_reader.cpp"
 
@@ -45,21 +46,7 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 	ReadObjFileToVec3("teapot.obj", mesh.triangles);
 
 	// Initialize the projection matrix
-	float nearPlane = 0.1f;
-	float farPlane = 1000.0f;
-	float fFieldOfViewDeg = 90.0f;
-	// float fieldOfViewRadians = (90.0f * 3.14159f) / 180.0f;
-	float aspectRatio = 1.0f;
-	// float aspectRatio = (float)renderBuffer.width / (float)renderBuffer.height;
-	float inverseTangent = 1.0f / std::tanf(fFieldOfViewDeg * 0.5f * 3.14159f / 180.0f);
-	// float inverseTangent = 1.0f / std::tanf(0.5f * fieldOfViewRadians);
-
-	projectionMatrix.m[0][0] = aspectRatio * inverseTangent;
-	projectionMatrix.m[1][1] = inverseTangent;
-	projectionMatrix.m[2][2] = farPlane / (farPlane - nearPlane);
-	projectionMatrix.m[3][2] = (-farPlane * nearPlane) / (farPlane - nearPlane);
-	projectionMatrix.m[2][3] = 1.0f;
-	projectionMatrix.m[3][3] = 0.0f;
+	projectionMatrix = MakeProjectionMatrix(90.0f, 1.0f, 0.1f, 1000.0f);
 }
 
 void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const RenderBuffer &renderBuffer, float dt)
@@ -72,23 +59,9 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	render::ClearScreen(renderBuffer, 0, 0, renderBuffer.width, renderBuffer.height, BACKGROUND_COLOR);
 
 	theta += dt;
-	math::Matrix4x4<float> rotationMatrixX;
-	math::Matrix4x4<float> rotationMatrixZ;
-
 	// Initialize the rotation matrices
-	rotationMatrixZ.m[0][0] = std::cosf(theta);
-	rotationMatrixZ.m[0][1] = -std::sinf(theta);
-	rotationMatrixZ.m[1][0] = std::sinf(theta);
-	rotationMatrixZ.m[1][1] = std::cosf(theta);
-	rotationMatrixZ.m[2][2] = 1.0f;
-	rotationMatrixZ.m[3][3] = 1.0f;
-
-	rotationMatrixX.m[0][0] = 1.0f;
-	rotationMatrixX.m[1][1] = std::cosf(theta);
-	rotationMatrixX.m[1][2] = -std::sinf(theta);
-	rotationMatrixX.m[2][1] = std::sinf(theta);
-	rotationMatrixX.m[2][2] = std::cosf(theta);
-	rotationMatrixX.m[3][3] = 1.0f;
+	math::Matrix4x4<float> rotationMatrixX = MakeXAxisRotationMatrix(theta);
+	math::Matrix4x4<float> rotationMatrixZ = MakeZAxisRotationMatrix(theta);
 
 	// Draw unit vectors along axes
 	math::Vec2<int> origin = { 0, 0 };
