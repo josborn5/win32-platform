@@ -63,6 +63,15 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	math::Matrix4x4<float> rotationMatrixX = MakeXAxisRotationMatrix(theta);
 	math::Matrix4x4<float> rotationMatrixZ = MakeZAxisRotationMatrix(theta);
 
+	// Initialize the translation matrix
+	// Push back away from the camera which is implicitly located at z: 0. This ensures we're not trying to render trinagles behind the camera
+	math::Matrix4x4<float> translationMatrix = MakeTranslationMatrix(0.0f, 0.0f, 150.0f);
+
+	// Combine all the rotation and translation matrices into a single world transfomration matrix
+	math::Matrix4x4<float> worldMatrix = MakeIdentityMatrix();
+	worldMatrix = MultiplyMatrixWithMatrix(rotationMatrixZ, rotationMatrixX);
+	worldMatrix = MultiplyMatrixWithMatrix(worldMatrix, translationMatrix);
+
 	// Draw unit vectors along axes
 	math::Vec2<int> origin = { 0, 0 };
 	math::Vec2<int> xPos = { 100, 0 };
@@ -72,41 +81,19 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 	for (Triangle3d tri : mesh.triangles)
 	{
-		Triangle3d translate;
-		Triangle3d rotatedZ;
-		Triangle3d rotatedZX;
+		Triangle3d transformed;
 		Triangle2d projected;
 
-		// Rotate each triangle
-		math::MultiplyVectorWithMatrix(tri.p[0], rotatedZ.p[0], rotationMatrixZ);
-		math::MultiplyVectorWithMatrix(tri.p[1], rotatedZ.p[1], rotationMatrixZ);
-		math::MultiplyVectorWithMatrix(tri.p[2], rotatedZ.p[2], rotationMatrixZ);
+		// Transform each triangle
+		math::MultiplyVectorWithMatrix(tri.p[0], transformed.p[0], worldMatrix);
+		math::MultiplyVectorWithMatrix(tri.p[1], transformed.p[1], worldMatrix);
+		math::MultiplyVectorWithMatrix(tri.p[2], transformed.p[2], worldMatrix);
 
-		math::MultiplyVectorWithMatrix(rotatedZ.p[0], rotatedZX.p[0], rotationMatrixX);
-		math::MultiplyVectorWithMatrix(rotatedZ.p[1], rotatedZX.p[1], rotationMatrixX);
-		math::MultiplyVectorWithMatrix(rotatedZ.p[2], rotatedZX.p[2], rotationMatrixX);
+		math::Vec3<float> line1 = SubtractVectors(transformed.p[1], transformed.p[0]);
+		math::Vec3<float> line2 = SubtractVectors(transformed.p[2], transformed.p[0]);
+		math::Vec3<float> normal = math::UnitVector(math::CrossProduct(line1, line2));
 
-		// Push back away from the camera which is implicitly located at z: 0. This ensures we're not trying to render trinagles behind the camera
-		translate = rotatedZX;
-		float zOffset = 150.0f;
-		translate.p[0].z += zOffset;
-		translate.p[1].z += zOffset;
-		translate.p[2].z += zOffset;
-
-		math::Vec3<float> normal;
-		math::Vec3<float> line1;
-		math::Vec3<float> line2;
-		line1.x = translate.p[1].x - translate.p[0].x;
-		line1.y = translate.p[1].y - translate.p[0].y;
-		line1.z = translate.p[1].z - translate.p[0].z;
-
-		line2.x = translate.p[2].x - translate.p[0].x;
-		line2.y = translate.p[2].y - translate.p[0].y;
-		line2.z = translate.p[2].z - translate.p[0].z;
-
-		normal = math::UnitVector(math::CrossProduct(line1, line2));
-
-		math::Vec3<float> fromCameraToTriangle = math::SubtractVectors(translate.p[0], camera);
+		math::Vec3<float> fromCameraToTriangle = math::SubtractVectors(transformed.p[0], camera);
 		float dot = DotProduct(normal, fromCameraToTriangle);
 
 		if (dot > 0.0f)
@@ -132,9 +119,9 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 			uint32_t triangleColor = (uint32_t)(0x000000 + (int(RED * shade) << 16) + (int(GREEN * shade) << 8) + int(BLUE * shade));
 			
 			// Project each triangle in 3D space onto the 2D space triangle to render
-			math::ProjectVec3ToVec2(translate.p[0], projected.p[0], projectionMatrix);
-			math::ProjectVec3ToVec2(translate.p[1], projected.p[1], projectionMatrix);
-			math::ProjectVec3ToVec2(translate.p[2], projected.p[2], projectionMatrix);
+			math::ProjectVec3ToVec2(transformed.p[0], projected.p[0], projectionMatrix);
+			math::ProjectVec3ToVec2(transformed.p[1], projected.p[1], projectionMatrix);
+			math::ProjectVec3ToVec2(transformed.p[2], projected.p[2], projectionMatrix);
 
 			// Scale to view
 			const float sf = 500.0f;

@@ -59,3 +59,12 @@ math::Matrix4x4<float> MakeXAxisRotationMatrix(float theta)
 	SetXAxisRotationMatrix(theta, matrix);
 	return matrix;
 }
+
+math::Matrix4x4<float> MakeTranslationMatrix(float dispX, float dispY, float dispZ)
+{
+	math::Matrix4x4<float> matrix = MakeIdentityMatrix();
+	matrix.m[3][0] = dispX;
+	matrix.m[3][1] = dispY;
+	matrix.m[3][2] = dispZ;
+	return matrix;
+}

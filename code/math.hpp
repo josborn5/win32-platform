@@ -96,6 +96,23 @@ namespace math
 			out.z /= out.w;
 		}
 	}
+
+	template<typename T>
+	Matrix4x4<T> MultiplyMatrixWithMatrix(const Matrix4x4<T> &m1, const Matrix4x4<T> &m2)
+	{
+		Matrix4x4<T> matrix;
+		for (int col = 0; col < 4; col += 1)
+		{
+			for (int row = 0; row < 4; row += 1)
+			{
+				matrix.m[row][col] = m1.m[row][0] * m2.m[0][col]
+								+ m1.m[row][1] * m2.m[1][col]
+								+ m1.m[row][2] * m2.m[2][col]
+								+ m1.m[row][3] * m2.m[3][col];
+			}
+		}
+		return matrix;
+	}
 }
 
 #endif
