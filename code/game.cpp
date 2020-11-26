@@ -145,9 +145,9 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 			math::MultiplyVectorWithMatrix(transformed.p[2], viewed.p[2], viewMatrix);
 
 			// Project each triangle in 3D space onto the 2D space triangle to render
-			math::ProjectVec3ToVec2(transformed.p[0], projected.p[0], projectionMatrix);
-			math::ProjectVec3ToVec2(transformed.p[1], projected.p[1], projectionMatrix);
-			math::ProjectVec3ToVec2(transformed.p[2], projected.p[2], projectionMatrix);
+			math::ProjectVec3ToVec2(viewed.p[0], projected.p[0], projectionMatrix);
+			math::ProjectVec3ToVec2(viewed.p[1], projected.p[1], projectionMatrix);
+			math::ProjectVec3ToVec2(viewed.p[2], projected.p[2], projectionMatrix);
 
 			// Scale to view
 			const float sf = 500.0f;
