@@ -68,3 +68,55 @@ math::Matrix4x4<float> MakeTranslationMatrix(float dispX, float dispY, float dis
 	matrix.m[3][2] = dispZ;
 	return matrix;
 }
+
+/**
+ * Structure of the PointAt Matrix:
+ * | Ax | Ay | Az | 0 |
+ * | Bx | By | Bz | 0 |
+ * | Cx | Cy | Cz | 0 |
+ * | Tx | Ty | Tz | 1 |
+ */
+math::Matrix4x4<float> PointAt(const math::Vec3<float> &position, const math::Vec3<float> &target, const math::Vec3<float> &up)
+{
+	// Vector from the position to the target is the new forward direction
+	math::Vec3<float> forwardUnit = math::SubtractVectors(target, position);
+	forwardUnit = math::UnitVector(forwardUnit);
+
+	// Calculate the new up direction of the new forward direction
+	float newUpScalar = DotProduct(up, forwardUnit);
+	math::Vec3<float> newUpTemp = MultiplyVectorByScalar(forwardUnit, newUpScalar);
+	math::Vec3<float> upUnit = SubtractVectors(up, newUpTemp);
+	upUnit = math::UnitVector(upUnit);
+
+	// Calculate the new right direction for the new up & forward directions
+	math::Vec3<float> rightUnit = CrossProduct(upUnit, forwardUnit);
+
+	// Construct the new transformation matrix
+	math::Matrix4x4<float> pointAt;
+	pointAt.m[0][0] = rightUnit.x;		pointAt.m[1][0] = rightUnit.y;		pointAt.m[2][0] = rightUnit.z;		pointAt.m[3][0] = 0.0f;
+	pointAt.m[0][1] = upUnit.x;			pointAt.m[1][1] = upUnit.y;			pointAt.m[2][1] = rightUnit.z;		pointAt.m[3][1] = 0.0f;
+	pointAt.m[0][2] = forwardUnit.x;	pointAt.m[1][2] = forwardUnit.y;	pointAt.m[2][2] = forwardUnit.z;	pointAt.m[3][2] = 0.0f;
+	pointAt.m[0][3] = position.x;		pointAt.m[1][3] = position.y;		pointAt.m[2][3] = position.z;		pointAt.m[3][3] = 1.0f;
+	return pointAt;
+}
+
+/**
+ * Structure of the LookAt Matrix:
+ * |  Ax  |  Bx  |  Cx  | 0 |
+ * |  Ay  |  By  |  Cy  | 0 |
+ * |  Az  |  Bz  |  Cz  | 0 |
+ * | -T.A | -T.B | -T.C | 1 |
+ */
+math::Matrix4x4<float> LookAt(math::Matrix4x4<float> const &pointAt)
+{
+	float tDotA = (pointAt.m[0][0] * pointAt.m[0][3]) + (pointAt.m[1][0] * pointAt.m[1][3]) + (pointAt.m[2][0] * pointAt.m[2][3]);
+	float tDotB = (pointAt.m[0][1] * pointAt.m[0][3]) + (pointAt.m[1][1] * pointAt.m[1][3]) + (pointAt.m[2][1] * pointAt.m[2][3]);
+	float tDotC = (pointAt.m[0][2] * pointAt.m[0][3]) + (pointAt.m[1][2] * pointAt.m[1][3]) + (pointAt.m[2][2] * pointAt.m[2][3]);
+
+	math::Matrix4x4<float> lookAt;
+	lookAt.m[0][0] = pointAt.m[0][0];	lookAt.m[1][0] = pointAt.m[0][1];	lookAt.m[2][0] = pointAt.m[0][2];	lookAt.m[3][0] = 0.0f;
+	lookAt.m[0][1] = pointAt.m[1][0];	lookAt.m[1][1] = pointAt.m[1][1];	lookAt.m[2][1] = pointAt.m[1][2];	lookAt.m[3][1] = 0.0f;
+	lookAt.m[0][2] = pointAt.m[2][0];	lookAt.m[1][2] = pointAt.m[2][1];	lookAt.m[2][2] = pointAt.m[2][2];	lookAt.m[3][2] = 0.0f;
+	lookAt.m[0][3] = -tDotA;			lookAt.m[1][3] = -tDotB;			lookAt.m[2][3] = -tDotC;			lookAt.m[3][3] = 1.0f;
+	return lookAt;
+}

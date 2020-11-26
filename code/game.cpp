@@ -8,7 +8,8 @@
 
 #include "obj_file_reader.cpp"
 
-math::Vec3<float> camera = {0};
+math::Vec3<float> cameraPosition = {0};
+math::Vec3<float> cameraDirection = {0};
 Mesh mesh;
 math::Matrix4x4<float> projectionMatrix;
 
@@ -56,9 +57,18 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	const int BLUE = 0;
 	const uint32_t BACKGROUND_COLOR = 0x000000;
 
+	if (input.buttons[KEY_DOWN].isDown)
+	{
+		cameraPosition.z -= 10.0f;
+	}
+	else if (input.buttons[KEY_UP].isDown)
+	{
+		cameraPosition.z += 10.0f;
+	}
+
 	render::ClearScreen(renderBuffer, 0, 0, renderBuffer.width, renderBuffer.height, BACKGROUND_COLOR);
 
-	theta += dt;
+	// theta += dt;
 	// Initialize the rotation matrices
 	math::Matrix4x4<float> rotationMatrixX = MakeXAxisRotationMatrix(theta);
 	math::Matrix4x4<float> rotationMatrixZ = MakeZAxisRotationMatrix(theta);
@@ -68,9 +78,19 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	math::Matrix4x4<float> translationMatrix = MakeTranslationMatrix(0.0f, 0.0f, 150.0f);
 
 	// Combine all the rotation and translation matrices into a single world transfomration matrix
-	math::Matrix4x4<float> worldMatrix = MakeIdentityMatrix();
+	math::Matrix4x4<float> worldMatrix;
 	worldMatrix = MultiplyMatrixWithMatrix(rotationMatrixZ, rotationMatrixX);
 	worldMatrix = MultiplyMatrixWithMatrix(worldMatrix, translationMatrix);
+
+	// Camera matrix
+	math::Vec3<float> up = { 0.0f, 1.0f, 0.0f };
+	cameraDirection = { 0.0f, 0.0f, 1.0f };	// Hard coded to look along the z-axis
+	math::Vec3<float> target = AddVectors(cameraPosition, cameraDirection);
+	math::Matrix4x4<float> cameraMatrix = PointAt(cameraPosition, target, up);
+
+	// View matrix
+	math::Matrix4x4<float> viewMatrix = LookAt(cameraMatrix);
+
 
 	// Draw unit vectors along axes
 	math::Vec2<int> origin = { 0, 0 };
@@ -82,7 +102,8 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	for (Triangle3d tri : mesh.triangles)
 	{
 		Triangle3d transformed;
-		Triangle2d projected;
+		Triangle3d viewed;
+		Triangle2d projected; // TODO: switch this to Triangle3d so the depth information is kept and can be used in a depth buffer to prevent double rendering of triangles behind each other
 
 		// Transform each triangle
 		math::MultiplyVectorWithMatrix(tri.p[0], transformed.p[0], worldMatrix);
@@ -93,7 +114,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 		math::Vec3<float> line2 = SubtractVectors(transformed.p[2], transformed.p[0]);
 		math::Vec3<float> normal = math::UnitVector(math::CrossProduct(line1, line2));
 
-		math::Vec3<float> fromCameraToTriangle = math::SubtractVectors(transformed.p[0], camera);
+		math::Vec3<float> fromCameraToTriangle = math::SubtractVectors(transformed.p[0], cameraPosition);
 		float dot = DotProduct(normal, fromCameraToTriangle);
 
 		if (dot > 0.0f)
@@ -117,7 +138,12 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 			// Adding these together gives us the 0xRRGGBB value:
 			//		|0x|00|00|00| + |00|RR|00|00| + |00|00|GG|00| + |00|00|00|BB| = |0x|RR|GG|BB|
 			uint32_t triangleColor = (uint32_t)(0x000000 + (int(RED * shade) << 16) + (int(GREEN * shade) << 8) + int(BLUE * shade));
-			
+
+			// Convert the triangle position fro world space to view space
+			math::MultiplyVectorWithMatrix(transformed.p[0], viewed.p[0], viewMatrix);
+			math::MultiplyVectorWithMatrix(transformed.p[1], viewed.p[1], viewMatrix);
+			math::MultiplyVectorWithMatrix(transformed.p[2], viewed.p[2], viewMatrix);
+
 			// Project each triangle in 3D space onto the 2D space triangle to render
 			math::ProjectVec3ToVec2(transformed.p[0], projected.p[0], projectionMatrix);
 			math::ProjectVec3ToVec2(transformed.p[1], projected.p[1], projectionMatrix);
