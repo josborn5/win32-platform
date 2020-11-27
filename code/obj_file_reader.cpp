@@ -30,7 +30,7 @@ static bool ReadObjFileToVec3(std::string const &filename, std::vector<Triangle3
 			math::Vec3<float> vertex;
 			// expect line to have syntax 'v x y z' where x, y & z are the ordinals of the point position
 			stringStream >> junk >> vertex.x >> vertex.y >> vertex.z;
-
+			vertex.w = 1.0f;
 			vertices.push_back(vertex);
 		}
 

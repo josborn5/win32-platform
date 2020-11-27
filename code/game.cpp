@@ -17,10 +17,8 @@ float theta = 0.0f;
 
 void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuffer)
 {
-	ReadObjFileToVec3("teapot.obj", mesh.triangles);
-
 	// Using a clockwise winding convention
-	mesh.triangles = {
+	/*mesh.triangles = {
 		// SOUTH
 		{ 0.0f, 0.0f, 0.0f, 1.0f,		0.0f, 1.0f, 0.0f, 1.0f,		1.0f, 1.0f, 0.0f, 1.0f },
 		{ 0.0f, 0.0f, 0.0f, 1.0f,		1.0f, 1.0f, 0.0f, 1.0f,		1.0f, 0.0f, 0.0f, 1.0f },
@@ -44,7 +42,9 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 		// BOTTOM
 		{ 1.0f, 0.0f, 1.0f, 1.0f,		0.0f, 0.0f, 0.0f, 1.0f,		1.0f, 0.0f, 0.0f, 1.0f },
 		{ 1.0f, 0.0f, 1.0f, 1.0f,		0.0f, 0.0f, 1.0f, 1.0f,		0.0f, 0.0f, 0.0f, 1.0f }
-	};
+	};*/
+
+	ReadObjFileToVec3("teapot.obj", mesh.triangles);
 
 	// Initialize the projection matrix
 	projectionMatrix = MakeProjectionMatrix(90.0f, 1.0f, 0.1f, 1000.0f);
@@ -53,11 +53,11 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const RenderBuffer &renderBuffer, float dt)
 {
 	const int RED = 0;
-	const int GREEN = 0x00FF00;
+	const int GREEN = 255;
 	const int BLUE = 0;
 	const uint32_t BACKGROUND_COLOR = 0x000000;
 
-	float increment = 0.5;
+	float increment = 5.0f;
 	if (input.buttons[KEY_DOWN].isDown)
 	{
 		cameraPosition.z -= increment;
@@ -94,7 +94,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 	// Initialize the translation matrix
 	// Push back away from the camera which is implicitly located at z: 0. This ensures we're not trying to render trinagles behind the camera
-	math::Matrix4x4<float> translationMatrix = MakeTranslationMatrix(0.0f, 0.0f, 8.0f);
+	math::Matrix4x4<float> translationMatrix = MakeTranslationMatrix(0.0f, 0.0f, 150.0f);
 
 	// Combine all the rotation and translation matrices into a single world transfomration matrix
 	math::Matrix4x4<float> worldMatrix;
@@ -135,11 +135,11 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 		math::Vec3<float> fromCameraToTriangle = math::SubtractVectors(transformed.p[0], cameraPosition);
 		float dot = DotProduct(normal, fromCameraToTriangle);
 
-		if (dot <= 0.0f)
+		if (dot >= 0.0f)
 		{
-			// math::Vec3<float> lightDirection = { 0.0f, 0.0f, -1.0f };
-			// math::Vec3<float> normalizedLightDirection = UnitVector(lightDirection);
-			// float shade = math::DotProduct(normal, normalizedLightDirection);
+			math::Vec3<float> lightDirection = { 0.0f, 0.0f, 1.0f };
+			math::Vec3<float> normalizedLightDirection = UnitVector(lightDirection);
+			float shade = math::DotProduct(normal, normalizedLightDirection);
 			// Use bitwise operators to construct a single uint32_t value from three 0-255 RGB values.
 			// There are 32 bits to fill up.
 			// Each 0-255 value is a single byte, or 8 bits. So the 32 bits will be split into 4 segments (32 bits / 8 bits = 4).
@@ -155,7 +155,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 			//							|00|00|00|BB|
 			// Adding these together gives us the 0xRRGGBB value:
 			//		|0x|00|00|00| + |00|RR|00|00| + |00|00|GG|00| + |00|00|00|BB| = |0x|RR|GG|BB|
-			// uint32_t triangleColor = (uint32_t)(0x000000 + (int(RED * shade) << 16) + (int(GREEN * shade) << 8) + int(BLUE * shade));
+			uint32_t triangleColor = (uint32_t)(0x000000 + (int(RED * shade) << 16) + (int(GREEN * shade) << 8) + int(BLUE * shade));
 
 			// Convert the triangle position from world space to view space
 			math::MultiplyVectorWithMatrix(transformed.p[0], viewed.p[0], viewMatrix);
@@ -187,7 +187,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 			math::Vec2<int> p1Int = { (int)triToRender.p[1].x, (int)triToRender.p[1].y };
 			math::Vec2<int> p2Int = { (int)triToRender.p[2].x, (int)triToRender.p[2].y };
 
-			render::DrawTriangleInPixels(renderBuffer, GREEN, p0Int, p1Int, p2Int);
+			render::DrawTriangleInPixels(renderBuffer, triangleColor, p0Int, p1Int, p2Int);
 		}
 	}
 }
