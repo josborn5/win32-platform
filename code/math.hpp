@@ -71,6 +71,9 @@ namespace math
 		return Vec3<float> { in.x / length, in.y / length, in.z / length } ;
 	}
 
+	/**
+	 * Indexing is done by row then column. matrix.m[row][col]
+	 */
 	template<typename T>
 	struct Matrix4x4
 	{
@@ -96,17 +99,10 @@ namespace math
 	template<typename T>
 	void MultiplyVectorWithMatrix(const Vec3<T> &in, Vec3<T> &out, const Matrix4x4<T> &matrix)
 	{
-		out.x = (in.x * matrix.m[0][0]) + (in.y * matrix.m[1][0]) + (in.z * matrix.m[2][0]) + matrix.m[3][0];
-		out.y = (in.x * matrix.m[0][1]) + (in.y * matrix.m[1][1]) + (in.z * matrix.m[2][1]) + matrix.m[3][1];
-		out.z = (in.x * matrix.m[0][2]) + (in.y * matrix.m[1][2]) + (in.z * matrix.m[2][2]) + matrix.m[3][2];
-		out.w = (in.x * matrix.m[0][3]) + (in.y * matrix.m[1][3]) + (in.z * matrix.m[2][3]) + matrix.m[3][3];
-
-		if (out.w != 0.0f)
-		{
-			out.x /= out.w;
-			out.y /= out.w;
-			out.z /= out.w;
-		}
+		out.x = (in.x * matrix.m[0][0]) + (in.y * matrix.m[1][0]) + (in.z * matrix.m[2][0]) + (in.w * matrix.m[3][0]);
+		out.y = (in.x * matrix.m[0][1]) + (in.y * matrix.m[1][1]) + (in.z * matrix.m[2][1]) + (in.w * matrix.m[3][1]);
+		out.z = (in.x * matrix.m[0][2]) + (in.y * matrix.m[1][2]) + (in.z * matrix.m[2][2]) + (in.w * matrix.m[3][2]);
+		out.w = (in.x * matrix.m[0][3]) + (in.y * matrix.m[1][3]) + (in.z * matrix.m[2][3]) + (in.w * matrix.m[3][3]);
 	}
 
 	template<typename T>
