@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "math.tests.cpp"
 #include "software_rendering.tests.cpp"
+#include "geometry_tests.cpp"
 
 int main()
 {
@@ -10,4 +11,7 @@ int main()
 
 	RunSoftwareRenderingTests();
 	std::cout << "software_rendering tests passed.\n";
+
+	RunGeometryTests();
+	std::cout << "geometry tests passed.\n";
 }

@@ -43,6 +43,23 @@ math::Matrix4x4<float> MakeZAxisRotationMatrix(float theta)
 	return matrix;
 }
 
+void SetYAxisRotationMatrix(float theta, math::Matrix4x4<float> &matrix)
+{
+	float cos = std::cosf(theta);
+	float sin = std::sinf(theta);
+	matrix.m[0][0] = cos;
+	matrix.m[0][2] = sin;
+	matrix.m[2][0] = -sin;
+	matrix.m[2][2] = cos;
+}
+
+math::Matrix4x4<float> MakeYAxisRotationMatrix(float theta)
+{
+	math::Matrix4x4<float> matrix = MakeIdentityMatrix();
+	SetYAxisRotationMatrix(theta, matrix);
+	return matrix;
+}
+
 void SetXAxisRotationMatrix(float theta, math::Matrix4x4<float> &matrix)
 {
 	float cos = std::cosf(theta);
@@ -94,7 +111,7 @@ math::Matrix4x4<float> PointAt(const math::Vec3<float> &position, const math::Ve
 	// Construct the new transformation matrix
 	math::Matrix4x4<float> pointAt;
 	pointAt.m[0][0] = rightUnit.x;		pointAt.m[0][1] = rightUnit.y;		pointAt.m[0][2] = rightUnit.z;		pointAt.m[0][3] = 0.0f;
-	pointAt.m[1][0] = upUnit.x;			pointAt.m[1][1] = upUnit.y;			pointAt.m[1][2] = rightUnit.z;		pointAt.m[1][3] = 0.0f;
+	pointAt.m[1][0] = upUnit.x;			pointAt.m[1][1] = upUnit.y;			pointAt.m[1][2] = upUnit.z;			pointAt.m[1][3] = 0.0f;
 	pointAt.m[2][0] = forwardUnit.x;	pointAt.m[2][1] = forwardUnit.y;	pointAt.m[2][2] = forwardUnit.z;	pointAt.m[2][3] = 0.0f;
 	pointAt.m[3][0] = position.x;		pointAt.m[3][1] = position.y;		pointAt.m[3][2] = position.z;		pointAt.m[3][3] = 1.0f;
 	return pointAt;
