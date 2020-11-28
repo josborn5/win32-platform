@@ -124,7 +124,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 	// Initialize the translation matrix
 	// Push back away from the camera which is implicitly located at z: 0. This ensures we're not trying to render trinagles behind the camera
-	math::Matrix4x4<float> translationMatrix = MakeTranslationMatrix(0.0f, 0.0f, 5.0f);
+	math::Matrix4x4<float> translationMatrix = MakeTranslationMatrix(0.0f, 0.0f, 150.0f);
 
 	// Combine all the rotation and translation matrices into a single world transfomration matrix
 	math::Matrix4x4<float> worldMatrix;
