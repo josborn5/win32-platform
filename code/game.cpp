@@ -14,14 +14,17 @@ Mesh mesh;
 math::Matrix4x4<float> projectionMatrix;
 
 float theta = 0.0f;
+float cameraYaw = 0.0f;
 
 void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuffer)
 {
+	ReadObjFileToVec3("teapot.obj", mesh.triangles);
+	
 	// Using a clockwise winding convention
 	/*mesh.triangles = {
 		// SOUTH
 		{ 0.0f, 0.0f, 0.0f, 1.0f,		0.0f, 1.0f, 0.0f, 1.0f,		1.0f, 1.0f, 0.0f, 1.0f },
-		{ 0.0f, 0.0f, 0.0f, 1.0f,		1.0f, 1.0f, 0.0f, 1.0f,		1.0f, 0.0f, 0.0f, 1.0f },
+		// { 0.0f, 0.0f, 0.0f, 1.0f,		1.0f, 1.0f, 0.0f, 1.0f,		1.0f, 0.0f, 0.0f, 1.0f },
 
 		// EAST
 		{ 1.0f, 0.0f, 0.0f, 1.0f,		1.0f, 1.0f, 0.0f, 1.0f,		1.0f, 1.0f, 1.0f, 1.0f },
@@ -44,10 +47,13 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 		{ 1.0f, 0.0f, 1.0f, 1.0f,		0.0f, 0.0f, 1.0f, 1.0f,		0.0f, 0.0f, 0.0f, 1.0f }
 	};*/
 
-	ReadObjFileToVec3("teapot.obj", mesh.triangles);
+	
 
 	// Initialize the projection matrix
 	projectionMatrix = MakeProjectionMatrix(90.0f, 1.0f, 0.1f, 1000.0f);
+
+	// Initialize the camera
+	cameraDirection = { 0.0f, 0.0f, 1.0f };
 }
 
 void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const RenderBuffer &renderBuffer, float dt)
@@ -57,32 +63,55 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	const int BLUE = 0;
 	const uint32_t BACKGROUND_COLOR = 0x000000;
 
-	float increment = 5.0f;
-	if (input.buttons[KEY_DOWN].isDown)
+	float positionIncrement = 0.5f;
+	float yawIncrement = 0.01f;
+
+	// First process any change in yaw and update the camera direction
+	if (input.buttons[KEY_D].isDown)
 	{
-		cameraPosition.z -= increment;
+		cameraYaw -= yawIncrement;
 	}
-	else if (input.buttons[KEY_UP].isDown)
+	else if (input.buttons[KEY_A].isDown)
 	{
-		cameraPosition.z += increment;
+		cameraYaw += yawIncrement;
 	}
 
+	// Apply the camera yaw to the cameraDirection vector
+	math::Vec3<float> up = { 0.0f, 1.0f, 0.0f };
+	math::Vec3<float> target = { 0.0f, 0.0f, 1.0f };
+	math::Matrix4x4<float> cameraYawMatrix = MakeYAxisRotationMatrix(cameraYaw);
+	math::MultiplyVectorWithMatrix(target, cameraDirection, cameraYawMatrix);
+
+	// Next process any forwards or backwards movement
+	math::Vec3<float> cameraPositionForwardBack = MultiplyVectorByScalar(cameraDirection, positionIncrement);
 	if (input.buttons[KEY_S].isDown)
 	{
-		cameraPosition.y -= increment;
+		cameraPosition = SubtractVectors(cameraPosition, cameraPositionForwardBack);
 	}
 	else if (input.buttons[KEY_W].isDown)
 	{
-		cameraPosition.y += increment;
+		cameraPosition = AddVectors(cameraPosition, cameraPositionForwardBack);
 	}
 
-	if (input.buttons[KEY_A].isDown)
+	// Strafing - use the cross product between the camera direction and up to get a normal vector to the direction being faced
+	math::Vec3<float> cameraPositionStrafe = CrossProduct(up, cameraDirection);
+	if (input.buttons[KEY_LEFT].isDown)
 	{
-		cameraPosition.x -= increment;
+		cameraPosition = SubtractVectors(cameraPosition, cameraPositionStrafe);
 	}
-	else if (input.buttons[KEY_D].isDown)
+	else if (input.buttons[KEY_RIGHT].isDown)
 	{
-		cameraPosition.x += increment;
+		cameraPosition = AddVectors(cameraPosition, cameraPositionStrafe);
+	}
+
+	// Simply move the camera position vertically with up/down keypress
+	if (input.buttons[KEY_DOWN].isDown)
+	{
+		cameraPosition.y -= positionIncrement;
+	}
+	else if (input.buttons[KEY_UP].isDown)
+	{
+		cameraPosition.y += positionIncrement;
 	}
 
 	render::ClearScreen(renderBuffer, 0, 0, renderBuffer.width, renderBuffer.height, BACKGROUND_COLOR);
@@ -90,21 +119,21 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	theta += dt;
 	// Initialize the rotation matrices
 	math::Matrix4x4<float> rotationMatrixX = MakeXAxisRotationMatrix(theta);
+	math::Matrix4x4<float> rotationMatrixY = MakeYAxisRotationMatrix(theta);
 	math::Matrix4x4<float> rotationMatrixZ = MakeZAxisRotationMatrix(theta);
 
 	// Initialize the translation matrix
 	// Push back away from the camera which is implicitly located at z: 0. This ensures we're not trying to render trinagles behind the camera
-	math::Matrix4x4<float> translationMatrix = MakeTranslationMatrix(0.0f, 0.0f, 150.0f);
+	math::Matrix4x4<float> translationMatrix = MakeTranslationMatrix(0.0f, 0.0f, 5.0f);
 
 	// Combine all the rotation and translation matrices into a single world transfomration matrix
 	math::Matrix4x4<float> worldMatrix;
-	worldMatrix = MultiplyMatrixWithMatrix(rotationMatrixZ, rotationMatrixX);
+	// worldMatrix = MultiplyMatrixWithMatrix(rotationMatrixZ, rotationMatrixX);
+	worldMatrix = MakeIdentityMatrix();
 	worldMatrix = MultiplyMatrixWithMatrix(worldMatrix, translationMatrix);
 
 	// Camera matrix
-	math::Vec3<float> up = { 0.0f, 1.0f, 0.0f };
-	cameraDirection = { 0.0f, 0.0f, 1.0f };	// Hard coded to look along the z-axis
-	math::Vec3<float> target = AddVectors(cameraPosition, cameraDirection);
+	target = AddVectors(cameraPosition, cameraDirection);
 	math::Matrix4x4<float> cameraMatrix = PointAt(cameraPosition, target, up);
 
 	// View matrix
