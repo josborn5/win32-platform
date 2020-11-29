@@ -12,6 +12,7 @@ struct Triangle2d
 struct Triangle3d
 {
 	math::Vec3<float> p[3];
+	uint32_t color;
 };
 
 struct Mesh

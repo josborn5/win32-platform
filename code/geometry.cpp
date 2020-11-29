@@ -206,6 +206,7 @@ int ClipTriangleAgainstPlane(const math::Vec3<float> &planeP, const math::Vec3<f
 		// for the other two points, work out where the triangleintersects the plane and use those points in hte output
 		outputTriangle1.p[1] = IntersectPlane(planeP, unitNormalToPlane, *insidePoints[0], *outsidePoints[0]);
 		outputTriangle1.p[2] = IntersectPlane(planeP, unitNormalToPlane, *insidePoints[0], *outsidePoints[1]);
+		outputTriangle1.color = inputTriangle.color;
 		return 1;
 	}
 
@@ -216,10 +217,12 @@ int ClipTriangleAgainstPlane(const math::Vec3<float> &planeP, const math::Vec3<f
 		outputTriangle1.p[0] = *insidePoints[0];
 		outputTriangle1.p[1] = *insidePoints[1];
 		outputTriangle1.p[2] = IntersectPlane(planeP, unitNormalToPlane, *insidePoints[0], *outsidePoints[0]);
+		outputTriangle1.color = inputTriangle.color;
 
 		outputTriangle2.p[0] = *insidePoints[1];
 		outputTriangle2.p[1] = outputTriangle1.p[2];
 		outputTriangle2.p[2] = IntersectPlane(planeP, unitNormalToPlane, *insidePoints[1], *outsidePoints[0]);
+		outputTriangle2.color = inputTriangle.color;
 		return 2;
 	}
 
