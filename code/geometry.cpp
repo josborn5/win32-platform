@@ -137,3 +137,91 @@ math::Matrix4x4<float> LookAt(math::Matrix4x4<float> const &pointAt)
 	lookAt.m[3][0] = -tDotA;			lookAt.m[3][1] = -tDotB;			lookAt.m[3][2] = -tDotC;			lookAt.m[3][3] = 1.0f;
 	return lookAt;
 }
+
+math::Vec3<float> IntersectPlane(const math::Vec3<float> &planeP, const math::Vec3<float> &planeN, const math::Vec3<float> &lineStart, const math::Vec3<float> lineEnd)
+{
+	math::Vec3<float> normalizedPlaneN = math::UnitVector(planeN);
+	float planeD = DotProduct(normalizedPlaneN, planeP);
+	float ad = DotProduct(lineStart, normalizedPlaneN);
+	float bd = DotProduct(lineEnd, normalizedPlaneN);
+	float t = (planeD - ad) / (bd - ad);
+	math::Vec3<float> lineStartToEnd = SubtractVectors(lineEnd, lineStart);
+	math::Vec3<float> lineToIntersect = MultiplyVectorByScalar(lineStartToEnd, t);
+	return AddVectors(lineStart, lineToIntersect);
+}
+
+float ShortestDistanceFromPointToPlane(const math::Vec3<float> &point, const math::Vec3<float> &planeP, const math::Vec3<float> &unitNormalToPlane)
+{
+	float distance = math::DotProduct(unitNormalToPlane, point) - math::DotProduct(unitNormalToPlane, planeP);
+	return distance;
+}
+
+int ClipTriangleAgainstPlane(const math::Vec3<float> &planeP, const math::Vec3<float> &planeN, Triangle3d &inputTriangle, Triangle3d &outputTriangle1, Triangle3d &outputTriangle2)
+{
+	math::Vec3<float> unitNormalToPlane = math::UnitVector(planeN);
+
+	// Two baskets to store points that are inside the plane and points that are outside
+	math::Vec3<float>* insidePoints[3];
+	math::Vec3<float>* outsidePoints[3];
+	int insidePointCount = 0;
+	int outsidePointCount = 0;
+
+	// Work out the distance between the plane and each point on the triangle and put it in the relevant basket
+	for (int i = 0; i < 3; i += 1)
+	{
+		float distance = ShortestDistanceFromPointToPlane(inputTriangle.p[i], planeP, unitNormalToPlane);
+		if (distance >= 0)
+		{
+			insidePoints[insidePointCount] = &inputTriangle.p[i];
+			insidePointCount += 1;
+		}
+		else
+		{
+			outsidePoints[outsidePointCount] = &inputTriangle.p[i];
+			outsidePointCount += 1;
+		}
+	}
+
+	// All the points in the triangle are outside the plane
+	if (insidePointCount == 0)
+	{
+		// inputTriangle is not valid.
+		return 0;
+	}
+
+	// All the points on the triangle are inside the plane
+	if (insidePointCount == 3)
+	{
+		// inputTriangle is valid.
+		outputTriangle1 = inputTriangle;
+		return 1;
+	}
+
+	// Two points lie outside the plane
+	if (insidePointCount == 1 && outsidePointCount == 2)
+	{
+		// keep the one point inside the place in the output triangle
+		outputTriangle1.p[0] = *insidePoints[0];
+
+		// for the other two points, work out where the triangleintersects the plane and use those points in hte output
+		outputTriangle1.p[1] = IntersectPlane(planeP, unitNormalToPlane, *insidePoints[0], *outsidePoints[0]);
+		outputTriangle1.p[2] = IntersectPlane(planeP, unitNormalToPlane, *insidePoints[0], *outsidePoints[1]);
+		return 1;
+	}
+
+	// One point lies outside the plane
+	if (insidePointCount == 2 && outsidePointCount == 1)
+	{
+		// Create two new triangles from the two points inside the plane and the two points where the triangle intersects the plane
+		outputTriangle1.p[0] = *insidePoints[0];
+		outputTriangle1.p[1] = *insidePoints[1];
+		outputTriangle1.p[2] = IntersectPlane(planeP, unitNormalToPlane, *insidePoints[0], *outsidePoints[0]);
+
+		outputTriangle2.p[0] = *insidePoints[1];
+		outputTriangle2.p[1] = outputTriangle1.p[2];
+		outputTriangle2.p[2] = IntersectPlane(planeP, unitNormalToPlane, *insidePoints[1], *outsidePoints[0]);
+		return 2;
+	}
+
+	return 0;
+}

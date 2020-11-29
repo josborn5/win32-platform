@@ -1,4 +1,5 @@
 #include <math.h>
+#include <list>
 #include "win32_platform.cpp"
 #include "software_rendering.cpp"
 
@@ -24,7 +25,7 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 	/*mesh.triangles = {
 		// SOUTH
 		{ 0.0f, 0.0f, 0.0f, 1.0f,		0.0f, 1.0f, 0.0f, 1.0f,		1.0f, 1.0f, 0.0f, 1.0f },
-		// { 0.0f, 0.0f, 0.0f, 1.0f,		1.0f, 1.0f, 0.0f, 1.0f,		1.0f, 0.0f, 0.0f, 1.0f },
+		{ 0.0f, 0.0f, 0.0f, 1.0f,		1.0f, 1.0f, 0.0f, 1.0f,		1.0f, 0.0f, 0.0f, 1.0f },
 
 		// EAST
 		{ 1.0f, 0.0f, 0.0f, 1.0f,		1.0f, 1.0f, 0.0f, 1.0f,		1.0f, 1.0f, 1.0f, 1.0f },
@@ -59,12 +60,12 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const RenderBuffer &renderBuffer, float dt)
 {
 	const int RED = 0;
-	const int GREEN = 255;
+	const int GREEN = 0x00FF00;
 	const int BLUE = 0;
 	const uint32_t BACKGROUND_COLOR = 0x000000;
 
-	float positionIncrement = 0.5f;
-	float yawIncrement = 0.01f;
+	float positionIncrement = 1.0f;
+	float yawIncrement = 0.05f;
 
 	// First process any change in yaw and update the camera direction
 	if (input.buttons[KEY_D].isDown)
@@ -146,11 +147,13 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	render::DrawLineInPixels(renderBuffer, 0xFFFFFF, origin, xPos);
 	render::DrawLineInPixels(renderBuffer, 0xFFFFFF, origin, yPos);
 
+	std::vector<Triangle3d> trianglesToDraw;
+
 	for (Triangle3d tri : mesh.triangles)
 	{
 		Triangle3d transformed;
 		Triangle3d viewed;
-		Triangle2d projected; // TODO: switch this to Triangle3d so the depth information is kept and can be used in a depth buffer to prevent double rendering of triangles behind each other
+		Triangle3d projected; // TODO: switch this to Triangle3d so the depth information is kept and can be used in a depth buffer to prevent double rendering of triangles behind each other
 
 		// Transform each triangle
 		math::MultiplyVectorWithMatrix(tri.p[0], transformed.p[0], worldMatrix);
@@ -166,9 +169,9 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 		if (dot >= 0.0f)
 		{
-			math::Vec3<float> lightDirection = { 0.0f, 0.0f, 1.0f };
-			math::Vec3<float> normalizedLightDirection = UnitVector(lightDirection);
-			float shade = math::DotProduct(normal, normalizedLightDirection);
+			//math::Vec3<float> lightDirection = { 0.0f, 0.0f, 1.0f };
+			//math::Vec3<float> normalizedLightDirection = UnitVector(lightDirection);
+			//float shade = math::DotProduct(normal, normalizedLightDirection);
 			// Use bitwise operators to construct a single uint32_t value from three 0-255 RGB values.
 			// There are 32 bits to fill up.
 			// Each 0-255 value is a single byte, or 8 bits. So the 32 bits will be split into 4 segments (32 bits / 8 bits = 4).
@@ -184,39 +187,102 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 			//							|00|00|00|BB|
 			// Adding these together gives us the 0xRRGGBB value:
 			//		|0x|00|00|00| + |00|RR|00|00| + |00|00|GG|00| + |00|00|00|BB| = |0x|RR|GG|BB|
-			uint32_t triangleColor = (uint32_t)(0x000000 + (int(RED * shade) << 16) + (int(GREEN * shade) << 8) + int(BLUE * shade));
+			//uint32_t triangleColor = (uint32_t)(0x000000 + (int(RED * shade) << 16) + (int(GREEN * shade) << 8) + int(BLUE * shade));
 
 			// Convert the triangle position from world space to view space
 			math::MultiplyVectorWithMatrix(transformed.p[0], viewed.p[0], viewMatrix);
 			math::MultiplyVectorWithMatrix(transformed.p[1], viewed.p[1], viewMatrix);
 			math::MultiplyVectorWithMatrix(transformed.p[2], viewed.p[2], viewMatrix);
 
-			// Project each triangle in 3D space onto the 2D space triangle to render
-			math::ProjectVec3ToVec2(viewed.p[0], projected.p[0], projectionMatrix);
-			math::ProjectVec3ToVec2(viewed.p[1], projected.p[1], projectionMatrix);
-			math::ProjectVec3ToVec2(viewed.p[2], projected.p[2], projectionMatrix);
+			// Clip the triangles before they get projected. Define a plane just in fron of the camera to clip against
+			Triangle3d clipped[2];
+			int clippedTriangleCount = ClipTriangleAgainstPlane({ 0.0f, 0.0f, 0.1f }, { 0.0f, 0.0f, 1.0f }, viewed, clipped[0], clipped[1]);
 
-			// Scale to view
-			const float sf = 500.0f;
-			Triangle2d triToRender = projected;
-			triToRender.p[0].x *= sf;
-			triToRender.p[0].y *= sf;
-			triToRender.p[1].x *= sf;
-			triToRender.p[1].y *= sf;
-			triToRender.p[2].x *= sf;
-			triToRender.p[2].y *= sf;
+			for (int i = 0; i < clippedTriangleCount; i += 1)
+			{
+				// Project each triangle in 3D space onto the 2D space triangle to render
+				math::Project3DPointTo2D(clipped[i].p[0], projected.p[0], projectionMatrix);
+				math::Project3DPointTo2D(clipped[i].p[1], projected.p[1], projectionMatrix);
+				math::Project3DPointTo2D(clipped[i].p[2], projected.p[2], projectionMatrix);
 
-			const float translateX = 0.5f * (float)renderBuffer.width;
-			const float translateY = 0.5f * (float)renderBuffer.height;
-			triToRender.p[0].x += translateX; triToRender.p[0].y += translateY;
-			triToRender.p[1].x += translateX; triToRender.p[1].y += translateY;
-			triToRender.p[2].x += translateX; triToRender.p[2].y += translateY;
+				// Scale to view
+				const float sf = 500.0f;
+				Triangle3d triToRender = projected;
+				triToRender.p[0].x *= sf;
+				triToRender.p[0].y *= sf;
+				triToRender.p[1].x *= sf;
+				triToRender.p[1].y *= sf;
+				triToRender.p[2].x *= sf;
+				triToRender.p[2].y *= sf;
 
+				const float translateX = 0.5f * (float)renderBuffer.width;
+				const float translateY = 0.5f * (float)renderBuffer.height;
+				triToRender.p[0].x += translateX; triToRender.p[0].y += translateY;
+				triToRender.p[1].x += translateX; triToRender.p[1].y += translateY;
+				triToRender.p[2].x += translateX; triToRender.p[2].y += translateY;
+
+				trianglesToDraw.push_back(triToRender);
+			}
+		}
+	}
+
+	for (Triangle3d triToRender : trianglesToDraw)
+	{
+		Triangle3d clipped[2];
+		std::list<Triangle3d> triangleQueue;
+		triangleQueue.push_back(triToRender);
+		int newTriangles = 1;
+
+		// Clip against each screen edge
+		for (int edge = 0; edge < 4; edge += 1)
+		{
+			int trianglesToAdd = 0;
+			while (newTriangles > 0)
+			{
+				Triangle3d test = triangleQueue.front();
+				triangleQueue.pop_front();
+				newTriangles -= 1;
+
+				switch (edge)
+				{
+					case 0:
+					{
+						trianglesToAdd = ClipTriangleAgainstPlane({ 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, test, clipped[0], clipped[1]);
+						break;
+					}
+					case 1:
+					{
+						trianglesToAdd = ClipTriangleAgainstPlane({ 0.0f, (float)(renderBuffer.height - 1), 0.0f }, { 0.0f, -1.0f, 0.0f }, test, clipped[0], clipped[1]);
+						break;
+					}
+					case 2:
+					{
+						trianglesToAdd = ClipTriangleAgainstPlane({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, test, clipped[0], clipped[1]);
+						break;
+					}
+					case 3:
+					{
+						trianglesToAdd = ClipTriangleAgainstPlane({ (float)(renderBuffer.width - 1), 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, test, clipped[0], clipped[1]);
+						break;
+					}
+				}
+
+				for (int i = 0; i < trianglesToAdd; i += 1)
+				{
+					triangleQueue.push_back(clipped[i]);
+				}
+			}
+
+			newTriangles = (int)triangleQueue.size();
+		}
+
+		for (Triangle3d draw : triangleQueue)
+		{
 			math::Vec2<int> p0Int = { (int)triToRender.p[0].x, (int)triToRender.p[0].y };
 			math::Vec2<int> p1Int = { (int)triToRender.p[1].x, (int)triToRender.p[1].y };
 			math::Vec2<int> p2Int = { (int)triToRender.p[2].x, (int)triToRender.p[2].y };
 
-			render::DrawTriangleInPixels(renderBuffer, triangleColor, p0Int, p1Int, p2Int);
+			render::DrawTriangleInPixels(renderBuffer, GREEN, p0Int, p1Int, p2Int);
 		}
 	}
 }
