@@ -156,7 +156,7 @@ float ShortestDistanceFromPointToPlane(const math::Vec4<float> &point, const mat
 	return distance;
 }
 
-int ClipTriangleAgainstPlane(const Plane<float> &plane, Triangle3d &inputTriangle, Triangle3d &outputTriangle1, Triangle3d &outputTriangle2)
+int ClipTriangleAgainstPlane(const Plane<float> &plane, Triangle4d &inputTriangle, Triangle4d &outputTriangle1, Triangle4d &outputTriangle2)
 {
 	math::Vec4<float> unitNormalToPlane = math::UnitVector(plane.normal);
 

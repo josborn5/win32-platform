@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 
-static bool ReadObjFileToVec4(std::string const &filename, std::vector<Triangle3d> &triangles)
+static bool ReadObjFileToVec4(std::string const &filename, std::vector<Triangle4d> &triangles)
 {
 	std::ifstream objFile;
 	objFile.open(filename);
@@ -39,7 +39,7 @@ static bool ReadObjFileToVec4(std::string const &filename, std::vector<Triangle3
 			int points[3];
 			stringStream >> junk >> points[0] >> points[1] >> points[2];
 			// expect line to have syntax 'f 1 2 3' where 1, 2 & 3 are the 1-indexed positions of the points in the file
-			Triangle3d newTriangle = { vertices[points[0] - 1], vertices[points[1] - 1], vertices[points[2] - 1] };
+			Triangle4d newTriangle = { vertices[points[0] - 1], vertices[points[1] - 1], vertices[points[2] - 1] };
 			triangles.push_back(newTriangle);
 		}
 	}

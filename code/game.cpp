@@ -148,13 +148,13 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	render::DrawLineInPixels(renderBuffer, 0xFFFFFF, origin, xPos);
 	render::DrawLineInPixels(renderBuffer, 0xFFFFFF, origin, yPos);
 
-	std::vector<Triangle3d> trianglesToDraw;
+	std::vector<Triangle4d> trianglesToDraw;
 
-	for (Triangle3d tri : mesh.triangles)
+	for (Triangle4d tri : mesh.triangles)
 	{
-		Triangle3d transformed;
-		Triangle3d viewed;
-		Triangle3d projected; // TODO: switch this to Triangle3d so the depth information is kept and can be used in a depth buffer to prevent double rendering of triangles behind each other
+		Triangle4d transformed;
+		Triangle4d viewed;
+		Triangle4d projected; // TODO: switch this to Triangle4d so the depth information is kept and can be used in a depth buffer to prevent double rendering of triangles behind each other
 
 		// Transform each triangle
 		math::MultiplyVectorWithMatrix(tri.p[0], transformed.p[0], worldMatrix);
@@ -196,7 +196,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 			math::MultiplyVectorWithMatrix(transformed.p[2], viewed.p[2], viewMatrix);
 
 			// Clip the triangles before they get projected. Define a plane just in fron of the camera to clip against
-			Triangle3d clipped[2];
+			Triangle4d clipped[2];
 			Plane<float> inFrontOfScreen = { 0.0f, 0.0f, 0.1f, 0.0f,	 0.0f, 0.0f, 1.0f };
 			int clippedTriangleCount = ClipTriangleAgainstPlane(inFrontOfScreen, viewed, clipped[0], clipped[1]);
 
@@ -209,7 +209,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 				// Scale to view
 				const float sf = 500.0f;
-				Triangle3d triToRender = projected;
+				Triangle4d triToRender = projected;
 				triToRender.p[0].x *= sf;
 				triToRender.p[0].y *= sf;
 				triToRender.p[1].x *= sf;
@@ -230,10 +230,10 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 		}
 	}
 
-	for (Triangle3d triToRender : trianglesToDraw)
+	for (Triangle4d triToRender : trianglesToDraw)
 	{
-		Triangle3d clipped[2];
-		std::list<Triangle3d> triangleQueue;
+		Triangle4d clipped[2];
+		std::list<Triangle4d> triangleQueue;
 		triangleQueue.push_back(triToRender);
 		int newTriangles = 1;
 
@@ -243,7 +243,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 			int trianglesToAdd = 0;
 			while (newTriangles > 0)
 			{
-				Triangle3d test = triangleQueue.front();
+				Triangle4d test = triangleQueue.front();
 				triangleQueue.pop_front();
 				newTriangles -= 1;
 
@@ -284,7 +284,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 			newTriangles = (int)triangleQueue.size();
 		}
 
-		for (Triangle3d draw : triangleQueue)
+		for (Triangle4d draw : triangleQueue)
 		{
 			math::Vec2<int> p0Int = { (int)triToRender.p[0].x, (int)triToRender.p[0].y };
 			math::Vec2<int> p1Int = { (int)triToRender.p[1].x, (int)triToRender.p[1].y };

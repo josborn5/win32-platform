@@ -9,7 +9,7 @@ struct Triangle2d
 	math::Vec2<float> p[3];
 };
 
-struct Triangle3d
+struct Triangle4d
 {
 	math::Vec4<float> p[3];
 	uint32_t color;
@@ -24,7 +24,7 @@ struct Plane
 
 struct Mesh
 {
-	std::vector<Triangle3d> triangles;
+	std::vector<Triangle4d> triangles;
 };
 
 #endif
