@@ -138,19 +138,19 @@ math::Matrix4x4<float> LookAt(math::Matrix4x4<float> const &pointAt)
 	return lookAt;
 }
 
-math::Vec4<float> IntersectPlane(const math::Vec4<float> &planeP, const math::Vec4<float> &planeN, const math::Vec4<float> &lineStart, const math::Vec4<float> lineEnd)
+math::Vec4<float> IntersectPlane(const Plane<float> &plane, const math::Vec4<float> &lineStart, const math::Vec4<float> lineEnd)
 {
-	math::Vec4<float> normalizedPlaneN = math::UnitVector(planeN);
-	float planeD = DotProduct(normalizedPlaneN, planeP);
-	float ad = DotProduct(lineStart, normalizedPlaneN);
-	float bd = DotProduct(lineEnd, normalizedPlaneN);
+	math::Vec3<float> normalizedPlaneN = math::UnitVector(plane.normal);
+	float planeD = DotProduct(normalizedPlaneN, plane.position);
+	float ad = DotProduct(normalizedPlaneN, lineStart);
+	float bd = DotProduct(normalizedPlaneN, lineEnd);
 	float t = (planeD - ad) / (bd - ad);
 	math::Vec4<float> lineStartToEnd = SubtractVectors(lineEnd, lineStart);
 	math::Vec4<float> lineToIntersect = MultiplyVectorByScalar(lineStartToEnd, t);
 	return AddVectors(lineStart, lineToIntersect);
 }
 
-float ShortestDistanceFromPointToPlane(const math::Vec4<float> &point, const math::Vec4<float> &planeP, const math::Vec4<float> &unitNormalToPlane)
+float ShortestDistanceFromPointToPlane(const math::Vec4<float> &point, const math::Vec3<float> &planeP, const math::Vec3<float> &unitNormalToPlane)
 {
 	float distance = math::DotProduct(unitNormalToPlane, point) - math::DotProduct(unitNormalToPlane, planeP);
 	return distance;
@@ -158,7 +158,7 @@ float ShortestDistanceFromPointToPlane(const math::Vec4<float> &point, const mat
 
 int ClipTriangleAgainstPlane(const Plane<float> &plane, Triangle4d &inputTriangle, Triangle4d &outputTriangle1, Triangle4d &outputTriangle2)
 {
-	math::Vec4<float> unitNormalToPlane = math::UnitVector(plane.normal);
+	math::Vec3<float> unitNormalToPlane = math::UnitVector(plane.normal);
 
 	// Two baskets to store points that are inside the plane and points that are outside
 	math::Vec4<float>* insidePoints[3];
@@ -204,8 +204,8 @@ int ClipTriangleAgainstPlane(const Plane<float> &plane, Triangle4d &inputTriangl
 		outputTriangle1.p[0] = *insidePoints[0];
 
 		// for the other two points, work out where the triangleintersects the plane and use those points in hte output
-		outputTriangle1.p[1] = IntersectPlane(plane.position, unitNormalToPlane, *insidePoints[0], *outsidePoints[0]);
-		outputTriangle1.p[2] = IntersectPlane(plane.position, unitNormalToPlane, *insidePoints[0], *outsidePoints[1]);
+		outputTriangle1.p[1] = IntersectPlane(plane, *insidePoints[0], *outsidePoints[0]);
+		outputTriangle1.p[2] = IntersectPlane(plane, *insidePoints[0], *outsidePoints[1]);
 		return 1;
 	}
 
@@ -215,11 +215,11 @@ int ClipTriangleAgainstPlane(const Plane<float> &plane, Triangle4d &inputTriangl
 		// Create two new triangles from the two points inside the plane and the two points where the triangle intersects the plane
 		outputTriangle1.p[0] = *insidePoints[0];
 		outputTriangle1.p[1] = *insidePoints[1];
-		outputTriangle1.p[2] = IntersectPlane(plane.position, unitNormalToPlane, *insidePoints[0], *outsidePoints[0]);
+		outputTriangle1.p[2] = IntersectPlane(plane, *insidePoints[0], *outsidePoints[0]);
 
 		outputTriangle2.p[0] = *insidePoints[1];
 		outputTriangle2.p[1] = outputTriangle1.p[2];
-		outputTriangle2.p[2] = IntersectPlane(plane.position, unitNormalToPlane, *insidePoints[1], *outsidePoints[0]);
+		outputTriangle2.p[2] = IntersectPlane(plane, *insidePoints[1], *outsidePoints[0]);
 		return 2;
 	}
 

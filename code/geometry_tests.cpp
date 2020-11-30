@@ -24,12 +24,13 @@ void RunGeometryTests()
 
 
 	// IntersectPlane test
-	math::Vec4<float> plane = { 0.0f, 1.0f, 0.0f, 1.0f };
-	math::Vec4<float> planeNormal = { 0.0f, -1.0f, 0.0f, 1.0f };
+	Plane<float> plane;
+	plane.position = { 0.0f, 1.0f, 0.0f };
+	plane.normal = { 0.0f, -1.0f, 0.0f };
 	math::Vec4<float> lineStart = { 0.0f, 0.0f, 0.0f, 1.0f };
 	math::Vec4<float> lineEnd = { 0.0f, 2.0f, 0.0f, 1.0f };
 
-	math::Vec4<float> result = IntersectPlane(plane, planeNormal, lineStart, lineEnd);
+	math::Vec4<float> result = IntersectPlane(plane, lineStart, lineEnd);
 
 	assert(result.x == 0.0f);
 	assert(result.y == 1.0f);

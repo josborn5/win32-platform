@@ -197,7 +197,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 			// Clip the triangles before they get projected. Define a plane just in fron of the camera to clip against
 			Triangle4d clipped[2];
-			Plane<float> inFrontOfScreen = { 0.0f, 0.0f, 0.1f, 0.0f,	 0.0f, 0.0f, 1.0f };
+			Plane<float> inFrontOfScreen = { 0.0f, 0.0f, 0.1f,	 0.0f, 0.0f, 1.0f };
 			int clippedTriangleCount = ClipTriangleAgainstPlane(inFrontOfScreen, viewed, clipped[0], clipped[1]);
 
 			for (int i = 0; i < clippedTriangleCount; i += 1)
@@ -247,10 +247,10 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 				triangleQueue.pop_front();
 				newTriangles -= 1;
 
-				Plane<float> bottomOfScreen = { 0.0f, 0.0f, 0.0f, 0.0f,								0.0f, 1.0f, 0.0f };
-				Plane<float> topOfScreen = { 0.0f, (float)(renderBuffer.height - 1), 0.0f, 0.0f,	0.0f, -1.0f, 0.0f };
-				Plane<float> leftOfScreen = { 0.0f, 0.0f, 0.0f, 0.0f,								1.0f, 0.0f, 0.0f };
-				Plane<float> rightOfScreen = { (float)(renderBuffer.width - 1), 0.0f, 0.0f, 0.0f,	-1.0f, 0.0f, 0.0f };
+				Plane<float> bottomOfScreen = { 0.0f, 0.0f, 0.0f,								0.0f, 1.0f, 0.0f };
+				Plane<float> topOfScreen = { 0.0f, (float)(renderBuffer.height - 1), 0.0f,		0.0f, -1.0f, 0.0f };
+				Plane<float> leftOfScreen = { 0.0f, 0.0f, 0.0f,									1.0f, 0.0f, 0.0f };
+				Plane<float> rightOfScreen = { (float)(renderBuffer.width - 1), 0.0f, 0.0f,		-1.0f, 0.0f, 0.0f };
 				switch (edge)
 				{
 					case 0:

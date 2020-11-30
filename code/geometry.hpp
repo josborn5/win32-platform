@@ -18,8 +18,8 @@ struct Triangle4d
 template<typename T>
 struct Plane
 {
-	math::Vec4<T> position;
-	math::Vec4<T> normal;
+	math::Vec3<T> position;
+	math::Vec3<T> normal;
 };
 
 struct Mesh

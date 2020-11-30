@@ -13,6 +13,14 @@ namespace math
 	};
 
 	template<typename T>
+	struct Vec3
+	{
+		T x;
+		T y;
+		T z;
+	};
+
+	template<typename T>
 	struct Vec4
 	{
 		T x;
@@ -49,6 +57,24 @@ namespace math
 	}
 
 	template<typename T>
+	T DotProduct(const Vec3<T> &v1, const Vec4<T> &v2)
+	{
+		return
+			(v1.x * v2.x) +
+			(v1.y * v2.y) +
+			(v1.z * v2.z);
+	}
+
+	template<typename T>
+	T DotProduct(const Vec3<T> &v1, const Vec3<T> &v2)
+	{
+		return
+			(v1.x * v2.x) +
+			(v1.y * v2.y) +
+			(v1.z * v2.z);
+	}
+
+	template<typename T>
 	Vec4<T> CrossProduct(const Vec4<T> &v1, const Vec4<T> &v2)
 	{
 		return Vec4<T>{
@@ -65,10 +91,23 @@ namespace math
 	}
 
 	template<typename T>
+	float Length(const Vec3<T> &in)
+	{
+		return std::sqrtf((in.x * in.x) + (in.y * in.y) + (in.z * in.z));
+	}
+
+	template<typename T>
 	Vec4<float> UnitVector(const Vec4<T> &in)
 	{
 		float length = Length(in);
 		return Vec4<float> { in.x / length, in.y / length, in.z / length } ;
+	}
+
+	template<typename T>
+	Vec3<float> UnitVector(const Vec3<T> &in)
+	{
+		float length = Length(in);
+		return Vec3<float> { in.x / length, in.y / length, in.z / length } ;
 	}
 
 	/**
