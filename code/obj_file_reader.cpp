@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 
-static bool ReadObjFileToVec3(std::string const &filename, std::vector<Triangle3d> &triangles)
+static bool ReadObjFileToVec4(std::string const &filename, std::vector<Triangle3d> &triangles)
 {
 	std::ifstream objFile;
 	objFile.open(filename);
@@ -14,7 +14,7 @@ static bool ReadObjFileToVec3(std::string const &filename, std::vector<Triangle3
 		return false;
 	}
 
-	std::vector<math::Vec3<float>> vertices;
+	std::vector<math::Vec4<float>> vertices;
 
 	while (!objFile.eof())
 	{
@@ -27,7 +27,7 @@ static bool ReadObjFileToVec3(std::string const &filename, std::vector<Triangle3
 
 		if (line[0] == 'v')
 		{
-			math::Vec3<float> vertex;
+			math::Vec4<float> vertex;
 			// expect line to have syntax 'v x y z' where x, y & z are the ordinals of the point position
 			stringStream >> junk >> vertex.x >> vertex.y >> vertex.z;
 			vertex.w = 1.0f;

@@ -13,7 +13,7 @@ namespace math
 	};
 
 	template<typename T>
-	struct Vec3
+	struct Vec4
 	{
 		T x;
 		T y;
@@ -22,25 +22,25 @@ namespace math
 	};
 
 	template<typename T>
-	Vec3<T> AddVectors(const Vec3<T> &v1, const Vec3<T> &v2)
+	Vec4<T> AddVectors(const Vec4<T> &v1, const Vec4<T> &v2)
 	{
-		return Vec3<T>{v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
+		return Vec4<T>{v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
 	}
 
 	template<typename T>
-	Vec3<T> SubtractVectors(const Vec3<T> &v1, const Vec3<T> &v2)
+	Vec4<T> SubtractVectors(const Vec4<T> &v1, const Vec4<T> &v2)
 	{
-		return Vec3<T>{v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
+		return Vec4<T>{v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
 	}
 
 	template<typename T>
-	Vec3<T> MultiplyVectorByScalar(const Vec3<T> &vec, T sca)
+	Vec4<T> MultiplyVectorByScalar(const Vec4<T> &vec, T sca)
 	{
-		return Vec3<T>{ vec.x * sca, vec.y * sca, vec.z * sca };
+		return Vec4<T>{ vec.x * sca, vec.y * sca, vec.z * sca };
 	}
 
 	template<typename T>
-	T DotProduct(const Vec3<T> &v1, const Vec3<T> &v2)
+	T DotProduct(const Vec4<T> &v1, const Vec4<T> &v2)
 	{
 		return
 			(v1.x * v2.x) +
@@ -49,9 +49,9 @@ namespace math
 	}
 
 	template<typename T>
-	Vec3<T> CrossProduct(const Vec3<T> &v1, const Vec3<T> &v2)
+	Vec4<T> CrossProduct(const Vec4<T> &v1, const Vec4<T> &v2)
 	{
-		return Vec3<T>{
+		return Vec4<T>{
 			(v1.y * v2.z) - (v1.z * v2.y),
 			(v1.z * v2.x) - (v1.x * v2.z),
 			(v1.x * v2.y) - (v1.y * v2.x)
@@ -59,16 +59,16 @@ namespace math
 	}
 
 	template<typename T>
-	float Length(const Vec3<T> &in)
+	float Length(const Vec4<T> &in)
 	{
 		return std::sqrtf((in.x * in.x) + (in.y * in.y) + (in.z * in.z));
 	}
 
 	template<typename T>
-	Vec3<float> UnitVector(const Vec3<T> &in)
+	Vec4<float> UnitVector(const Vec4<T> &in)
 	{
 		float length = Length(in);
-		return Vec3<float> { in.x / length, in.y / length, in.z / length } ;
+		return Vec4<float> { in.x / length, in.y / length, in.z / length } ;
 	}
 
 	/**
@@ -81,7 +81,7 @@ namespace math
 	};
 
 	template<typename T>
-	void Project3DPointTo2D(const Vec3<T> &in, Vec3<T> &out, const Matrix4x4<T> &matrix)
+	void Project3DPointTo2D(const Vec4<T> &in, Vec4<T> &out, const Matrix4x4<T> &matrix)
 	{
 		out.x = (in.x * matrix.m[0][0]) + (in.y * matrix.m[1][0]) + (in.z * matrix.m[2][0]) + (in.w * matrix.m[3][0]);
 		out.y = (in.x * matrix.m[0][1]) + (in.y * matrix.m[1][1]) + (in.z * matrix.m[2][1]) + (in.w * matrix.m[3][1]);
@@ -97,7 +97,7 @@ namespace math
 	}
 
 	template<typename T>
-	void MultiplyVectorWithMatrix(const Vec3<T> &in, Vec3<T> &out, const Matrix4x4<T> &matrix)
+	void MultiplyVectorWithMatrix(const Vec4<T> &in, Vec4<T> &out, const Matrix4x4<T> &matrix)
 	{
 		out.x = (in.x * matrix.m[0][0]) + (in.y * matrix.m[1][0]) + (in.z * matrix.m[2][0]) + (in.w * matrix.m[3][0]);
 		out.y = (in.x * matrix.m[0][1]) + (in.y * matrix.m[1][1]) + (in.z * matrix.m[2][1]) + (in.w * matrix.m[3][1]);

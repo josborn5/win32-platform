@@ -11,8 +11,15 @@ struct Triangle2d
 
 struct Triangle3d
 {
-	math::Vec3<float> p[3];
+	math::Vec4<float> p[3];
 	uint32_t color;
+};
+
+template<typename T>
+struct Plane
+{
+	math::Vec4<T> position;
+	math::Vec4<T> normal;
 };
 
 struct Mesh

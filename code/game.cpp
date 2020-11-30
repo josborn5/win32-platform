@@ -9,8 +9,8 @@
 
 #include "obj_file_reader.cpp"
 
-math::Vec3<float> cameraPosition = {0};
-math::Vec3<float> cameraDirection = {0};
+math::Vec4<float> cameraPosition = {0};
+math::Vec4<float> cameraDirection = {0};
 Mesh mesh;
 math::Matrix4x4<float> projectionMatrix;
 
@@ -19,7 +19,7 @@ float cameraYaw = 0.0f;
 
 void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuffer)
 {
-	ReadObjFileToVec3("teapot.obj", mesh.triangles);
+	ReadObjFileToVec4("teapot.obj", mesh.triangles);
 	
 	// Using a clockwise winding convention
 	/*mesh.triangles = {
@@ -66,6 +66,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 	float positionIncrement = 1.0f;
 	float yawIncrement = 0.05f;
+	float zOffset = 150.0f;
 
 	// First process any change in yaw and update the camera direction
 	if (input.buttons[KEY_D].isDown)
@@ -78,13 +79,13 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	}
 
 	// Apply the camera yaw to the cameraDirection vector
-	math::Vec3<float> up = { 0.0f, 1.0f, 0.0f };
-	math::Vec3<float> target = { 0.0f, 0.0f, 1.0f };
+	math::Vec4<float> up = { 0.0f, 1.0f, 0.0f };
+	math::Vec4<float> target = { 0.0f, 0.0f, 1.0f };
 	math::Matrix4x4<float> cameraYawMatrix = MakeYAxisRotationMatrix(cameraYaw);
 	math::MultiplyVectorWithMatrix(target, cameraDirection, cameraYawMatrix);
 
 	// Next process any forwards or backwards movement
-	math::Vec3<float> cameraPositionForwardBack = MultiplyVectorByScalar(cameraDirection, positionIncrement);
+	math::Vec4<float> cameraPositionForwardBack = MultiplyVectorByScalar(cameraDirection, positionIncrement);
 	if (input.buttons[KEY_S].isDown)
 	{
 		cameraPosition = SubtractVectors(cameraPosition, cameraPositionForwardBack);
@@ -95,7 +96,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	}
 
 	// Strafing - use the cross product between the camera direction and up to get a normal vector to the direction being faced
-	math::Vec3<float> cameraPositionStrafe = CrossProduct(up, cameraDirection);
+	math::Vec4<float> cameraPositionStrafe = CrossProduct(up, cameraDirection);
 	if (input.buttons[KEY_LEFT].isDown)
 	{
 		cameraPosition = SubtractVectors(cameraPosition, cameraPositionStrafe);
@@ -125,7 +126,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 	// Initialize the translation matrix
 	// Push back away from the camera which is implicitly located at z: 0. This ensures we're not trying to render trinagles behind the camera
-	math::Matrix4x4<float> translationMatrix = MakeTranslationMatrix(0.0f, 0.0f, 150.0f);
+	math::Matrix4x4<float> translationMatrix = MakeTranslationMatrix(0.0f, 0.0f, zOffset);
 
 	// Combine all the rotation and translation matrices into a single world transfomration matrix
 	math::Matrix4x4<float> worldMatrix;
@@ -160,17 +161,17 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 		math::MultiplyVectorWithMatrix(tri.p[1], transformed.p[1], worldMatrix);
 		math::MultiplyVectorWithMatrix(tri.p[2], transformed.p[2], worldMatrix);
 
-		math::Vec3<float> line1 = SubtractVectors(transformed.p[1], transformed.p[0]);
-		math::Vec3<float> line2 = SubtractVectors(transformed.p[2], transformed.p[0]);
-		math::Vec3<float> normal = math::UnitVector(math::CrossProduct(line1, line2));
+		math::Vec4<float> line1 = SubtractVectors(transformed.p[1], transformed.p[0]);
+		math::Vec4<float> line2 = SubtractVectors(transformed.p[2], transformed.p[0]);
+		math::Vec4<float> normal = math::UnitVector(math::CrossProduct(line1, line2));
 
-		math::Vec3<float> fromCameraToTriangle = math::SubtractVectors(transformed.p[0], cameraPosition);
+		math::Vec4<float> fromCameraToTriangle = math::SubtractVectors(transformed.p[0], cameraPosition);
 		float dot = DotProduct(normal, fromCameraToTriangle);
 
 		if (dot >= 0.0f)
 		{
-			math::Vec3<float> lightDirection = { 0.0f, 0.0f, 1.0f };
-			math::Vec3<float> normalizedLightDirection = UnitVector(lightDirection);
+			math::Vec4<float> lightDirection = { 0.0f, 0.0f, 1.0f };
+			math::Vec4<float> normalizedLightDirection = UnitVector(lightDirection);
 			float shade = math::DotProduct(normal, normalizedLightDirection);
 			// Use bitwise operators to construct a single uint32_t value from three 0-255 RGB values.
 			// There are 32 bits to fill up.
@@ -196,7 +197,8 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 			// Clip the triangles before they get projected. Define a plane just in fron of the camera to clip against
 			Triangle3d clipped[2];
-			int clippedTriangleCount = ClipTriangleAgainstPlane({ 0.0f, 0.0f, 0.1f }, { 0.0f, 0.0f, 1.0f }, viewed, clipped[0], clipped[1]);
+			Plane<float> inFrontOfScreen = { 0.0f, 0.0f, 0.1f, 0.0f,	 0.0f, 0.0f, 1.0f };
+			int clippedTriangleCount = ClipTriangleAgainstPlane(inFrontOfScreen, viewed, clipped[0], clipped[1]);
 
 			for (int i = 0; i < clippedTriangleCount; i += 1)
 			{
@@ -245,26 +247,30 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 				triangleQueue.pop_front();
 				newTriangles -= 1;
 
+				Plane<float> bottomOfScreen = { 0.0f, 0.0f, 0.0f, 0.0f,								0.0f, 1.0f, 0.0f };
+				Plane<float> topOfScreen = { 0.0f, (float)(renderBuffer.height - 1), 0.0f, 0.0f,	0.0f, -1.0f, 0.0f };
+				Plane<float> leftOfScreen = { 0.0f, 0.0f, 0.0f, 0.0f,								1.0f, 0.0f, 0.0f };
+				Plane<float> rightOfScreen = { (float)(renderBuffer.width - 1), 0.0f, 0.0f, 0.0f,	-1.0f, 0.0f, 0.0f };
 				switch (edge)
 				{
 					case 0:
 					{
-						trianglesToAdd = ClipTriangleAgainstPlane({ 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, test, clipped[0], clipped[1]);
+						trianglesToAdd = ClipTriangleAgainstPlane(bottomOfScreen, test, clipped[0], clipped[1]);
 						break;
 					}
 					case 1:
 					{
-						trianglesToAdd = ClipTriangleAgainstPlane({ 0.0f, (float)(renderBuffer.height - 1), 0.0f }, { 0.0f, -1.0f, 0.0f }, test, clipped[0], clipped[1]);
+						trianglesToAdd = ClipTriangleAgainstPlane(topOfScreen, test, clipped[0], clipped[1]);
 						break;
 					}
 					case 2:
 					{
-						trianglesToAdd = ClipTriangleAgainstPlane({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, test, clipped[0], clipped[1]);
+						trianglesToAdd = ClipTriangleAgainstPlane(leftOfScreen, test, clipped[0], clipped[1]);
 						break;
 					}
 					case 3:
 					{
-						trianglesToAdd = ClipTriangleAgainstPlane({ (float)(renderBuffer.width - 1), 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, test, clipped[0], clipped[1]);
+						trianglesToAdd = ClipTriangleAgainstPlane(rightOfScreen, test, clipped[0], clipped[1]);
 						break;
 					}
 				}

@@ -93,20 +93,20 @@ math::Matrix4x4<float> MakeTranslationMatrix(float dispX, float dispY, float dis
  * | Cx | Cy | Cz | 0 |
  * | Tx | Ty | Tz | 1 |
  */
-math::Matrix4x4<float> PointAt(const math::Vec3<float> &position, const math::Vec3<float> &target, const math::Vec3<float> &up)
+math::Matrix4x4<float> PointAt(const math::Vec4<float> &position, const math::Vec4<float> &target, const math::Vec4<float> &up)
 {
 	// Vector from the position to the target is the new forward direction
-	math::Vec3<float> forwardUnit = math::SubtractVectors(target, position);
+	math::Vec4<float> forwardUnit = math::SubtractVectors(target, position);
 	forwardUnit = math::UnitVector(forwardUnit);
 
 	// Calculate the new up direction of the new forward direction
 	float newUpScalar = DotProduct(up, forwardUnit);
-	math::Vec3<float> newUpTemp = MultiplyVectorByScalar(forwardUnit, newUpScalar);
-	math::Vec3<float> upUnit = SubtractVectors(up, newUpTemp);
+	math::Vec4<float> newUpTemp = MultiplyVectorByScalar(forwardUnit, newUpScalar);
+	math::Vec4<float> upUnit = SubtractVectors(up, newUpTemp);
 	upUnit = math::UnitVector(upUnit);
 
 	// Calculate the new right direction for the new up & forward directions
-	math::Vec3<float> rightUnit = CrossProduct(upUnit, forwardUnit);
+	math::Vec4<float> rightUnit = CrossProduct(upUnit, forwardUnit);
 
 	// Construct the new transformation matrix
 	math::Matrix4x4<float> pointAt;
@@ -138,38 +138,38 @@ math::Matrix4x4<float> LookAt(math::Matrix4x4<float> const &pointAt)
 	return lookAt;
 }
 
-math::Vec3<float> IntersectPlane(const math::Vec3<float> &planeP, const math::Vec3<float> &planeN, const math::Vec3<float> &lineStart, const math::Vec3<float> lineEnd)
+math::Vec4<float> IntersectPlane(const math::Vec4<float> &planeP, const math::Vec4<float> &planeN, const math::Vec4<float> &lineStart, const math::Vec4<float> lineEnd)
 {
-	math::Vec3<float> normalizedPlaneN = math::UnitVector(planeN);
+	math::Vec4<float> normalizedPlaneN = math::UnitVector(planeN);
 	float planeD = DotProduct(normalizedPlaneN, planeP);
 	float ad = DotProduct(lineStart, normalizedPlaneN);
 	float bd = DotProduct(lineEnd, normalizedPlaneN);
 	float t = (planeD - ad) / (bd - ad);
-	math::Vec3<float> lineStartToEnd = SubtractVectors(lineEnd, lineStart);
-	math::Vec3<float> lineToIntersect = MultiplyVectorByScalar(lineStartToEnd, t);
+	math::Vec4<float> lineStartToEnd = SubtractVectors(lineEnd, lineStart);
+	math::Vec4<float> lineToIntersect = MultiplyVectorByScalar(lineStartToEnd, t);
 	return AddVectors(lineStart, lineToIntersect);
 }
 
-float ShortestDistanceFromPointToPlane(const math::Vec3<float> &point, const math::Vec3<float> &planeP, const math::Vec3<float> &unitNormalToPlane)
+float ShortestDistanceFromPointToPlane(const math::Vec4<float> &point, const math::Vec4<float> &planeP, const math::Vec4<float> &unitNormalToPlane)
 {
 	float distance = math::DotProduct(unitNormalToPlane, point) - math::DotProduct(unitNormalToPlane, planeP);
 	return distance;
 }
 
-int ClipTriangleAgainstPlane(const math::Vec3<float> &planeP, const math::Vec3<float> &planeN, Triangle3d &inputTriangle, Triangle3d &outputTriangle1, Triangle3d &outputTriangle2)
+int ClipTriangleAgainstPlane(const Plane<float> &plane, Triangle3d &inputTriangle, Triangle3d &outputTriangle1, Triangle3d &outputTriangle2)
 {
-	math::Vec3<float> unitNormalToPlane = math::UnitVector(planeN);
+	math::Vec4<float> unitNormalToPlane = math::UnitVector(plane.normal);
 
 	// Two baskets to store points that are inside the plane and points that are outside
-	math::Vec3<float>* insidePoints[3];
-	math::Vec3<float>* outsidePoints[3];
+	math::Vec4<float>* insidePoints[3];
+	math::Vec4<float>* outsidePoints[3];
 	int insidePointCount = 0;
 	int outsidePointCount = 0;
 
 	// Work out the distance between the plane and each point on the triangle and put it in the relevant basket
 	for (int i = 0; i < 3; i += 1)
 	{
-		float distance = ShortestDistanceFromPointToPlane(inputTriangle.p[i], planeP, unitNormalToPlane);
+		float distance = ShortestDistanceFromPointToPlane(inputTriangle.p[i], plane.position, unitNormalToPlane);
 		if (distance >= 0)
 		{
 			insidePoints[insidePointCount] = &inputTriangle.p[i];
@@ -204,9 +204,8 @@ int ClipTriangleAgainstPlane(const math::Vec3<float> &planeP, const math::Vec3<f
 		outputTriangle1.p[0] = *insidePoints[0];
 
 		// for the other two points, work out where the triangleintersects the plane and use those points in hte output
-		outputTriangle1.p[1] = IntersectPlane(planeP, unitNormalToPlane, *insidePoints[0], *outsidePoints[0]);
-		outputTriangle1.p[2] = IntersectPlane(planeP, unitNormalToPlane, *insidePoints[0], *outsidePoints[1]);
-		outputTriangle1.color = inputTriangle.color;
+		outputTriangle1.p[1] = IntersectPlane(plane.position, unitNormalToPlane, *insidePoints[0], *outsidePoints[0]);
+		outputTriangle1.p[2] = IntersectPlane(plane.position, unitNormalToPlane, *insidePoints[0], *outsidePoints[1]);
 		return 1;
 	}
 
@@ -216,13 +215,11 @@ int ClipTriangleAgainstPlane(const math::Vec3<float> &planeP, const math::Vec3<f
 		// Create two new triangles from the two points inside the plane and the two points where the triangle intersects the plane
 		outputTriangle1.p[0] = *insidePoints[0];
 		outputTriangle1.p[1] = *insidePoints[1];
-		outputTriangle1.p[2] = IntersectPlane(planeP, unitNormalToPlane, *insidePoints[0], *outsidePoints[0]);
-		outputTriangle1.color = inputTriangle.color;
+		outputTriangle1.p[2] = IntersectPlane(plane.position, unitNormalToPlane, *insidePoints[0], *outsidePoints[0]);
 
 		outputTriangle2.p[0] = *insidePoints[1];
 		outputTriangle2.p[1] = outputTriangle1.p[2];
-		outputTriangle2.p[2] = IntersectPlane(planeP, unitNormalToPlane, *insidePoints[1], *outsidePoints[0]);
-		outputTriangle2.color = inputTriangle.color;
+		outputTriangle2.p[2] = IntersectPlane(plane.position, unitNormalToPlane, *insidePoints[1], *outsidePoints[0]);
 		return 2;
 	}
 

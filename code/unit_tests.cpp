@@ -6,8 +6,8 @@
 
 int main()
 {
-	run_vec3_tests();
-	std::cout << "vec3 tests passed.\n";
+	run_Vec4_tests();
+	std::cout << "Vec4 tests passed.\n";
 
 	RunSoftwareRenderingTests();
 	std::cout << "software_rendering tests passed.\n";
