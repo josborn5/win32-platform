@@ -5,7 +5,8 @@
 #include <iostream>
 #include <vector>
 
-static bool ReadObjFileToVec4(std::string const &filename, std::vector<Triangle4d> &triangles)
+template<typename T>
+static bool ReadObjFileToVec4(std::string const &filename, std::vector<Triangle4d<T>> &triangles)
 {
 	std::ifstream objFile;
 	objFile.open(filename);
@@ -14,7 +15,7 @@ static bool ReadObjFileToVec4(std::string const &filename, std::vector<Triangle4
 		return false;
 	}
 
-	std::vector<math::Vec4<float>> vertices;
+	std::vector<math::Vec4<T>> vertices;
 
 	while (!objFile.eof())
 	{
@@ -27,7 +28,7 @@ static bool ReadObjFileToVec4(std::string const &filename, std::vector<Triangle4
 
 		if (line[0] == 'v')
 		{
-			math::Vec4<float> vertex;
+			math::Vec4<T> vertex;
 			// expect line to have syntax 'v x y z' where x, y & z are the ordinals of the point position
 			stringStream >> junk >> vertex.x >> vertex.y >> vertex.z;
 			vertex.w = 1.0f;
@@ -39,7 +40,7 @@ static bool ReadObjFileToVec4(std::string const &filename, std::vector<Triangle4
 			int points[3];
 			stringStream >> junk >> points[0] >> points[1] >> points[2];
 			// expect line to have syntax 'f 1 2 3' where 1, 2 & 3 are the 1-indexed positions of the points in the file
-			Triangle4d newTriangle = { vertices[points[0] - 1], vertices[points[1] - 1], vertices[points[2] - 1] };
+			Triangle4d<T> newTriangle = { vertices[points[0] - 1], vertices[points[1] - 1], vertices[points[2] - 1] };
 			triangles.push_back(newTriangle);
 		}
 	}

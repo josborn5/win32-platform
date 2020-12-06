@@ -97,17 +97,17 @@ namespace math
 	}
 
 	template<typename T>
-	Vec4<float> UnitVector(const Vec4<T> &in)
+	Vec4<T> UnitVector(const Vec4<T> &in)
 	{
 		float length = Length(in);
-		return Vec4<float> { in.x / length, in.y / length, in.z / length } ;
+		return Vec4<T> { in.x / length, in.y / length, in.z / length } ;
 	}
 
 	template<typename T>
-	Vec3<float> UnitVector(const Vec3<T> &in)
+	Vec3<T> UnitVector(const Vec3<T> &in)
 	{
 		float length = Length(in);
-		return Vec3<float> { in.x / length, in.y / length, in.z / length } ;
+		return Vec3<T> { in.x / length, in.y / length, in.z / length } ;
 	}
 
 	/**

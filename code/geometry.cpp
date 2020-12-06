@@ -138,38 +138,41 @@ math::Matrix4x4<float> LookAt(math::Matrix4x4<float> const &pointAt)
 	return lookAt;
 }
 
-math::Vec4<float> IntersectPlane(const Plane<float> &plane, const math::Vec4<float> &lineStart, const math::Vec4<float> lineEnd)
+template<typename T>
+math::Vec4<T> IntersectPlane(const Plane<T> &plane, const math::Vec4<T> &lineStart, const math::Vec4<T> lineEnd)
 {
-	math::Vec3<float> normalizedPlaneN = math::UnitVector(plane.normal);
+	math::Vec3<T> normalizedPlaneN = math::UnitVector(plane.normal);
 	float planeD = DotProduct(normalizedPlaneN, plane.position);
 	float ad = DotProduct(normalizedPlaneN, lineStart);
 	float bd = DotProduct(normalizedPlaneN, lineEnd);
 	float t = (planeD - ad) / (bd - ad);
-	math::Vec4<float> lineStartToEnd = SubtractVectors(lineEnd, lineStart);
-	math::Vec4<float> lineToIntersect = MultiplyVectorByScalar(lineStartToEnd, t);
+	math::Vec4<T> lineStartToEnd = SubtractVectors(lineEnd, lineStart);
+	math::Vec4<T> lineToIntersect = MultiplyVectorByScalar(lineStartToEnd, t);
 	return AddVectors(lineStart, lineToIntersect);
 }
 
-float ShortestDistanceFromPointToPlane(const math::Vec4<float> &point, const math::Vec3<float> &planeP, const math::Vec3<float> &unitNormalToPlane)
+template<typename T>
+T ShortestDistanceFromPointToPlane(const math::Vec4<T> &point, const math::Vec3<T> &planeP, const math::Vec3<T> &unitNormalToPlane)
 {
-	float distance = math::DotProduct(unitNormalToPlane, point) - math::DotProduct(unitNormalToPlane, planeP);
+	T distance = math::DotProduct(unitNormalToPlane, point) - math::DotProduct(unitNormalToPlane, planeP);
 	return distance;
 }
 
-int ClipTriangleAgainstPlane(const Plane<float> &plane, Triangle4d &inputTriangle, Triangle4d &outputTriangle1, Triangle4d &outputTriangle2)
+template<typename T>
+int ClipTriangleAgainstPlane(const Plane<T> &plane, Triangle4d<T> &inputTriangle, Triangle4d<T> &outputTriangle1, Triangle4d<T> &outputTriangle2)
 {
-	math::Vec3<float> unitNormalToPlane = math::UnitVector(plane.normal);
+	math::Vec3<T> unitNormalToPlane = math::UnitVector(plane.normal);
 
 	// Two baskets to store points that are inside the plane and points that are outside
-	math::Vec4<float>* insidePoints[3];
-	math::Vec4<float>* outsidePoints[3];
+	math::Vec4<T>* insidePoints[3];
+	math::Vec4<T>* outsidePoints[3];
 	int insidePointCount = 0;
 	int outsidePointCount = 0;
 
 	// Work out the distance between the plane and each point on the triangle and put it in the relevant basket
 	for (int i = 0; i < 3; i += 1)
 	{
-		float distance = ShortestDistanceFromPointToPlane(inputTriangle.p[i], plane.position, unitNormalToPlane);
+		T distance = ShortestDistanceFromPointToPlane(inputTriangle.p[i], plane.position, unitNormalToPlane);
 		if (distance >= 0)
 		{
 			insidePoints[insidePointCount] = &inputTriangle.p[i];
