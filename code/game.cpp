@@ -141,13 +141,6 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	// View matrix
 	math::Matrix4x4<float> viewMatrix = LookAt(cameraMatrix);
 
-	// Draw unit vectors along axes
-	math::Vec2<int> origin = { 0, 0 };
-	math::Vec2<int> xPos = { 100, 0 };
-	math::Vec2<int> yPos = { 0, 100 };
-	render::DrawLineInPixels(renderBuffer, 0xFFFFFF, origin, xPos);
-	render::DrawLineInPixels(renderBuffer, 0xFFFFFF, origin, yPos);
-
 	std::vector<Triangle4d<float>> trianglesToDraw;
 
 	for (Triangle4d<float> tri : mesh.triangles)
