@@ -9,8 +9,7 @@
 
 #include "obj_file_reader.cpp"
 
-math::Vec4<float> cameraPosition = {0};
-math::Vec4<float> cameraDirection = {0};
+Ray<float> camera;
 Mesh<float> mesh;
 math::Matrix4x4<float> projectionMatrix;
 
@@ -54,7 +53,8 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 	projectionMatrix = MakeProjectionMatrix(90.0f, 1.0f, 0.1f, 1000.0f);
 
 	// Initialize the camera
-	cameraDirection = { 0.0f, 0.0f, 1.0f };
+	camera.position = { 0.0f, 0.0f, 0.0f };
+	camera.direction = { 0.0f, 0.0f, 1.0f };
 }
 
 void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const RenderBuffer &renderBuffer, float dt)
@@ -78,42 +78,42 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 		cameraYaw += yawIncrement;
 	}
 
-	// Apply the camera yaw to the cameraDirection vector
+	// Apply the camera yaw to the camera.direction vector
 	math::Vec4<float> up = { 0.0f, 1.0f, 0.0f };
 	math::Vec4<float> target = { 0.0f, 0.0f, 1.0f };
 	math::Matrix4x4<float> cameraYawMatrix = MakeYAxisRotationMatrix(cameraYaw);
-	math::MultiplyVectorWithMatrix(target, cameraDirection, cameraYawMatrix);
+	math::MultiplyVectorWithMatrix(target, camera.direction, cameraYawMatrix);
 
 	// Next process any forwards or backwards movement
-	math::Vec4<float> cameraPositionForwardBack = MultiplyVectorByScalar(cameraDirection, positionIncrement);
+	math::Vec4<float> cameraPositionForwardBack = MultiplyVectorByScalar(camera.direction, positionIncrement);
 	if (input.buttons[KEY_S].isDown)
 	{
-		cameraPosition = SubtractVectors(cameraPosition, cameraPositionForwardBack);
+		camera.position = SubtractVectors(camera.position, cameraPositionForwardBack);
 	}
 	else if (input.buttons[KEY_W].isDown)
 	{
-		cameraPosition = AddVectors(cameraPosition, cameraPositionForwardBack);
+		camera.position = AddVectors(camera.position, cameraPositionForwardBack);
 	}
 
 	// Strafing - use the cross product between the camera direction and up to get a normal vector to the direction being faced
-	math::Vec4<float> cameraPositionStrafe = CrossProduct(up, cameraDirection);
+	math::Vec4<float> cameraPositionStrafe = CrossProduct(up, camera.direction);
 	if (input.buttons[KEY_LEFT].isDown)
 	{
-		cameraPosition = SubtractVectors(cameraPosition, cameraPositionStrafe);
+		camera.position = SubtractVectors(camera.position, cameraPositionStrafe);
 	}
 	else if (input.buttons[KEY_RIGHT].isDown)
 	{
-		cameraPosition = AddVectors(cameraPosition, cameraPositionStrafe);
+		camera.position = AddVectors(camera.position, cameraPositionStrafe);
 	}
 
 	// Simply move the camera position vertically with up/down keypress
 	if (input.buttons[KEY_DOWN].isDown)
 	{
-		cameraPosition.y -= positionIncrement;
+		camera.position.y -= positionIncrement;
 	}
 	else if (input.buttons[KEY_UP].isDown)
 	{
-		cameraPosition.y += positionIncrement;
+		camera.position.y += positionIncrement;
 	}
 
 	render::ClearScreen(renderBuffer, 0, 0, renderBuffer.width, renderBuffer.height, BACKGROUND_COLOR);
@@ -135,8 +135,8 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	worldMatrix = MultiplyMatrixWithMatrix(worldMatrix, translationMatrix);
 
 	// Camera matrix
-	target = AddVectors(cameraPosition, cameraDirection);
-	math::Matrix4x4<float> cameraMatrix = PointAt(cameraPosition, target, up);
+	target = AddVectors(camera.position, camera.direction);
+	math::Matrix4x4<float> cameraMatrix = PointAt(camera.position, target, up);
 
 	// View matrix
 	math::Matrix4x4<float> viewMatrix = LookAt(cameraMatrix);
@@ -158,7 +158,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 		math::Vec4<float> line2 = SubtractVectors(transformed.p[2], transformed.p[0]);
 		math::Vec4<float> normal = math::UnitVector(math::CrossProduct(line1, line2));
 
-		math::Vec4<float> fromCameraToTriangle = math::SubtractVectors(transformed.p[0], cameraPosition);
+		math::Vec4<float> fromCameraToTriangle = math::SubtractVectors(transformed.p[0], camera.position);
 		float dot = DotProduct(normal, fromCameraToTriangle);
 
 		if (dot >= 0.0f)

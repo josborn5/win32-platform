@@ -30,4 +30,11 @@ struct Mesh
 	std::vector<Triangle4d<T>> triangles;
 };
 
+template<typename T>
+struct Ray
+{
+	math::Vec4<T> position;
+	math::Vec4<T> direction;
+};
+
 #endif
