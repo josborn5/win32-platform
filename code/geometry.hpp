@@ -31,10 +31,11 @@ struct Mesh
 };
 
 template<typename T>
-struct Ray
+struct Camera
 {
 	math::Vec4<T> position;
 	math::Vec4<T> direction;
+	math::Vec4<T> up;
 };
 
 #endif

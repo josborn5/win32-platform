@@ -122,16 +122,12 @@ namespace math
 	template<typename T>
 	void Project3DPointTo2D(const Vec4<T> &in, Vec4<T> &out, const Matrix4x4<T> &matrix)
 	{
-		out.x = (in.x * matrix.m[0][0]) + (in.y * matrix.m[1][0]) + (in.z * matrix.m[2][0]) + (in.w * matrix.m[3][0]);
-		out.y = (in.x * matrix.m[0][1]) + (in.y * matrix.m[1][1]) + (in.z * matrix.m[2][1]) + (in.w * matrix.m[3][1]);
-		out.z = (in.x * matrix.m[0][2]) + (in.y * matrix.m[1][2]) + (in.z * matrix.m[2][2]) + (in.w * matrix.m[3][2]);
-		float w = (in.x * matrix.m[0][3]) + (in.y * matrix.m[1][3]) + (in.z * matrix.m[2][3]) + (in.w * matrix.m[3][3]);
-
-		if (w != 0.0f)
+		MultiplyVectorWithMatrix(in, out, matrix);
+		if (out.w != 0.0f)
 		{
-			out.x /= w;
-			out.y /= w;
-			out.z /= w;
+			out.x /= out.w;
+			out.y /= out.w;
+			out.z /= out.w;
 		}
 	}
 
