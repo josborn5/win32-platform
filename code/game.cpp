@@ -131,7 +131,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	// Combine all the rotation and translation matrices into a single world transfomration matrix
 	math::Matrix4x4<float> worldMatrix;
 	// worldMatrix = MultiplyMatrixWithMatrix(rotationMatrixZ, rotationMatrixX);
-	worldMatrix = MakeIdentityMatrix();
+	worldMatrix = MakeIdentityMatrix<float>();
 	worldMatrix = MultiplyMatrixWithMatrix(worldMatrix, translationMatrix);
 
 	// Camera matrix

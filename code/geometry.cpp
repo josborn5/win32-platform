@@ -16,13 +16,14 @@ math::Matrix4x4<float> MakeProjectionMatrix(float fieldOfVewDeg, float aspectRat
 	return matrix;
 }
 
-math::Matrix4x4<float> MakeIdentityMatrix()
+template<typename T>
+math::Matrix4x4<T> MakeIdentityMatrix()
 {
-	math::Matrix4x4<float> matrix;
-	matrix.m[0][0] = 1.0f;
-	matrix.m[1][1] = 1.0f;
-	matrix.m[2][2] = 1.0f;
-	matrix.m[3][3] = 1.0f;
+	math::Matrix4x4<T> matrix;
+	matrix.m[0][0] = 1;
+	matrix.m[1][1] = 1;
+	matrix.m[2][2] = 1;
+	matrix.m[3][3] = 1;
 	return matrix;
 }
 
@@ -38,7 +39,7 @@ void SetZAxisRotationMatrix(float theta, math::Matrix4x4<float> &matrix)
 
 math::Matrix4x4<float> MakeZAxisRotationMatrix(float theta)
 {
-	math::Matrix4x4<float> matrix = MakeIdentityMatrix();
+	math::Matrix4x4<float> matrix = MakeIdentityMatrix<float>();
 	SetZAxisRotationMatrix(theta, matrix);
 	return matrix;
 }
@@ -55,7 +56,7 @@ void SetYAxisRotationMatrix(float theta, math::Matrix4x4<float> &matrix)
 
 math::Matrix4x4<float> MakeYAxisRotationMatrix(float theta)
 {
-	math::Matrix4x4<float> matrix = MakeIdentityMatrix();
+	math::Matrix4x4<float> matrix = MakeIdentityMatrix<float>();
 	SetYAxisRotationMatrix(theta, matrix);
 	return matrix;
 }
@@ -72,14 +73,15 @@ void SetXAxisRotationMatrix(float theta, math::Matrix4x4<float> &matrix)
 
 math::Matrix4x4<float> MakeXAxisRotationMatrix(float theta)
 {
-	math::Matrix4x4<float> matrix = MakeIdentityMatrix();
+	math::Matrix4x4<float> matrix = MakeIdentityMatrix<float>();
 	SetXAxisRotationMatrix(theta, matrix);
 	return matrix;
 }
 
-math::Matrix4x4<float> MakeTranslationMatrix(float dispX, float dispY, float dispZ)
+template<typename T>
+math::Matrix4x4<T> MakeTranslationMatrix(T dispX, T dispY, T dispZ)
 {
-	math::Matrix4x4<float> matrix = MakeIdentityMatrix();
+	math::Matrix4x4<T> matrix = MakeIdentityMatrix<T>();
 	matrix.m[3][0] = dispX;
 	matrix.m[3][1] = dispY;
 	matrix.m[3][2] = dispZ;
@@ -93,27 +95,28 @@ math::Matrix4x4<float> MakeTranslationMatrix(float dispX, float dispY, float dis
  * | Cx | Cy | Cz | 0 |
  * | Tx | Ty | Tz | 1 |
  */
-math::Matrix4x4<float> PointAt(const math::Vec4<float> &position, const math::Vec4<float> &target, const math::Vec4<float> &up)
+template<typename T>
+math::Matrix4x4<T> PointAt(const math::Vec4<T> &position, const math::Vec4<T> &target, const math::Vec4<T> &up)
 {
 	// Vector from the position to the target is the new forward direction
-	math::Vec4<float> forwardUnit = math::SubtractVectors(target, position);
+	math::Vec4<T> forwardUnit = math::SubtractVectors(target, position);
 	forwardUnit = math::UnitVector(forwardUnit);
 
 	// Calculate the new up direction of the new forward direction
-	float newUpScalar = DotProduct(up, forwardUnit);
-	math::Vec4<float> newUpTemp = MultiplyVectorByScalar(forwardUnit, newUpScalar);
-	math::Vec4<float> upUnit = SubtractVectors(up, newUpTemp);
+	T newUpScalar = DotProduct(up, forwardUnit);
+	math::Vec4<T> newUpTemp = MultiplyVectorByScalar(forwardUnit, newUpScalar);
+	math::Vec4<T> upUnit = SubtractVectors(up, newUpTemp);
 	upUnit = math::UnitVector(upUnit);
 
 	// Calculate the new right direction for the new up & forward directions
-	math::Vec4<float> rightUnit = CrossProduct(upUnit, forwardUnit);
+	math::Vec4<T> rightUnit = CrossProduct(upUnit, forwardUnit);
 
 	// Construct the new transformation matrix
-	math::Matrix4x4<float> pointAt;
-	pointAt.m[0][0] = rightUnit.x;		pointAt.m[0][1] = rightUnit.y;		pointAt.m[0][2] = rightUnit.z;		pointAt.m[0][3] = 0.0f;
-	pointAt.m[1][0] = upUnit.x;			pointAt.m[1][1] = upUnit.y;			pointAt.m[1][2] = upUnit.z;			pointAt.m[1][3] = 0.0f;
-	pointAt.m[2][0] = forwardUnit.x;	pointAt.m[2][1] = forwardUnit.y;	pointAt.m[2][2] = forwardUnit.z;	pointAt.m[2][3] = 0.0f;
-	pointAt.m[3][0] = position.x;		pointAt.m[3][1] = position.y;		pointAt.m[3][2] = position.z;		pointAt.m[3][3] = 1.0f;
+	math::Matrix4x4<T> pointAt;
+	pointAt.m[0][0] = rightUnit.x;		pointAt.m[0][1] = rightUnit.y;		pointAt.m[0][2] = rightUnit.z;		pointAt.m[0][3] = 0;
+	pointAt.m[1][0] = upUnit.x;			pointAt.m[1][1] = upUnit.y;			pointAt.m[1][2] = upUnit.z;			pointAt.m[1][3] = 0;
+	pointAt.m[2][0] = forwardUnit.x;	pointAt.m[2][1] = forwardUnit.y;	pointAt.m[2][2] = forwardUnit.z;	pointAt.m[2][3] = 0;
+	pointAt.m[3][0] = position.x;		pointAt.m[3][1] = position.y;		pointAt.m[3][2] = position.z;		pointAt.m[3][3] = 1;
 	return pointAt;
 }
 
@@ -124,17 +127,18 @@ math::Matrix4x4<float> PointAt(const math::Vec4<float> &position, const math::Ve
  * |  Az  |  Bz  |  Cz  | 0 |
  * | -T.A | -T.B | -T.C | 1 |
  */
-math::Matrix4x4<float> LookAt(math::Matrix4x4<float> const &pointAt)
+template<typename T>
+math::Matrix4x4<T> LookAt(math::Matrix4x4<T> const &pointAt)
 {
-	float tDotA = (pointAt.m[3][0] * pointAt.m[0][0]) + (pointAt.m[3][1] * pointAt.m[0][1]) + (pointAt.m[3][2] * pointAt.m[0][2]);
-	float tDotB = (pointAt.m[3][0] * pointAt.m[1][0]) + (pointAt.m[3][1] * pointAt.m[1][1]) + (pointAt.m[3][2] * pointAt.m[1][2]);
-	float tDotC = (pointAt.m[3][0] * pointAt.m[2][0]) + (pointAt.m[3][1] * pointAt.m[2][1]) + (pointAt.m[3][2] * pointAt.m[2][2]);
+	T tDotA = (pointAt.m[3][0] * pointAt.m[0][0]) + (pointAt.m[3][1] * pointAt.m[0][1]) + (pointAt.m[3][2] * pointAt.m[0][2]);
+	T tDotB = (pointAt.m[3][0] * pointAt.m[1][0]) + (pointAt.m[3][1] * pointAt.m[1][1]) + (pointAt.m[3][2] * pointAt.m[1][2]);
+	T tDotC = (pointAt.m[3][0] * pointAt.m[2][0]) + (pointAt.m[3][1] * pointAt.m[2][1]) + (pointAt.m[3][2] * pointAt.m[2][2]);
 
-	math::Matrix4x4<float> lookAt;
-	lookAt.m[0][0] = pointAt.m[0][0];	lookAt.m[0][1] = pointAt.m[1][0];	lookAt.m[0][2] = pointAt.m[2][0];	lookAt.m[0][3] = 0.0f;
-	lookAt.m[1][0] = pointAt.m[0][1];	lookAt.m[1][1] = pointAt.m[1][1];	lookAt.m[1][2] = pointAt.m[2][1];	lookAt.m[1][3] = 0.0f;
-	lookAt.m[2][0] = pointAt.m[0][2];	lookAt.m[2][1] = pointAt.m[1][2];	lookAt.m[2][2] = pointAt.m[2][2];	lookAt.m[2][3] = 0.0f;
-	lookAt.m[3][0] = -tDotA;			lookAt.m[3][1] = -tDotB;			lookAt.m[3][2] = -tDotC;			lookAt.m[3][3] = 1.0f;
+	math::Matrix4x4<T> lookAt;
+	lookAt.m[0][0] = pointAt.m[0][0];	lookAt.m[0][1] = pointAt.m[1][0];	lookAt.m[0][2] = pointAt.m[2][0];	lookAt.m[0][3] = 0;
+	lookAt.m[1][0] = pointAt.m[0][1];	lookAt.m[1][1] = pointAt.m[1][1];	lookAt.m[1][2] = pointAt.m[2][1];	lookAt.m[1][3] = 0;
+	lookAt.m[2][0] = pointAt.m[0][2];	lookAt.m[2][1] = pointAt.m[1][2];	lookAt.m[2][2] = pointAt.m[2][2];	lookAt.m[2][3] = 0;
+	lookAt.m[3][0] = -tDotA;			lookAt.m[3][1] = -tDotB;			lookAt.m[3][2] = -tDotC;			lookAt.m[3][3] = 1;
 	return lookAt;
 }
 
@@ -142,10 +146,10 @@ template<typename T>
 math::Vec4<T> IntersectPlane(const Plane<T> &plane, const math::Vec4<T> &lineStart, const math::Vec4<T> lineEnd)
 {
 	math::Vec3<T> normalizedPlaneN = math::UnitVector(plane.normal);
-	float planeD = DotProduct(normalizedPlaneN, plane.position);
-	float ad = DotProduct(normalizedPlaneN, lineStart);
-	float bd = DotProduct(normalizedPlaneN, lineEnd);
-	float t = (planeD - ad) / (bd - ad);
+	T planeD = DotProduct(normalizedPlaneN, plane.position);
+	T ad = DotProduct(normalizedPlaneN, lineStart);
+	T bd = DotProduct(normalizedPlaneN, lineEnd);
+	T t = (planeD - ad) / (bd - ad);
 	math::Vec4<T> lineStartToEnd = SubtractVectors(lineEnd, lineStart);
 	math::Vec4<T> lineToIntersect = MultiplyVectorByScalar(lineStartToEnd, t);
 	return AddVectors(lineStart, lineToIntersect);
