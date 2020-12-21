@@ -4,20 +4,15 @@
 const uint32_t EMPTY = 0x000000;
 const uint32_t FILLED = 0xFFFFFF;
 
-void ClearPixels(uint32_t* pixel)
-{
-	for (int i = 0; i < 18; i += 1)
-	{
-		*pixel = EMPTY;
-		pixel++;
-	}
-}
-
-void RunSoftwareRenderingTests()
+void RunLineDrawTest(math::Vec2<int> p0, math::Vec2<int> p1, uint32_t* expectedPixels)
 {
 	uint32_t pixelArray[18] = { EMPTY };	// define pixels as an an array of 16 uint32_t values
 											// NB this array lives on the stack in the scope of the RunSoftwareRenderingTests function only.
 											// The array is sized greater than the RenderBuffer pixel array so it can pick up illegal memory writes to the pixel array
+	for (int i = 0; i < 18; i += 1)
+	{
+		pixelArray[0] = EMPTY;
+	}
 
 	/**
 	 * Set the RenderBuffer to be a 4x4 grid of pixels (pixel ordinals 0 - 3)
@@ -39,6 +34,62 @@ void RunSoftwareRenderingTests()
 	renderBuffer.width = 4;					// Size the buffer to 16 pixels. pixelArray is 18 pixels so the test can tell if the function ever oversteps the bounds of RenderBuffer.
 	renderBuffer.pixels = &pixelArray[1];	// Use the second element in pixelArray so we can tell if the zero-th element ever gets accessed.
 
+	render::DrawLineInPixels(renderBuffer, FILLED, p0, p1);
+
+	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
+
+	for (int i = 0; i < renderBuffer.height * renderBuffer.width; i += 1)
+	{
+		assert(pixelArray[i + 1] == expectedPixels[i]);
+	}
+
+	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
+}
+
+void RunFillTriangleTest(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<int> p2, uint32_t* expectedPixels)
+{
+	uint32_t pixelArray[18] = { EMPTY };	// define pixels as an an array of 16 uint32_t values
+											// NB this array lives on the stack in the scope of the RunSoftwareRenderingTests function only.
+											// The array is sized greater than the RenderBuffer pixel array so it can pick up illegal memory writes to the pixel array
+	for (int i = 0; i < 18; i += 1)
+	{
+		pixelArray[0] = EMPTY;
+	}
+
+	/**
+	 * Set the RenderBuffer to be a 4x4 grid of pixels (pixel ordinals 0 - 3)
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|-0
+	 *	0 |   |   |   |   |
+	 *	  |---|---|---|---|-1
+	 *	1 |   |   |   |   |
+	 *	  |---|---|---|---|-2
+	 *	2 |   |   |   |   |
+	 *	  |---|---|---|---|-3
+	 *	3 |   |   |   |   |
+	 *	  |---|---|---|---|-4
+	 *    0   1   2   3   4
+	 */
+	RenderBuffer renderBuffer;
+	renderBuffer.height = 4;
+	renderBuffer.width = 4;					// Size the buffer to 16 pixels. pixelArray is 18 pixels so the test can tell if the function ever oversteps the bounds of RenderBuffer.
+	renderBuffer.pixels = &pixelArray[1];	// Use the second element in pixelArray so we can tell if the zero-th element ever gets accessed.
+
+	render::FillTriangleInPixels(renderBuffer, FILLED, p0, p1, p2);
+
+	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
+
+	for (int i = 0; i < renderBuffer.height * renderBuffer.width; i += 1)
+	{
+		assert(pixelArray[i + 1] == expectedPixels[i]);
+	}
+
+	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
+}
+
+void RunSoftwareRenderingTests()
+{
 	/**
 	 * STRAIGHT HORIZONTAL LINE TO BOUNDARY OF BUFFER
 	 *
@@ -53,32 +104,13 @@ void RunSoftwareRenderingTests()
 	 *	3 |   |   |   |   |
 	 *	  |---|---|---|---|
 	 */
-	ClearPixels(pixelArray);
-	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 0, 2 }, math::Vec2<int>{ 3, 2 });
-
-	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
-
-	assert(pixelArray[1] == EMPTY);
-	assert(pixelArray[2] == EMPTY);
-	assert(pixelArray[3] == EMPTY);
-	assert(pixelArray[4] == EMPTY);
-
-	assert(pixelArray[5] == EMPTY);
-	assert(pixelArray[6] == EMPTY);
-	assert(pixelArray[7] == EMPTY);
-	assert(pixelArray[8] == EMPTY);
-
-	assert(pixelArray[9] == FILLED);
-	assert(pixelArray[10] == FILLED);
-	assert(pixelArray[11] == FILLED);
-	assert(pixelArray[12] == FILLED);
-
-	assert(pixelArray[13] == EMPTY);
-	assert(pixelArray[14] == EMPTY);
-	assert(pixelArray[15] == EMPTY);
-	assert(pixelArray[16] == EMPTY);
-
-	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
+	uint32_t el1[16] = {
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	FILLED,	FILLED,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunLineDrawTest(math::Vec2<int>{ 0, 2 }, math::Vec2<int>{ 3, 2 }, el1);
 
 	/**
 	 * STRAIGHT VERTICAL LINE TO BOUNDARY OF BUFFER
@@ -94,32 +126,13 @@ void RunSoftwareRenderingTests()
 	 *	3 | O |   |   |   |
 	 *	  |---|---|---|---|
 	 */
-	ClearPixels(pixelArray);
-	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 0, 0 });
-
-	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
-
-	assert(pixelArray[1] == FILLED);
-	assert(pixelArray[2] == EMPTY);
-	assert(pixelArray[3] == EMPTY);
-	assert(pixelArray[4] == EMPTY);
-
-	assert(pixelArray[5] == FILLED);
-	assert(pixelArray[6] == EMPTY);
-	assert(pixelArray[7] == EMPTY);
-	assert(pixelArray[8] == EMPTY);
-
-	assert(pixelArray[9] == FILLED);
-	assert(pixelArray[10] == EMPTY);
-	assert(pixelArray[11] == EMPTY);
-	assert(pixelArray[12] == EMPTY);
-
-	assert(pixelArray[13] == FILLED);
-	assert(pixelArray[14] == EMPTY);
-	assert(pixelArray[15] == EMPTY);
-	assert(pixelArray[16] == EMPTY);
-
-	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
+	uint32_t el2[16] = {
+		FILLED,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunLineDrawTest(math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 0, 0 }, el2);
 
 	/**
 	 * DIAGONAL LINE TO BOUNDARY OF BUFFER
@@ -136,32 +149,13 @@ void RunSoftwareRenderingTests()
 	 *	3 |   |   |   | O |
 	 *	  |---|---|---|---|
 	 */
-	ClearPixels(pixelArray);
-	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 0, 0 }, math::Vec2<int>{ 3, 3 });
-
-	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
-
-	assert(pixelArray[1] == FILLED);
-	assert(pixelArray[2] == EMPTY);
-	assert(pixelArray[3] == EMPTY);
-	assert(pixelArray[4] == EMPTY);
-
-	assert(pixelArray[5] == EMPTY);
-	assert(pixelArray[6] == FILLED);
-	assert(pixelArray[7] == EMPTY);
-	assert(pixelArray[8] == EMPTY);
-
-	assert(pixelArray[9] == EMPTY);
-	assert(pixelArray[10] == EMPTY);
-	assert(pixelArray[11] == FILLED);
-	assert(pixelArray[12] == EMPTY);
-
-	assert(pixelArray[13] == EMPTY);
-	assert(pixelArray[14] == EMPTY);
-	assert(pixelArray[15] == EMPTY);
-	assert(pixelArray[16] == FILLED);
-
-	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
+	uint32_t el3[16] = {
+		FILLED,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	FILLED,	EMPTY,	EMPTY,
+		EMPTY,	EMPTY,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	FILLED
+	};
+	RunLineDrawTest(math::Vec2<int>{ 0, 0 }, math::Vec2<int>{ 3, 3 }, el3);
 
 	/**
 	 * DIAGONAL LINE TO BOUNDARY OF BUFFER
@@ -178,32 +172,13 @@ void RunSoftwareRenderingTests()
 	 *	3 | O |   |   |   |
 	 *	  |---|---|---|---|
 	 */
-	ClearPixels(pixelArray);
-	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 3, 0 });
-
-	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
-
-	assert(pixelArray[1] == EMPTY);
-	assert(pixelArray[2] == EMPTY);
-	assert(pixelArray[3] == EMPTY);
-	assert(pixelArray[4] == FILLED);
-
-	assert(pixelArray[5] == EMPTY);
-	assert(pixelArray[6] == EMPTY);
-	assert(pixelArray[7] == FILLED);
-	assert(pixelArray[8] == EMPTY);
-
-	assert(pixelArray[9] == EMPTY);
-	assert(pixelArray[10] == FILLED);
-	assert(pixelArray[11] == EMPTY);
-	assert(pixelArray[12] == EMPTY);
-
-	assert(pixelArray[13] == FILLED);
-	assert(pixelArray[14] == EMPTY);
-	assert(pixelArray[15] == EMPTY);
-	assert(pixelArray[16] == EMPTY);
-
-	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
+	uint32_t el4[16] = {
+		EMPTY,	EMPTY,	EMPTY,	FILLED,
+		EMPTY,	EMPTY,	FILLED,	EMPTY,
+		EMPTY,	FILLED,	EMPTY,	EMPTY,
+		FILLED,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunLineDrawTest(math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 3, 0 }, el4);
 
 	/**
 	 * STEEP GRADIENT, X +VE INCREMENT, Y +VE INCREMENT
@@ -219,32 +194,13 @@ void RunSoftwareRenderingTests()
 	 *	3 |   |   | O |   |
 	 *	  |---|---|---|---|
 	 */
-	ClearPixels(pixelArray);
-	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 1, 0 }, math::Vec2<int>{ 2, 3 });
-
-	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
-
-	assert(pixelArray[1] == EMPTY);
-	assert(pixelArray[2] == FILLED);
-	assert(pixelArray[3] == EMPTY);
-	assert(pixelArray[4] == EMPTY);
-
-	assert(pixelArray[5] == EMPTY);
-	assert(pixelArray[6] == FILLED);
-	assert(pixelArray[7] == EMPTY);
-	assert(pixelArray[8] == EMPTY);
-
-	assert(pixelArray[9] == EMPTY);
-	assert(pixelArray[10] == EMPTY);
-	assert(pixelArray[11] == FILLED);
-	assert(pixelArray[12] == EMPTY);
-
-	assert(pixelArray[13] == EMPTY);
-	assert(pixelArray[14] == EMPTY);
-	assert(pixelArray[15] == FILLED);
-	assert(pixelArray[16] == EMPTY);
-
-	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
+	uint32_t el5[16] = {
+		EMPTY,	FILLED,	EMPTY,	EMPTY,
+		EMPTY,	FILLED,	EMPTY,	EMPTY,
+		EMPTY,	EMPTY,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	FILLED,	EMPTY
+	};
+	RunLineDrawTest(math::Vec2<int>{ 1, 0 }, math::Vec2<int>{ 2, 3 }, el5);
 
 	/**
 	 * SHALLOW GRADIENT, X +VE INCREMENT, Y +VE INCREMENT
@@ -260,34 +216,15 @@ void RunSoftwareRenderingTests()
 	 *	3 |   |   |   |   |
 	 *	  |---|---|---|---|
 	 */
-	ClearPixels(pixelArray);
-	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 0, 1 }, math::Vec2<int>{ 3, 2 });
+	uint32_t el6[16] = {
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	EMPTY,	EMPTY,
+		EMPTY,	EMPTY,	FILLED,	FILLED,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunLineDrawTest(math::Vec2<int>{ 0, 1 }, math::Vec2<int>{ 3, 2 }, el6);
 
-	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
-
-	assert(pixelArray[1] == EMPTY);
-	assert(pixelArray[2] == EMPTY);
-	assert(pixelArray[3] == EMPTY);
-	assert(pixelArray[4] == EMPTY);
-
-	assert(pixelArray[5] == FILLED);
-	assert(pixelArray[6] == FILLED);
-	assert(pixelArray[7] == EMPTY);
-	assert(pixelArray[8] == EMPTY);
-
-	assert(pixelArray[9] == EMPTY);
-	assert(pixelArray[10] == EMPTY);
-	assert(pixelArray[11] == FILLED);
-	assert(pixelArray[12] == FILLED);
-
-	assert(pixelArray[13] == EMPTY);
-	assert(pixelArray[14] == EMPTY);
-	assert(pixelArray[15] == EMPTY);
-	assert(pixelArray[16] == EMPTY);
-
-	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
-
-		/**
+	/**
 	 * SHALLOW GRADIENT, X +VE INCREMENT, Y -VE INCREMENT
 	 *
 	 *	    0   1   2   3
@@ -301,30 +238,84 @@ void RunSoftwareRenderingTests()
 	 *	3 | O | x |   |   |
 	 *	  |---|---|---|---|
 	 */
-	ClearPixels(pixelArray);
-	render::DrawLineInPixels(renderBuffer, FILLED, math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 3, 2 });
+	uint32_t el7[16] = {
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	EMPTY,	FILLED,	FILLED,
+		FILLED,	FILLED,	EMPTY,	EMPTY
+	};
+	RunLineDrawTest(math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 3, 2 }, el7);
 
-	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
 
-	assert(pixelArray[1] == EMPTY);
-	assert(pixelArray[2] == EMPTY);
-	assert(pixelArray[3] == EMPTY);
-	assert(pixelArray[4] == EMPTY);
+	/**
+	 * FLAT TOP RIGHT HAND SIDE RIGHT ANGLED TRIANGLE
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 | O | x | x | O |
+	 *	  |---|---|---|---|
+	 *	1 |   | x | x | x |
+	 *	  |---|---|---|---|
+	 *	2 |   |   | x | x |
+	 *	  |---|---|---|---|
+	 *	3 |   |   |   | O |
+	 *	  |---|---|---|---|
+	 */
+	uint32_t et1[16] = {
+		FILLED,	FILLED,	FILLED,	FILLED,
+		EMPTY,	FILLED,	FILLED,	FILLED,
+		EMPTY,	EMPTY,	FILLED,	FILLED,
+		EMPTY,	EMPTY,	EMPTY,	FILLED
+	};
+	RunFillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, et1);
+	RunFillTriangleTest(math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, et1);
+	RunFillTriangleTest(math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, et1);
 
-	assert(pixelArray[5] == EMPTY);
-	assert(pixelArray[6] == EMPTY);
-	assert(pixelArray[7] == EMPTY);
-	assert(pixelArray[8] == EMPTY);
+	/**
+	 * FLAT TOP LEFT HAND SIDE RIGHT ANGLED TRIANGLE
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 | O | x | x | O |
+	 *	  |---|---|---|---|
+	 *	1 | x | x | x |   |
+	 *	  |---|---|---|---|
+	 *	2 | x | x |   |   |
+	 *	  |---|---|---|---|
+	 *	3 | O |   |   |   |
+	 *	  |---|---|---|---|
+	 */
+	uint32_t et2[16] = {
+		FILLED,	FILLED,	FILLED,	FILLED,
+		FILLED,	FILLED,	FILLED,	EMPTY,
+		FILLED,	FILLED,	EMPTY,	EMPTY,
+		FILLED,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunFillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, et2);
+	RunFillTriangleTest(math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, et2);
+	RunFillTriangleTest(math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, et2);
 
-	assert(pixelArray[9] == EMPTY);
-	assert(pixelArray[10] == EMPTY);
-	assert(pixelArray[11] == FILLED);
-	assert(pixelArray[12] == FILLED);
-
-	assert(pixelArray[13] == FILLED);
-	assert(pixelArray[14] == FILLED);
-	assert(pixelArray[15] == EMPTY);
-	assert(pixelArray[16] == EMPTY);
-
-	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
+	/**
+	 * FLAT TOP TRIANGLE
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 | O | x | x | O |
+	 *	  |---|---|---|---|
+	 *	1 |   | x | x |   |
+	 *	  |---|---|---|---|
+	 *	2 |   |   | x |   |
+	 *	  |---|---|---|---|
+	 *	3 |   |   | O |   |
+	 *	  |---|---|---|---|
+	 */
+	uint32_t et3[16] = {
+		FILLED,	FILLED,	FILLED,	FILLED,
+		EMPTY,	FILLED,	FILLED,	FILLED,
+		EMPTY,	EMPTY,	FILLED,	FILLED,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunFillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, et3);
+	RunFillTriangleTest(math::Vec3<int>{ 2, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, et3);
+	RunFillTriangleTest(math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, et3);
 }

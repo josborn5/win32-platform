@@ -36,15 +36,33 @@ namespace math
 	}
 
 	template<typename T>
+	Vec3<T> AddVectors(const Vec3<T> &v1, const Vec3<T> &v2)
+	{
+		return Vec3<T>{v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
+	}
+
+	template<typename T>
 	Vec4<T> SubtractVectors(const Vec4<T> &v1, const Vec4<T> &v2)
 	{
 		return Vec4<T>{v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
 	}
 
 	template<typename T>
+	Vec3<T> SubtractVectors(const Vec3<T> &v1, const Vec3<T> &v2)
+	{
+		return Vec3<T>{v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
+	}
+
+	template<typename T>
 	Vec4<T> MultiplyVectorByScalar(const Vec4<T> &vec, T sca)
 	{
 		return Vec4<T>{ vec.x * sca, vec.y * sca, vec.z * sca };
+	}
+
+	template<typename T>
+	Vec3<T> MultiplyVectorByScalar(const Vec3<T> &vec, T sca)
+	{
+		return Vec3<T>{ vec.x * sca, vec.y * sca, vec.z * sca };
 	}
 
 	template<typename T>

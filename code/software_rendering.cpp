@@ -174,6 +174,135 @@ namespace render
 		}
 	}
 
+	// https://youtu.be/9A5TVh6kPLA?t=1218
+	/*	p0------p1
+	 *	\       /
+	 *	 \     /
+	 *	  \   /
+	 *	   \ /
+	 *	    p2
+	 */
+	template<typename T>
+	void FillFlatTopTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<T> &p0, const math::Vec3<T> &p1, const math::Vec3<T> &p2)
+	{
+		// Slopes
+		T m0 = (p2.x - p0.x) / (p2.y - p0.y);
+		T m1 = (p2.x - p1.x) / (p2.y - p1.y);
+
+		// y: start & end of scanlines
+		const int yStart = (int)std::ceil(p0.y - (T)0.5);
+		const int yEnd = (int)std::ceil(p2.y - (T)0.5);
+
+		for (int y = yStart; y <= yEnd; y += 1)
+		{
+			const T px0 = m0 * ((T)y + (T)0.5 - p0.y) + p0.x;
+			const T px1 = m1 * ((T)y + (T)0.5 - p1.y) + p1.x;
+
+			// x: start & end of scanline
+			const int xStart = (int)std::ceil(px0 - (T)0.5f);
+			const int xEnd = (int)std::ceil(px1 - (T)0.5f);
+
+			for (int x = xStart; x <= xEnd; x += 1)
+			{
+				PlotPixel(renderBuffer, color, x, y);
+			}
+		}
+	}
+
+	/*`     p0
+	 *`     /\
+	 *`    /  \
+	 *`   /    \
+	 *	 /      \
+	 *	p1------p2
+	 */
+	template<typename T>
+	void FillFlatBottomTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<T> &p0, const math::Vec3<T> &p1, const math::Vec3<T> &p2)
+	{
+		// Slopes
+		T m0 = (p0.x - p1.x) / (p2.y - p0.y);
+		T m1 = (p2.x - p1.x) / (p2.y - p1.y);
+
+		// y: start & end of scanlines
+		const int yStart = (int)std::ceil(p0.y - (T)0.5);
+		const int yEnd = (int)std::ceil(p2.y - (T)0.5);
+
+		for (int y = yStart; y <= yEnd; y += 1)
+		{
+			const T px0 = m0 * ((T)y + (T)0.5 - p0.y) + p0.x;
+			const T px1 = m1 * ((T)y + (T)0.5 - p1.y) + p1.x;
+
+			// x: start & end of scanline
+			const int xStart = (int)std::ceil(px0 - (T)0.5f);
+			const int xEnd = (int)std::ceil(px1 - (T)0.5f);
+
+			for (int x = xStart; x <= xEnd; x += 1)
+			{
+				PlotPixel(renderBuffer, color, x, y);
+			}
+		}
+	}
+
+	template<typename T>
+	void FillTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<T> &p0, const math::Vec3<T> &p1, const math::Vec3<T> &p2)
+	{
+		const math::Vec3<T>* pp0 = &p0;
+		const math::Vec3<T>* pp1 = &p1;
+		const math::Vec3<T>* pp2 = &p2;
+
+		// Sort the three points of the triangle by their y co-ordinate
+		if (pp1->y < pp0->y)
+		{
+			std::swap(pp0, pp1);
+		}
+		if (pp2->y < pp1->y)
+		{
+			std::swap(pp1, pp2);
+		}
+		if (pp1->y < pp0->y)
+		{
+			std::swap(pp0, pp1);
+		}
+
+		// Check for natural flat top
+		if (pp0 -> y == pp1->y)
+		{
+			// sort top two points of flat top by their x co-ordinate
+			if (pp1->x < pp0->x)
+			{
+				std::swap(pp0, pp1);
+			}
+			FillFlatTopTriangle(renderBuffer, color, *pp0, *pp1, *pp2);
+		}
+		else if (pp1->y == pp2->y) // natural flat bottom
+		{
+			// sort bottom two points of flat bottom by their x co-ordinate
+			if (pp2->x < pp1->x)
+			{
+				std::swap(pp1, pp2);
+				// FillFlatBottomTriangle(*pp0, *pp1, *pp2, color);
+			}
+		}
+		else // general triangle - need to split it in two
+		{
+			const T splitFactor = (pp1->y - pp0->y) / (pp2->y - pp0->y);
+			const math::Vec3<T> toSplit = math::MultiplyVectorByScalar(math::SubtractVectors(*pp2, *pp0), splitFactor);
+			const math::Vec3<T> splitPoint = math::AddVectors(*pp0, toSplit);
+
+			if (pp1->x < splitPoint.x)	// major right triangle
+			{
+				//FillFlatBottomTriangle(*pp0, *pp1, splitPoint, color);
+				FillFlatTopTriangle(renderBuffer, color, *pp1, splitPoint, *pp2);
+			}
+			else	// major left triangle
+			{
+				// FillFlatBottomTriangle(*pp0, splitPoint, *pp1, color);
+				FillFlatTopTriangle(renderBuffer, color, splitPoint, *pp1, *pp2);
+			}
+		}
+	}
+
+
 	void DrawTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec2<int> &p0, const math::Vec2<int> &p1, const math::Vec2<int> &p2)
 	{
 		DrawLineInPixels(renderBuffer, color, p0, p1);
@@ -348,11 +477,15 @@ namespace render
 
 			for (Triangle4d<float> draw : triangleQueue)
 			{
-				math::Vec2<int> p0Int = { (int)triToRender.p[0].x, (int)triToRender.p[0].y };
-				math::Vec2<int> p1Int = { (int)triToRender.p[1].x, (int)triToRender.p[1].y };
-				math::Vec2<int> p2Int = { (int)triToRender.p[2].x, (int)triToRender.p[2].y };
+				// math::Vec2<int> p0Int = { (int)triToRender.p[0].x, (int)triToRender.p[0].y };
+				// math::Vec2<int> p1Int = { (int)triToRender.p[1].x, (int)triToRender.p[1].y };
+				// math::Vec2<int> p2Int = { (int)triToRender.p[2].x, (int)triToRender.p[2].y };
+				// render::DrawTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int);
 
-				render::DrawTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int);
+				math::Vec3<int> p0Int = { (int)triToRender.p[0].x, (int)triToRender.p[0].y };
+				math::Vec3<int> p1Int = { (int)triToRender.p[1].x, (int)triToRender.p[1].y };
+				math::Vec3<int> p2Int = { (int)triToRender.p[2].x, (int)triToRender.p[2].y };
+				render::FillTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int);
 			}
 		}
 	}
