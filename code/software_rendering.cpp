@@ -176,33 +176,27 @@ namespace render
 
 	// https://youtu.be/9A5TVh6kPLA?t=1218
 	/*	p0------p1
-	 *	\       /
-	 *	 \     /
-	 *	  \   /
-	 *	   \ /
+	 *	\       /	|
+	 *	 \     /	|
+	 *	  \   /		V
+	 *	   \ /	  +ve y
 	 *	    p2
 	 */
-	template<typename T>
-	void FillFlatTopTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<T> &p0, const math::Vec3<T> &p1, const math::Vec3<T> &p2)
+	void FillFlatTopTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
 	{
 		// Slopes
-		T m0 = (p2.x - p0.x) / (p2.y - p0.y);
-		T m1 = (p2.x - p1.x) / (p2.y - p1.y);
+		float m0 = (float)(p2.x - p0.x) / (float)(p2.y - p0.y);
+		float m1 = (float)(p2.x - p1.x) / (float)(p2.y - p1.y);
 
-		// y: start & end of scanlines
-		const int yStart = (int)std::ceil(p0.y - (T)0.5);
-		const int yEnd = (int)std::ceil(p2.y - (T)0.5);
-
-		for (int y = yStart; y <= yEnd; y += 1)
+		// step along the y-axis, drawing a horizontal scanline at each y ordinal
+		for (int y = p0.y; y <= p2.y; y += 1)
 		{
-			const T px0 = m0 * ((T)y + (T)0.5 - p0.y) + p0.x;
-			const T px1 = m1 * ((T)y + (T)0.5 - p1.y) + p1.x;
+			// TODO: can I use the line drawing algorithm here instead?
+			const int px0 = (int)std::floor(m0 * (float)(y - p0.y) + (float)p0.x);
+			const int px1 = (int)std::ceil(m1 * (float)(y - p1.y) + (float)p1.x);
 
 			// x: start & end of scanline
-			const int xStart = (int)std::ceil(px0 - (T)0.5f);
-			const int xEnd = (int)std::ceil(px1 - (T)0.5f);
-
-			for (int x = xStart; x <= xEnd; x += 1)
+			for (int x = px0; x <= px1; x += 1)
 			{
 				PlotPixel(renderBuffer, color, x, y);
 			}
@@ -210,45 +204,35 @@ namespace render
 	}
 
 	/*`     p0
-	 *`     /\
-	 *`    /  \
-	 *`   /    \
-	 *	 /      \
+	 *`     /\			|
+	 *`    /  \			|
+	 *`   /    \		V
+	 *	 /      \	  +ve y
 	 *	p1------p2
 	 */
-	template<typename T>
-	void FillFlatBottomTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<T> &p0, const math::Vec3<T> &p1, const math::Vec3<T> &p2)
+	void FillFlatBottomTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
 	{
 		// Slopes
-		T m0 = (p0.x - p1.x) / (p2.y - p0.y);
-		T m1 = (p2.x - p1.x) / (p2.y - p1.y);
+		float m2 = (float)(p2.x - p0.x) / (float)(p2.y - p0.y);
+		float m1 = (float)(p1.x - p0.x) / (float)(p1.y - p0.y);
 
-		// y: start & end of scanlines
-		const int yStart = (int)std::ceil(p0.y - (T)0.5);
-		const int yEnd = (int)std::ceil(p2.y - (T)0.5);
-
-		for (int y = yStart; y <= yEnd; y += 1)
+		for (int y = p0.y; y <= p2.y; y += 1)
 		{
-			const T px0 = m0 * ((T)y + (T)0.5 - p0.y) + p0.x;
-			const T px1 = m1 * ((T)y + (T)0.5 - p1.y) + p1.x;
+			const int px2 = (int)std::floor(m2 * (float)(y - p2.y) + (float)p2.x);
+			const int px1 = (int)std::ceil(m1 * (float)(y - p1.y) + (float)p1.x);
 
-			// x: start & end of scanline
-			const int xStart = (int)std::ceil(px0 - (T)0.5f);
-			const int xEnd = (int)std::ceil(px1 - (T)0.5f);
-
-			for (int x = xStart; x <= xEnd; x += 1)
+			for (int x = px1; x <= px2; x += 1)
 			{
 				PlotPixel(renderBuffer, color, x, y);
 			}
 		}
 	}
 
-	template<typename T>
-	void FillTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<T> &p0, const math::Vec3<T> &p1, const math::Vec3<T> &p2)
+	void FillTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
 	{
-		const math::Vec3<T>* pp0 = &p0;
-		const math::Vec3<T>* pp1 = &p1;
-		const math::Vec3<T>* pp2 = &p2;
+		const math::Vec3<int>* pp0 = &p0;
+		const math::Vec3<int>* pp1 = &p1;
+		const math::Vec3<int>* pp2 = &p2;
 
 		// Sort the three points of the triangle by their y co-ordinate
 		if (pp1->y < pp0->y)
@@ -280,23 +264,24 @@ namespace render
 			if (pp2->x < pp1->x)
 			{
 				std::swap(pp1, pp2);
-				// FillFlatBottomTriangle(*pp0, *pp1, *pp2, color);
 			}
+			FillFlatBottomTriangle(renderBuffer, color, *pp0, *pp1, *pp2);
 		}
 		else // general triangle - need to split it in two
 		{
-			const T splitFactor = (pp1->y - pp0->y) / (pp2->y - pp0->y);
-			const math::Vec3<T> toSplit = math::MultiplyVectorByScalar(math::SubtractVectors(*pp2, *pp0), splitFactor);
-			const math::Vec3<T> splitPoint = math::AddVectors(*pp0, toSplit);
+			const float splitFactor = (float)(pp1->y - pp0->y) / (float)(pp2->y - pp0->y);
+			const math::Vec3<int> diff = math::SubtractVectors(*pp2, *pp0);
+			const math::Vec3<float> toSplit = math::MultiplyVectorByScalar(math::Vec3<float>{ (float)diff.x, (float)diff.y, (float)diff.z }, splitFactor);
+			const math::Vec3<int> splitPoint = math::AddVectors(*pp0, math::Vec3<int>{ (int)toSplit.x, (int)toSplit.y, (int)toSplit.z });
 
 			if (pp1->x < splitPoint.x)	// major right triangle
 			{
-				//FillFlatBottomTriangle(*pp0, *pp1, splitPoint, color);
+				FillFlatBottomTriangle(renderBuffer, color, *pp0, *pp1, splitPoint);
 				FillFlatTopTriangle(renderBuffer, color, *pp1, splitPoint, *pp2);
 			}
 			else	// major left triangle
 			{
-				// FillFlatBottomTriangle(*pp0, splitPoint, *pp1, color);
+				FillFlatBottomTriangle(renderBuffer, color, *pp0, splitPoint, *pp1);
 				FillFlatTopTriangle(renderBuffer, color, splitPoint, *pp1, *pp2);
 			}
 		}

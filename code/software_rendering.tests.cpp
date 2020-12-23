@@ -4,15 +4,21 @@
 const uint32_t EMPTY = 0x000000;
 const uint32_t FILLED = 0xFFFFFF;
 
+
+void ClearPixelArray(uint32_t* pixelArray, int arrayLength)
+{
+	for (int i = 0; i < arrayLength; i += 1)
+	{
+		pixelArray[i] = EMPTY;
+	}
+}
+
 void RunLineDrawTest(math::Vec2<int> p0, math::Vec2<int> p1, uint32_t* expectedPixels)
 {
 	uint32_t pixelArray[18] = { EMPTY };	// define pixels as an an array of 16 uint32_t values
 											// NB this array lives on the stack in the scope of the RunSoftwareRenderingTests function only.
 											// The array is sized greater than the RenderBuffer pixel array so it can pick up illegal memory writes to the pixel array
-	for (int i = 0; i < 18; i += 1)
-	{
-		pixelArray[0] = EMPTY;
-	}
+	ClearPixelArray(pixelArray, 18);
 
 	/**
 	 * Set the RenderBuffer to be a 4x4 grid of pixels (pixel ordinals 0 - 3)
@@ -51,10 +57,7 @@ void RunFillTriangleTest(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<int>
 	uint32_t pixelArray[18] = { EMPTY };	// define pixels as an an array of 16 uint32_t values
 											// NB this array lives on the stack in the scope of the RunSoftwareRenderingTests function only.
 											// The array is sized greater than the RenderBuffer pixel array so it can pick up illegal memory writes to the pixel array
-	for (int i = 0; i < 18; i += 1)
-	{
-		pixelArray[0] = EMPTY;
-	}
+	ClearPixelArray(pixelArray, 18);
 
 	/**
 	 * Set the RenderBuffer to be a 4x4 grid of pixels (pixel ordinals 0 - 3)
@@ -302,20 +305,140 @@ void RunSoftwareRenderingTests()
 	 *	  |---|---|---|---|
 	 *	0 | O | x | x | O |
 	 *	  |---|---|---|---|
-	 *	1 |   | x | x |   |
+	 *	1 | x | x | x | x |
 	 *	  |---|---|---|---|
-	 *	2 |   |   | x |   |
+	 *	2 |   | x | x | x |
 	 *	  |---|---|---|---|
 	 *	3 |   |   | O |   |
 	 *	  |---|---|---|---|
 	 */
 	uint32_t et3[16] = {
 		FILLED,	FILLED,	FILLED,	FILLED,
+		FILLED,	FILLED,	FILLED,	FILLED,
 		EMPTY,	FILLED,	FILLED,	FILLED,
-		EMPTY,	EMPTY,	FILLED,	FILLED,
-		EMPTY,	EMPTY,	EMPTY,	EMPTY
+		EMPTY,	EMPTY,	FILLED,	EMPTY
 	};
 	RunFillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, et3);
 	RunFillTriangleTest(math::Vec3<int>{ 2, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, et3);
 	RunFillTriangleTest(math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, et3);
+
+	/**
+	 * FLAT BOTTOM RIGHT HAND SIDE RIGHT ANGLED TRIANGLE
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 |   |   |   | O |
+	 *	  |---|---|---|---|
+	 *	1 |   |   | x | x |
+	 *	  |---|---|---|---|
+	 *	2 |   | x | x | x |
+	 *	  |---|---|---|---|
+	 *	3 | 0 | x | x | O |
+	 *	  |---|---|---|---|
+	 */
+	uint32_t et4[16] = {
+		EMPTY,	EMPTY,	EMPTY,	FILLED,
+		EMPTY,	EMPTY,	FILLED,	FILLED,
+		EMPTY,	FILLED,	FILLED,	FILLED,
+		FILLED,	FILLED,	FILLED,	FILLED
+	};
+	RunFillTriangleTest(math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, et4);
+	RunFillTriangleTest(math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 0, 0 }, et4);
+	RunFillTriangleTest(math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 3, 0 }, et4);
+
+	/**
+	 * FLAT BOTTOM LEFT HAND SIDE RIGHT ANGLED TRIANGLE
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 | O |   |   |   |
+	 *	  |---|---|---|---|
+	 *	1 | x | x |   |   |
+	 *	  |---|---|---|---|
+	 *	2 | x | x | x |   |
+	 *	  |---|---|---|---|
+	 *	3 | O | x | x | O |
+	 *	  |---|---|---|---|
+	 */
+	uint32_t et5[16] = {
+		FILLED,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	FILLED,	EMPTY,
+		FILLED,	FILLED,	FILLED,	FILLED
+	};
+	RunFillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 3, 0 }, et5);
+	RunFillTriangleTest(math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, et5);
+	RunFillTriangleTest(math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, et5);
+
+	/**
+	 * FLAT BOTTOM TRIANGLE
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 |   |   | O |   |
+	 *	  |---|---|---|---|
+	 *	1 |   |   | x |   |
+	 *	  |---|---|---|---|
+	 *	2 |   | x | x |   |
+	 *	  |---|---|---|---|
+	 *	3 | O | x | x | O |
+	 *	  |---|---|---|---|
+	 */
+	uint32_t et6[16] = {
+		EMPTY,	EMPTY,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	FILLED,	EMPTY,
+		EMPTY,	FILLED,	FILLED,	EMPTY,
+		FILLED,	FILLED,	FILLED,	FILLED
+	};
+	RunFillTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 3, 0 }, et6);
+	RunFillTriangleTest(math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, et6);
+	RunFillTriangleTest(math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 2, 0, 0 }, et6);
+
+	/**
+	 * RIGHT MAJOR TRIANGLE
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 |   |   | O |   |
+	 *	  |---|---|---|---|
+	 *	1 |   | x | x |   |
+	 *	  |---|---|---|---|
+	 *	2 | O | x | x |   |
+	 *	  |---|---|---|---|
+	 *	3 |   |   |   | O |
+	 *	  |---|---|---|---|
+	 */
+	uint32_t et7[16] = {
+		EMPTY,	EMPTY,	FILLED,	EMPTY,
+		EMPTY,	FILLED,	FILLED,	EMPTY,
+		FILLED,	FILLED,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	FILLED
+	};
+	RunFillTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 2, 0 }, et7);
+	RunFillTriangleTest(math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, et7);
+	RunFillTriangleTest(math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 2, 0, 0 }, et7);
+
+	/**
+	 * LEFT MAJOR TRIANGLE
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 |   |   | O |   |
+	 *	  |---|---|---|---|
+	 *	1 |   |   | x |   |
+	 *	  |---|---|---|---|
+	 *	2 |   | x | x | O |
+	 *	  |---|---|---|---|
+	 *	3 | O |   |   |   |
+	 *	  |---|---|---|---|
+	 */
+	uint32_t et8[16] = {
+		EMPTY,	EMPTY,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	FILLED,	EMPTY,
+		EMPTY,	FILLED,	FILLED,	FILLED,
+		FILLED,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunFillTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 2, 0 }, math::Vec3<int>{ 0, 3, 0 }, et8);
+	RunFillTriangleTest(math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 2, 0 }, et8);
+	RunFillTriangleTest(math::Vec3<int>{ 3, 2, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 2, 0, 0 }, et8);
 }

@@ -21,7 +21,7 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 	ReadObjFileToVec4("teapot.obj", mesh.triangles);
 	
 	// Using a clockwise winding convention
-	mesh.triangles = {
+	/*mesh.triangles = {
 		// SOUTH
 		{ 0.0f, 0.0f, 0.0f, 1.0f,		0.0f, 1.0f, 0.0f, 1.0f,		1.0f, 1.0f, 0.0f, 1.0f },
 		{ 0.0f, 0.0f, 0.0f, 1.0f,		1.0f, 1.0f, 0.0f, 1.0f,		1.0f, 0.0f, 0.0f, 1.0f },
@@ -45,7 +45,7 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 		// BOTTOM
 		{ 1.0f, 0.0f, 1.0f, 1.0f,		0.0f, 0.0f, 0.0f, 1.0f,		1.0f, 0.0f, 0.0f, 1.0f },
 		{ 1.0f, 0.0f, 1.0f, 1.0f,		0.0f, 0.0f, 1.0f, 1.0f,		0.0f, 0.0f, 0.0f, 1.0f }
-	};
+	};*/
 
 	
 
