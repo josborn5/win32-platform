@@ -47,8 +47,6 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 		{ 1.0f, 0.0f, 1.0f, 1.0f,		0.0f, 0.0f, 1.0f, 1.0f,		0.0f, 0.0f, 0.0f, 1.0f }
 	};*/
 
-	
-
 	// Initialize the projection matrix
 	projectionMatrix = MakeProjectionMatrix(90.0f, 1.0f, 0.1f, 1000.0f);
 

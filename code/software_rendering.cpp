@@ -462,15 +462,15 @@ namespace render
 
 			for (Triangle4d<float> draw : triangleQueue)
 			{
-				// math::Vec2<int> p0Int = { (int)triToRender.p[0].x, (int)triToRender.p[0].y };
-				// math::Vec2<int> p1Int = { (int)triToRender.p[1].x, (int)triToRender.p[1].y };
-				// math::Vec2<int> p2Int = { (int)triToRender.p[2].x, (int)triToRender.p[2].y };
-				// render::DrawTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int);
+				math::Vec2<int> p0Int = { (int)draw.p[0].x, (int)draw.p[0].y };
+				math::Vec2<int> p1Int = { (int)draw.p[1].x, (int)draw.p[1].y };
+				math::Vec2<int> p2Int = { (int)draw.p[2].x, (int)draw.p[2].y };
+				render::DrawTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int);
 
-				math::Vec3<int> p0Int = { (int)triToRender.p[0].x, (int)triToRender.p[0].y };
-				math::Vec3<int> p1Int = { (int)triToRender.p[1].x, (int)triToRender.p[1].y };
-				math::Vec3<int> p2Int = { (int)triToRender.p[2].x, (int)triToRender.p[2].y };
-				render::FillTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int);
+				// bmath::Vec3<int> p0Int = { (int)draw.p[0].x, (int)draw.p[0].y };
+				// bmath::Vec3<int> p1Int = { (int)draw.p[1].x, (int)draw.p[1].y };
+				// bmath::Vec3<int> p2Int = { (int)draw.p[2].x, (int)draw.p[2].y };
+				// brender::FillTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int);
 			}
 		}
 	}
