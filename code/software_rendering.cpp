@@ -174,16 +174,20 @@ namespace render
 		}
 	}
 
-	// https://youtu.be/9A5TVh6kPLA?t=1218
 	/*	p0------p1
 	 *	\       /	|
 	 *	 \     /	|
 	 *	  \   /		V
-	 *	   \ /	  +ve y
+	 *	   \ /	  +ve y (if +ve y is up, this is actually a flat bottom triangle)
 	 *	    p2
 	 */
 	void FillFlatTopTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
 	{
+		if ((p0.x == p1.x && p0.y == p1.y) || (p0.x == p2.x && p0.y == p2.y) || (p1.x == p2.x && p1.y == p2.y))
+		{
+			// TODO: figure out why condition is occurring - is it a float --> int rounding thing when the triangle gets split???
+			return;
+		}
 		// Slopes
 		float m0 = (float)(p2.x - p0.x) / (float)(p2.y - p0.y);
 		float m1 = (float)(p2.x - p1.x) / (float)(p2.y - p1.y);
@@ -207,11 +211,16 @@ namespace render
 	 *`     /\			|
 	 *`    /  \			|
 	 *`   /    \		V
-	 *	 /      \	  +ve y
+	 *	 /      \	  +ve y (if +ve y is up, this is actually a flat top triangle)
 	 *	p1------p2
 	 */
 	void FillFlatBottomTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
 	{
+		if ((p0.x == p1.x && p0.y == p1.y) || (p0.x == p2.x && p0.y == p2.y) || (p1.x == p2.x && p1.y == p2.y))
+		{
+			// TODO: figure out why condition is occurring - is it a float --> int rounding thing when the triangle gets split???
+			return;
+		}
 		// Slopes
 		float m2 = (float)(p2.x - p0.x) / (float)(p2.y - p0.y);
 		float m1 = (float)(p1.x - p0.x) / (float)(p1.y - p0.y);
@@ -234,7 +243,13 @@ namespace render
 		const math::Vec3<int>* pp1 = &p1;
 		const math::Vec3<int>* pp2 = &p2;
 
-		// Sort the three points of the triangle by their y co-ordinate
+		/* Sort the three points of the triangle by their y co-ordinate
+		 *
+		 * pp0->y	low		|
+		 * pp1->y			|
+		 * pp2->y	high	V
+		 *				  +ve y
+		 */
 		if (pp1->y < pp0->y)
 		{
 			std::swap(pp0, pp1);
@@ -276,12 +291,28 @@ namespace render
 
 			if (pp1->x < splitPoint.x)	// major right triangle
 			{
+				/*				p0
+				 *			   / |
+				 *	|		  /  |
+				 *	|		p1---| split
+				 *	V		  \  |
+				 * +ve y	   \ |
+				 *				p2
+				 */
 				FillFlatBottomTriangle(renderBuffer, color, *pp0, *pp1, splitPoint);
 				FillFlatTopTriangle(renderBuffer, color, *pp1, splitPoint, *pp2);
 			}
-			else	// major left triangle
+			else if (splitPoint.x < pp1->x)	// major left triangle
 			{
-				FillFlatBottomTriangle(renderBuffer, color, *pp0, splitPoint, *pp1);
+				/*			  p0
+				 *			  | \
+				 *	|		  |  \
+				 *	|	split |---p1
+				 *	V		  |  /
+				 * +ve y	  | /
+				 *			  p2
+				 */
+				FillFlatBottomTriangle(renderBuffer, color, *pp0, splitPoint, *pp1); // !!! TODO - figure out why this can cause ~8000ms rendering times for the teapot !!!
 				FillFlatTopTriangle(renderBuffer, color, splitPoint, *pp1, *pp2);
 			}
 		}
@@ -462,15 +493,15 @@ namespace render
 
 			for (Triangle4d<float> draw : triangleQueue)
 			{
-				math::Vec2<int> p0Int = { (int)draw.p[0].x, (int)draw.p[0].y };
-				math::Vec2<int> p1Int = { (int)draw.p[1].x, (int)draw.p[1].y };
-				math::Vec2<int> p2Int = { (int)draw.p[2].x, (int)draw.p[2].y };
-				render::DrawTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int);
+				// math::Vec2<int> p0Int = { (int)draw.p[0].x, (int)draw.p[0].y };
+				// math::Vec2<int> p1Int = { (int)draw.p[1].x, (int)draw.p[1].y };
+				// math::Vec2<int> p2Int = { (int)draw.p[2].x, (int)draw.p[2].y };
+				// render::DrawTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int);
 
-				// bmath::Vec3<int> p0Int = { (int)draw.p[0].x, (int)draw.p[0].y };
-				// bmath::Vec3<int> p1Int = { (int)draw.p[1].x, (int)draw.p[1].y };
-				// bmath::Vec3<int> p2Int = { (int)draw.p[2].x, (int)draw.p[2].y };
-				// brender::FillTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int);
+				math::Vec3<int> p0Int = { (int)draw.p[0].x, (int)draw.p[0].y };
+				math::Vec3<int> p1Int = { (int)draw.p[1].x, (int)draw.p[1].y };
+				math::Vec3<int> p2Int = { (int)draw.p[2].x, (int)draw.p[2].y };
+				render::FillTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int);
 			}
 		}
 	}
