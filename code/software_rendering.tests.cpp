@@ -114,6 +114,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
 	RunLineDrawTest(math::Vec2<int>{ 0, 2 }, math::Vec2<int>{ 3, 2 }, el1);
+	RunLineDrawTest(math::Vec2<int>{ 3, 2 }, math::Vec2<int>{ 0, 2 }, el1);
 
 	/**
 	 * STRAIGHT VERTICAL LINE TO BOUNDARY OF BUFFER
@@ -136,6 +137,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	EMPTY,	EMPTY,	EMPTY
 	};
 	RunLineDrawTest(math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 0, 0 }, el2);
+	RunLineDrawTest(math::Vec2<int>{ 0, 0 }, math::Vec2<int>{ 0, 3 }, el2);
 
 	/**
 	 * DIAGONAL LINE TO BOUNDARY OF BUFFER
@@ -159,6 +161,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	FILLED
 	};
 	RunLineDrawTest(math::Vec2<int>{ 0, 0 }, math::Vec2<int>{ 3, 3 }, el3);
+	RunLineDrawTest(math::Vec2<int>{ 3, 3 }, math::Vec2<int>{ 0, 0 }, el3);
 
 	/**
 	 * DIAGONAL LINE TO BOUNDARY OF BUFFER
@@ -182,6 +185,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	EMPTY,	EMPTY,	EMPTY
 	};
 	RunLineDrawTest(math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 3, 0 }, el4);
+	RunLineDrawTest(math::Vec2<int>{ 3, 0 }, math::Vec2<int>{ 0, 3 }, el4);
 
 	/**
 	 * STEEP GRADIENT, X +VE INCREMENT, Y +VE INCREMENT
@@ -204,6 +208,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	FILLED,	EMPTY
 	};
 	RunLineDrawTest(math::Vec2<int>{ 1, 0 }, math::Vec2<int>{ 2, 3 }, el5);
+	RunLineDrawTest(math::Vec2<int>{ 2, 3 }, math::Vec2<int>{ 1, 0 }, el5);
 
 	/**
 	 * SHALLOW GRADIENT, X +VE INCREMENT, Y +VE INCREMENT
@@ -226,6 +231,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
 	RunLineDrawTest(math::Vec2<int>{ 0, 1 }, math::Vec2<int>{ 3, 2 }, el6);
+	RunLineDrawTest(math::Vec2<int>{ 3, 2 }, math::Vec2<int>{ 0, 1 }, el6);
 
 	/**
 	 * SHALLOW GRADIENT, X +VE INCREMENT, Y -VE INCREMENT
@@ -248,6 +254,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	EMPTY,	EMPTY
 	};
 	RunLineDrawTest(math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 3, 2 }, el7);
+	RunLineDrawTest(math::Vec2<int>{ 3, 2 }, math::Vec2<int>{ 0, 3 }, el7);
 
 
 	/**

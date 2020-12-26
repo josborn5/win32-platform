@@ -39,6 +39,33 @@ namespace render
 	 *	|---|---|---|
 	 *	0   1   2   3	position ordinals
 	 *
+	 * x1, x2 & y parameters are the pixel and NOT the position ordinals
+	 */
+	static void DrawHorizontalLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, int x0, int x1, int y)
+	{
+		const int* startX = &x0;
+		const int* endX = &x1;
+		if (x1 < x0)
+		{
+			std::swap(x0, x1);
+		}
+
+		int positionStartOfRow = renderBuffer.width * y;
+		int positionOfX0InRow = positionStartOfRow + *startX;
+		uint32_t* pixelPointer = renderBuffer.pixels + positionOfX0InRow;
+		for (int i = *startX; i <= *endX; i += 1)
+		{
+			*pixelPointer = color;
+			pixelPointer++;
+		}
+	}
+
+	/**
+	 *	|---|---|---|
+	 *	| 0 | 1 | 2 |	pixel ordinals
+	 *	|---|---|---|
+	 *	0   1   2   3	position ordinals
+	 *
 	 * x, y0 & y1 parameters are the pixel and NOT the position ordinals
 	 */
 	static void DrawVerticalLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, int x, int y0, int y1)
@@ -50,27 +77,6 @@ namespace render
 		{
 			PlotPixel(renderBuffer, color, x, y0);
 			y0 += yIncrement;
-		}
-	}
-
-	/**
-	 *	|---|---|---|
-	 *	| 0 | 1 | 2 |	pixel ordinals
-	 *	|---|---|---|
-	 *	0   1   2   3	position ordinals
-	 *
-	 * x1, x2 & y parameters are the pixel and NOT the position ordinals
-	 */
-	static void DrawHorizontalLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, int x0, int x1, int y)
-	{
-		int xDiff = x1 - x0;
-		int xDiffMod = (xDiff < 0) ? -1 * xDiff : xDiff;
-		int xIncrement = (xDiff < 0) ? -1 : 1;
-
-		for (int i = 0; i <= xDiffMod; i += 1)
-		{
-			PlotPixel(renderBuffer, color, x0, y);
-			x0 += xIncrement;
 		}
 	}
 
