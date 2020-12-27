@@ -160,8 +160,8 @@ namespace render
 			shortDimensionIncrement = xIncrement;
 		}
 
-		int p = (2 * shortDimensionDiff) - longDimensionDiff;
 		int negativePIncrement = 2 * shortDimensionDiff;
+		int p = negativePIncrement - longDimensionDiff;
 		int positivePIncrement = negativePIncrement - (2 * longDimensionDiff);
 
 		for (int i = 0; i <= longDimensionDiff; i += 1)
