@@ -91,6 +91,45 @@ void RunFillTriangleTest(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<int>
 	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
 }
 
+void RunFillTriangleTestZwei(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<int> p2, uint32_t* expectedPixels)
+{
+	uint32_t pixelArray[18] = { EMPTY };	// define pixels as an an array of 16 uint32_t values
+											// NB this array lives on the stack in the scope of the RunSoftwareRenderingTests function only.
+											// The array is sized greater than the RenderBuffer pixel array so it can pick up illegal memory writes to the pixel array
+	ClearPixelArray(pixelArray, 18);
+
+	/**
+	 * Set the RenderBuffer to be a 4x4 grid of pixels (pixel ordinals 0 - 3)
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|-0
+	 *	0 |   |   |   |   |
+	 *	  |---|---|---|---|-1
+	 *	1 |   |   |   |   |
+	 *	  |---|---|---|---|-2
+	 *	2 |   |   |   |   |
+	 *	  |---|---|---|---|-3
+	 *	3 |   |   |   |   |
+	 *	  |---|---|---|---|-4
+	 *    0   1   2   3   4
+	 */
+	RenderBuffer renderBuffer;
+	renderBuffer.height = 4;
+	renderBuffer.width = 4;					// Size the buffer to 16 pixels. pixelArray is 18 pixels so the test can tell if the function ever oversteps the bounds of RenderBuffer.
+	renderBuffer.pixels = &pixelArray[1];	// Use the second element in pixelArray so we can tell if the zero-th element ever gets accessed.
+
+	render::FillFlatTopTriangleZwei(renderBuffer, FILLED, p0, p1, p2);
+
+	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
+
+	for (int i = 0; i < renderBuffer.height * renderBuffer.width; i += 1)
+	{
+		assert(pixelArray[i + 1] == expectedPixels[i]);
+	}
+
+	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
+}
+
 void RunSoftwareRenderingTests()
 {
 	/**
@@ -255,6 +294,29 @@ void RunSoftwareRenderingTests()
 	};
 	RunLineDrawTest(math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 3, 2 }, el7);
 	RunLineDrawTest(math::Vec2<int>{ 3, 2 }, math::Vec2<int>{ 0, 3 }, el7);
+
+	/**
+	 * STEEP GRADIENT, X +VE INCREMENT, Y +VE INCREMENT
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 |   |   |   | O |
+	 *	  |---|---|---|---|
+	 *	1 |   |   | x |   |
+	 *	  |---|---|---|---|
+	 *	2 |   |   | x |   |
+	 *	  |---|---|---|---|
+	 *	3 |   | O |   |   |
+	 *	  |---|---|---|---|
+	 */
+	uint32_t el8[16] = {
+		EMPTY,	EMPTY,	EMPTY,	FILLED,
+		EMPTY,	EMPTY,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	FILLED,	EMPTY,
+		EMPTY,	FILLED,	EMPTY,	EMPTY
+	};
+	RunLineDrawTest(math::Vec2<int>{ 3, 0 }, math::Vec2<int>{ 1, 3 }, el8);
+	RunLineDrawTest(math::Vec2<int>{ 1, 3 }, math::Vec2<int>{ 3, 0 }, el8);
 
 
 	/**
@@ -448,4 +510,48 @@ void RunSoftwareRenderingTests()
 	RunFillTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 2, 0 }, math::Vec3<int>{ 0, 3, 0 }, et8);
 	RunFillTriangleTest(math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 2, 0 }, et8);
 	RunFillTriangleTest(math::Vec3<int>{ 3, 2, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 2, 0, 0 }, et8);
+
+	/**
+	 * NEW FLAT TOP TRIANGLE TEST - NARROW TALL 1
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 | O | x | x | O |
+	 *	  |---|---|---|---|
+	 *	1 |   | x | x | x |
+	 *	  |---|---|---|---|
+	 *	2 |   | x | x |   |
+	 *	  |---|---|---|---|
+	 *	3 |   |   | O |   |
+	 *	  |---|---|---|---|
+	 */
+	uint32_t et9[16] = {
+		FILLED,	FILLED,	FILLED,	FILLED,
+		EMPTY,	FILLED,	FILLED,	FILLED,
+		EMPTY,	FILLED,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	FILLED,	EMPTY
+	};
+	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, et9);
+
+	/**
+	 * NEW FLAT TOP TRIANGLE TEST - NARROW TALL 2
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 | O | x | x | O |
+	 *	  |---|---|---|---|
+	 *	1 | x | x | x |   |
+	 *	  |---|---|---|---|
+	 *	2 |   | x | x |   |
+	 *	  |---|---|---|---|
+	 *	3 |   | O |   |   |
+	 *	  |---|---|---|---|
+	 */
+	uint32_t et10[16] = {
+		FILLED,	FILLED,	FILLED,	FILLED,
+		FILLED,	FILLED,	FILLED,	EMPTY,
+		EMPTY,	FILLED,	FILLED,	EMPTY,
+		EMPTY,	FILLED,	EMPTY,	EMPTY
+	};
+	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 1, 3, 0 }, et10);
 }
