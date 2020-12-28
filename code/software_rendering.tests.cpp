@@ -318,6 +318,50 @@ void RunSoftwareRenderingTests()
 	RunLineDrawTest(math::Vec2<int>{ 3, 0 }, math::Vec2<int>{ 1, 3 }, el8);
 	RunLineDrawTest(math::Vec2<int>{ 1, 3 }, math::Vec2<int>{ 3, 0 }, el8);
 
+	/**
+	 * SHORT, SHALLOW GRADIENT - RIGHT TO LEFT
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 |   |   |   | O |
+	 *	  |---|---|---|---|
+	 *	1 |   | O | x |   |
+	 *	  |---|---|---|---|
+	 *	2 |   |   |   |   |
+	 *	  |---|---|---|---|
+	 *	3 |   |   |   |   |
+	 *	  |---|---|---|---|
+	 */
+	uint32_t el9[16] = {
+		EMPTY,	EMPTY,	EMPTY,	FILLED,
+		EMPTY,	FILLED,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunLineDrawTest(math::Vec2<int>{ 3, 0 }, math::Vec2<int>{ 1, 1 }, el9);
+
+	/**
+	 * SHORT, SHALLOW GRADIENT - LEFT TO RIGHT
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 |   |   | x | O |
+	 *	  |---|---|---|---|
+	 *	1 |   | O |   |   |
+	 *	  |---|---|---|---|
+	 *	2 |   |   |   |   |
+	 *	  |---|---|---|---|
+	 *	3 |   |   |   |   |
+	 *	  |---|---|---|---|
+	 */
+	uint32_t el10[16] = {
+		EMPTY,	EMPTY,	FILLED,	FILLED,
+		EMPTY,	FILLED,	EMPTY,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunLineDrawTest(math::Vec2<int>{ 1, 1 }, math::Vec2<int>{ 3, 0 }, el10);
+
 
 	/**
 	 * FLAT TOP RIGHT HAND SIDE RIGHT ANGLED TRIANGLE
