@@ -130,6 +130,43 @@ void RunFillTriangleTestZwei(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<
 	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
 }
 
+void RunFillTriangleTestShortAndWide(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<int> p2, uint32_t* expectedPixels)
+{
+	uint32_t pixelArray[23] = { EMPTY };	// define pixels as an an array of 16 uint32_t values
+											// NB this array lives on the stack in the scope of the RunSoftwareRenderingTests function only.
+											// The array is sized greater than the RenderBuffer pixel array so it can pick up illegal memory writes to the pixel array
+	ClearPixelArray(pixelArray, 23);
+
+	/**
+	 * Set the RenderBuffer to be a 4x4 grid of pixels (pixel ordinals 0 - 3)
+	 *
+	 *	    0   1   2   3   4   5   6
+	 *	  |---|---|---|---|---|---|---|-0
+	 *	0 |   |   |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|---|-1
+	 *	1 |   |   |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|---|-2
+	 *	2 |   |   |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|---|-3
+	 *    0   1   2   3   4   5   6   7
+	 */
+	RenderBuffer renderBuffer;
+	renderBuffer.height = 3;
+	renderBuffer.width = 7;					// Size the buffer to 16 pixels. pixelArray is 18 pixels so the test can tell if the function ever oversteps the bounds of RenderBuffer.
+	renderBuffer.pixels = &pixelArray[1];	// Use the second element in pixelArray so we can tell if the zero-th element ever gets accessed.
+
+	render::FillFlatTopTriangleShortAndWide(renderBuffer, FILLED, p0, p1, p2);
+
+	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
+
+	for (int i = 0; i < renderBuffer.height * renderBuffer.width; i += 1)
+	{
+		assert(pixelArray[i + 1] == expectedPixels[i]);
+	}
+
+	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
+}
+
 void RunSoftwareRenderingTests()
 {
 	/**
@@ -598,4 +635,23 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	EMPTY,	EMPTY
 	};
 	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 1, 3, 0 }, et10);
+
+	/**
+	 * NEW FLAT TOP TRIANGLE TEST - WIDE SHORT 1
+	 *
+	 *	    0   1   2   3   4   5   6
+	 *	  |---|---|---|---|---|---|---|
+	 *	0 | O | x | x | x | x | x | O |
+	 *	  |---|---|---|---|---|---|---|
+	 *	1 |   | x | x | x | x | x |   |
+	 *	  |---|---|---|---|---|---|---|
+	 *	2 |   |   |   | O |   |   |   |
+	 *	  |---|---|---|---|---|---|---|
+	 */
+	uint32_t et11[21] = {
+		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
+		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunFillTriangleTestShortAndWide(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 6, 0, 0 }, math::Vec3<int>{ 3, 2, 0 }, et11);
 }

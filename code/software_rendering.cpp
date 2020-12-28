@@ -265,6 +265,73 @@ namespace render
 	 *	   \ /	  +ve y (if +ve y is up, this is actually a flat bottom triangle)
 	 *	    p2
 	 */
+	void FillFlatTopTriangleShortAndWide(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
+	{
+		// LINE 0-->2
+		int xDiff0 = p2.x - p0.x;
+		if (xDiff0 == 0)
+		{
+			// x does not change with every y-increment
+		}
+
+		int yDiff0 = p2.y - p0.y;
+		if (yDiff0 == 0)
+		{
+			// triangle has no vertical height, so draw a horizontal line
+		}
+
+		// Assume that y is always the long increment here for now.
+		// i.e. it's a 'tall & narrow' and not a 'short & wide' triangle
+		// TODO: handle 'short & wide' triangles - when p0 --> p2 gradient is shallow
+		int negativePIncrement0 = 2 * yDiff0;
+		int acc0 = negativePIncrement0 - xDiff0;
+		int positivePIncrement0 = negativePIncrement0 - (2 * xDiff0);
+
+		// LINE 1-->2
+		int xDiff1 = p1.x - p2.x;
+		if (xDiff1 == 0)
+		{
+			// x does not change with every y-increment
+		}
+
+		int negativePIncrement1 = 2 * yDiff0;
+		int acc1 = negativePIncrement1 - xDiff1;
+		int positivePIncrement1 = negativePIncrement1 - (2 * xDiff1);
+
+		// Copy the x & y values for p0 & p1 so we can modify them safely inside this function
+		// Note that p0.y == p1.y so we only need one variable for the y position
+		int x0 = p0.x;
+		int y0 = p0.y;
+		int x1 = p1.x;
+		for (int i = 0; i <= yDiff0; i += 1)	// yDiff0 should be the same as yDiff1 as p0.y == p1.y
+		{
+			// draw scanline to fill in triangle between x0 & x1
+			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y0);
+
+			y0 += 1;
+			while (acc0 >= 0)
+			{
+				acc0 += positivePIncrement0;
+				x0 += 1;
+			}
+			acc0 += negativePIncrement0;
+
+			while (acc1 >= 0)
+			{
+				acc1 += positivePIncrement1;
+				x1 += -1;
+			}
+			acc1 += negativePIncrement1;
+		}
+	}
+
+	/*	p0------p1
+	 *	\       /	|
+	 *	 \     /	|
+	 *	  \   /		V
+	 *	   \ /	  +ve y (if +ve y is up, this is actually a flat bottom triangle)
+	 *	    p2
+	 */
 	void FillFlatTopTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
 	{
 		if ((p0.x == p1.x && p0.y == p1.y) || (p0.x == p2.x && p0.y == p2.y) || (p1.x == p2.x && p1.y == p2.y))
