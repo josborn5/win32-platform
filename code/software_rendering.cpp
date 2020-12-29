@@ -191,54 +191,38 @@ namespace render
 	{
 		// LINE 0-->2
 		int xDiff0 = p2.x - p0.x;
-		if (xDiff0 == 0)
-		{
-			// x does not change with every y-increment
-		}
-
 		int yDiff0 = p2.y - p0.y;
-		if (yDiff0 == 0)
-		{
-			// triangle has no vertical height, so draw a horizontal line
-		}
 
 		bool isLongDimension0X = (yDiff0 < xDiff0);
-		int longDimensionDiff0 = (isLongDimension0X) ? xDiff0 : yDiff0;
-		int shortDimensionDiff0 = (isLongDimension0X) ? yDiff0 : xDiff0;
+		int longDelta0 = (isLongDimension0X) ? xDiff0 : yDiff0;
+		int shortDelta0 = (isLongDimension0X) ? yDiff0 : xDiff0;
 
-		int negativePIncrement0 = 2 * shortDimensionDiff0;
-		int acc0 = negativePIncrement0 - longDimensionDiff0;
-		int positivePIncrement0 = negativePIncrement0 - (2 * longDimensionDiff0);
+		int negIncrement0 = 2 * shortDelta0;
+		int acc0 = negIncrement0 - longDelta0;
+		int posIncrement0 = negIncrement0 - (2 * longDelta0);
 
 		// LINE 1-->2
+		// Vertical distance for 1-->2 is the same as 0-->2, so no need for a separate yDiff1 variable. Can reuse yDiff0.
 		int xDiff1 = p1.x - p2.x;
-		if (xDiff1 == 0)
-		{
-			// x does not change with every y-increment
-		}
-		bool isLongDimension1X = (yDiff0 < xDiff1);
-		int longDimensionDiff1 = (isLongDimension1X) ? xDiff1 : yDiff0;
-		int shortDimensionDiff1 = (isLongDimension1X) ? yDiff0 : xDiff1;
 
-		// Assume that y is always the long increment here for now.
-		// i.e. it's a 'tall & narrow' and not a 'short & wide' triangle
-		// TODO: handle 'short & wide' triangles - when p1 --> p2 gradient is shallow
-		int negativePIncrement1 = 2 * shortDimensionDiff1;
-		int acc1 = negativePIncrement1 - longDimensionDiff1;
-		int positivePIncrement1 = negativePIncrement1 - (2 * longDimensionDiff1);
+		bool isLongDimension1X = (yDiff0 < xDiff1);
+		int longDelta1 = (isLongDimension1X) ? xDiff1 : yDiff0;
+		int shortDelta1 = (isLongDimension1X) ? yDiff0 : xDiff1;
+
+		int negIncrement1 = 2 * shortDelta1;
+		int acc1 = negIncrement1 - longDelta1;
+		int posIncrement1 = negIncrement1 - (2 * longDelta1);
 
 		// Copy the x & y values for p0 & p1 so we can modify them safely inside this function
 		// Note that p0.y == p1.y so we only need one variable for the y position
 		int x0 = p0.x;
-		int y0 = p0.y;
 		int x1 = p1.x;
-		for (int i = 0; i <= yDiff0; i += 1)	// yDiff0 should be the same as yDiff1 as p0.y == p1.y
+		for (int y = p0.y; y <= p2.y; y += 1)
 		{
 			// draw scanline to fill in triangle between x0 & x1
-			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y0);
+			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y);
 
 			// line p0 --> p2: decide to increment x0 or not for next y
-			y0 += 1;
 			if (isLongDimension0X) // X0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
 			{
 				x0 += 1;
@@ -246,24 +230,24 @@ namespace render
 				{
 					while (acc0 < 0)
 					{
-						acc0 += negativePIncrement1;
+						acc0 += negIncrement0;
 						x0 += 1;
 					}
 				}
 				else
 				{
-					acc0 += positivePIncrement1;
+					acc0 += posIncrement0;
 				}
 			}
 			else
 			{
 				if (acc0 < 0)
 				{
-					acc0 += negativePIncrement0;
+					acc0 += negIncrement0;
 				}
 				else
 				{
-					acc0 += positivePIncrement0;
+					acc0 += posIncrement0;
 					x0 += 1;
 				}
 			}
@@ -276,24 +260,24 @@ namespace render
 				{
 					while (acc1 < 0)
 					{
-						acc1 += negativePIncrement1;
+						acc1 += negIncrement1;
 						x1 += -1;
 					}
 				}
 				else
 				{
-					acc1 += positivePIncrement1;
+					acc1 += posIncrement1;
 				}
 			}
 			else
 			{
 				if (acc1 < 0)
 				{
-					acc1 += negativePIncrement1;
+					acc1 += negIncrement1;
 				}
 				else
 				{
-					acc1 += positivePIncrement1;
+					acc1 += posIncrement1;
 					x1 += -1;
 				}
 			}

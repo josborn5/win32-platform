@@ -686,4 +686,48 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
 	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 4, 2, 0 }, et14);
+
+	/**
+	 * NEW FLAT TOP TRIANGLE TEST - RIGHT HAND RIGHT ANGLE
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|
+	 *	0 | O | x | x | x | x | O |
+	 *	  |---|---|---|---|---|---|
+	 *	1 |   | x | x | x | x | x |
+	 *	  |---|---|---|---|---|---|
+	 *	2 |   |   |   | x | x | x |
+	 *	  |---|---|---|---|---|---|
+	 *	3 |   |   |   |   | x | O |
+	 *	  |---|---|---|---|---|---|
+	 */
+	uint32_t et15[24] = {
+		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
+		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
+		EMPTY,	EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED,	FILLED
+	};
+	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 5, 3, 0 }, et15);
+
+	/**
+	 * NEW FLAT TOP TRIANGLE TEST - LEFT HAND RIGHT ANGLE
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|
+	 *	0 | O | x | x | x | x | O |
+	 *	  |---|---|---|---|---|---|
+	 *	1 | x | x | x | x | x |   |
+	 *	  |---|---|---|---|---|---|
+	 *	2 | x | x | x |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	3 | O | x |   |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 */
+	uint32_t et16[24] = {
+		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
+		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
+		FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, et16);
 }
