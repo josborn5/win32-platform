@@ -202,12 +202,13 @@ namespace render
 			// triangle has no vertical height, so draw a horizontal line
 		}
 
-		// Assume that y is always the long increment here for now.
-		// i.e. it's a 'tall & narrow' and not a 'short & wide' triangle
-		// TODO: handle 'short & wide' triangles - when p0 --> p2 gradient is shallow
-		int negativePIncrement0 = 2 * xDiff0;
-		int acc0 = negativePIncrement0 - yDiff0;
-		int positivePIncrement0 = negativePIncrement0 - (2 * yDiff0);
+		bool isLongDimension0X = (yDiff0 < xDiff0);
+		int longDimensionDiff0 = (isLongDimension0X) ? xDiff0 : yDiff0;
+		int shortDimensionDiff0 = (isLongDimension0X) ? yDiff0 : xDiff0;
+
+		int negativePIncrement0 = 2 * shortDimensionDiff0;
+		int acc0 = negativePIncrement0 - longDimensionDiff0;
+		int positivePIncrement0 = negativePIncrement0 - (2 * longDimensionDiff0);
 
 		// LINE 1-->2
 		int xDiff1 = p1.x - p2.x;
@@ -215,13 +216,16 @@ namespace render
 		{
 			// x does not change with every y-increment
 		}
+		bool isLongDimension1X = (yDiff0 < xDiff1);
+		int longDimensionDiff1 = (isLongDimension1X) ? xDiff1 : yDiff0;
+		int shortDimensionDiff1 = (isLongDimension1X) ? yDiff0 : xDiff1;
 
 		// Assume that y is always the long increment here for now.
 		// i.e. it's a 'tall & narrow' and not a 'short & wide' triangle
 		// TODO: handle 'short & wide' triangles - when p1 --> p2 gradient is shallow
-		int negativePIncrement1 = 2 * xDiff1;
-		int acc1 = negativePIncrement1 - yDiff0;
-		int positivePIncrement1 = negativePIncrement1 - (2 * yDiff0);
+		int negativePIncrement1 = 2 * shortDimensionDiff1;
+		int acc1 = negativePIncrement1 - longDimensionDiff1;
+		int positivePIncrement1 = negativePIncrement1 - (2 * longDimensionDiff1);
 
 		// Copy the x & y values for p0 & p1 so we can modify them safely inside this function
 		// Note that p0.y == p1.y so we only need one variable for the y position
@@ -235,93 +239,64 @@ namespace render
 
 			// line p0 --> p2: decide to increment x0 or not for next y
 			y0 += 1;
-			if (acc0 < 0)
+			if (isLongDimension0X) // X0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
 			{
-				acc0 += negativePIncrement0;
+				x0 += 1;
+				if (acc0 < 0)
+				{
+					while (acc0 < 0)
+					{
+						acc0 += negativePIncrement1;
+						x0 += 1;
+					}
+				}
+				else
+				{
+					acc0 += positivePIncrement1;
+				}
 			}
 			else
 			{
-				acc0 += positivePIncrement0;
-				x0 += 1;
+				if (acc0 < 0)
+				{
+					acc0 += negativePIncrement0;
+				}
+				else
+				{
+					acc0 += positivePIncrement0;
+					x0 += 1;
+				}
 			}
 
 			// line p1 --> p2: decide to decrement x1 or not for next y
-			if (acc1 < 0)
+			if (isLongDimension1X)
 			{
-				acc1 += negativePIncrement1;
+				x1 += -1;
+				if (acc1 < 0)
+				{
+					while (acc1 < 0)
+					{
+						acc1 += negativePIncrement1;
+						x1 += -1;
+					}
+				}
+				else
+				{
+					acc1 += positivePIncrement1;
+				}
 			}
 			else
 			{
-				acc1 += positivePIncrement1;
-				x1 += -1;
+				if (acc1 < 0)
+				{
+					acc1 += negativePIncrement1;
+				}
+				else
+				{
+					acc1 += positivePIncrement1;
+					x1 += -1;
+				}
 			}
-		}
-	}
-
-	/*	p0------p1
-	 *	\       /	|
-	 *	 \     /	|
-	 *	  \   /		V
-	 *	   \ /	  +ve y (if +ve y is up, this is actually a flat bottom triangle)
-	 *	    p2
-	 */
-	void FillFlatTopTriangleShortAndWide(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
-	{
-		// LINE 0-->2
-		int xDiff0 = p2.x - p0.x;
-		if (xDiff0 == 0)
-		{
-			// x does not change with every y-increment
-		}
-
-		int yDiff0 = p2.y - p0.y;
-		if (yDiff0 == 0)
-		{
-			// triangle has no vertical height, so draw a horizontal line
-		}
-
-		// Assume that y is always the long increment here for now.
-		// i.e. it's a 'tall & narrow' and not a 'short & wide' triangle
-		// TODO: handle 'short & wide' triangles - when p0 --> p2 gradient is shallow
-		int negativePIncrement0 = 2 * yDiff0;
-		int acc0 = negativePIncrement0 - xDiff0;
-		int positivePIncrement0 = negativePIncrement0 - (2 * xDiff0);
-
-		// LINE 1-->2
-		int xDiff1 = p1.x - p2.x;
-		if (xDiff1 == 0)
-		{
-			// x does not change with every y-increment
-		}
-
-		int negativePIncrement1 = 2 * yDiff0;
-		int acc1 = negativePIncrement1 - xDiff1;
-		int positivePIncrement1 = negativePIncrement1 - (2 * xDiff1);
-
-		// Copy the x & y values for p0 & p1 so we can modify them safely inside this function
-		// Note that p0.y == p1.y so we only need one variable for the y position
-		int x0 = p0.x;
-		int y0 = p0.y;
-		int x1 = p1.x;
-		for (int i = 0; i <= yDiff0; i += 1)	// yDiff0 should be the same as yDiff1 as p0.y == p1.y
-		{
-			// draw scanline to fill in triangle between x0 & x1
-			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y0);
-
-			y0 += 1;
-			while (acc0 >= 0)
-			{
-				acc0 += positivePIncrement0;
-				x0 += 1;
-			}
-			acc0 += negativePIncrement0;
-
-			while (acc1 >= 0)
-			{
-				acc1 += positivePIncrement1;
-				x1 += -1;
-			}
-			acc1 += negativePIncrement1;
 		}
 	}
 
