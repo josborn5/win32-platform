@@ -110,15 +110,15 @@ namespace render
 			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y0);
 			return;
 		}
-
-		int xDiffMod = (xDiff < 0) ? -1 * xDiff : xDiff;
-		int yDiffMod = (yDiff < 0) ? -1 * yDiff : yDiff;
-		int modDiff = yDiffMod - xDiffMod;
-		int xIncrement = (xDiff < 0) ? -1 : 1;
-		int yIncrement = (yDiff < 0) ? -1 : 1;
+		bool negativeXDiff = (xDiff < 0);
+		bool negativeYDiff = (yDiff < 0);
+		int xDiffMod = (negativeXDiff) ? -1 * xDiff : xDiff;
+		int yDiffMod = (negativeYDiff) ? -1 * yDiff : yDiff;
+		int xIncrement = (negativeXDiff) ? -1 : 1;
+		int yIncrement = (negativeYDiff) ? -1 : 1;
 
 		// If the gradient is 1 simply increment both X & Y at on every iteration
-		if (modDiff == 0)
+		if (xDiffMod == yDiffMod)
 		{
 			for (int i = 0; i <= xDiffMod; ++i)
 			{
@@ -131,7 +131,6 @@ namespace render
 
 		// If the gradient is more than one then y gets incremented on every step along the line and x sometimes gets incremented
 		// If the gradient is less than one then x gets incremented on every step along the line and y sometimes gets incremented
-		bool isLongDimensionX = (modDiff < 0);
 		int longDimensionDiff;
 		int* longDimensionVar;	// Make this a pointer so PlotPixel can still be called with x0 & y0 arguments
 		int longDimensionIncrement;
@@ -139,7 +138,7 @@ namespace render
 		int* shortDimensionVar;	// Make this a pointer so PlotPixel can still be called with x0 & y0 arguments
 		int shortDimensionIncrement;
 
-		if (isLongDimensionX)
+		if (yDiffMod < xDiffMod)
 		{
 			longDimensionDiff = xDiffMod;
 			longDimensionVar = &x0;
