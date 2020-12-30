@@ -933,7 +933,7 @@ void RunSoftwareRenderingTests()
 	 *	  |---|---|---|---|---|---|
 	 *	1 |   |   |   | x | x | x |
 	 *	  |---|---|---|---|---|---|
-	 *	2 |   |   | x | x | x | x |
+	 *	2 |   | x | x | x | x | x |
 	 *	  |---|---|---|---|---|---|
 	 *	3 | O | x | x | x | x | O |
 	 *	  |---|---|---|---|---|---|
@@ -941,7 +941,7 @@ void RunSoftwareRenderingTests()
 	uint32_t efb7[24] = {
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED,
 		EMPTY,	EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,
-		EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,
+		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED
 	};
 	RunFillTriangleTestDrei(math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb7);
@@ -955,7 +955,7 @@ void RunSoftwareRenderingTests()
 	 *	  |---|---|---|---|---|---|
 	 *	1 | x | x | x |   |   |   |
 	 *	  |---|---|---|---|---|---|
-	 *	2 | x | x | x | x |   |   |
+	 *	2 | x | x | x | x | x |   |
 	 *	  |---|---|---|---|---|---|
 	 *	3 | O | x | x | x | x | O |
 	 *	  |---|---|---|---|---|---|
@@ -963,7 +963,7 @@ void RunSoftwareRenderingTests()
 	uint32_t efb8[24] = {
 		FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
 		FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
-		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED
 	};
 	RunFillTriangleTestDrei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb8);

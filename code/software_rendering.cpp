@@ -353,29 +353,39 @@ namespace render
 		// Note that p0.y == p1.y so we only need one variable for the y position
 		int x0 = p0.x;
 		int x1 = p0.x;
-		for (int y = p0.y; y < p1.y; y += 1)
+
+		for (int y = p0.y; y <= p1.y; y += 1)
 		{
+			// Loop through the x0 / acc0 evaluation until acc0 is +ve.
+			// acc0 turning +ve is the indication we should plot.
+			if (isLongDimension0X)
+			{
+				while ((acc0 < 0) && (p1.x < x0) && (negIncrement0 > 0)) // x0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
+				{
+					acc0 += negIncrement0;
+					x0 += -1;
+				}
+			}
+
+			if (isLongDimension1X)
+			{
+				while ((acc1 < 0) && (x1 < p2.x) && (negIncrement1 > 0))
+				{
+					acc1 += negIncrement1;
+					x1 += 1;
+				}
+			}
+
 			// draw scanline to fill in triangle between x0 & x1
 			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y);
 
 			// line p0 --> p1: decide to increment x0 or not for current y
 			if (p1.x < x0)
 			{
-				if (isLongDimension0X) // X0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
+				if (isLongDimension0X)
 				{
+					acc0 += posIncrement0;
 					x0 += -1;
-					if ((acc0 >= 0) && (posIncrement0 < 0))
-					{
-						while ((acc0 >= 0) && (p1.x < x0))
-						{
-							acc0 += posIncrement0;
-							x0 += -1;
-						}
-					}
-					else
-					{
-						acc0 += posIncrement0;
-					}
 				}
 				else
 				{
@@ -396,19 +406,8 @@ namespace render
 			{
 				if (isLongDimension1X)
 				{
+					acc1 += posIncrement1;
 					x1 += 1;
-					if ((acc1 >= 0) && (posIncrement1 < 0))
-					{
-						while ((acc1 >= 0) && (x1 < p2.x))
-						{
-							acc1 += posIncrement1;
-							x1 += 1;
-						}
-					}
-					else
-					{
-						acc1 += negIncrement1;
-					}
 				}
 				else
 				{
@@ -426,7 +425,7 @@ namespace render
 		}
 
 		// Draw final scanline
-		DrawHorizontalLineInPixels(renderBuffer, color, p1.x, p2.x, p1.y);
+		// DrawHorizontalLineInPixels(renderBuffer, color, p1.x, p2.x, p1.y);
 	}
 
 	/*`     p0
