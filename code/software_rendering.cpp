@@ -225,7 +225,7 @@ namespace render
 			if (isLongDimension0X) // X0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
 			{
 				x0 += 1;
-				if (acc0 < 0)
+				if ((acc0 < 0) && (negIncrement0 > 0))
 				{
 					while (acc0 < 0)
 					{
@@ -255,7 +255,7 @@ namespace render
 			if (isLongDimension1X)
 			{
 				x1 += -1;
-				if (acc1 < 0)
+				if ((acc1 < 0) && (negIncrement1 > 0))
 				{
 					while (acc1 < 0)
 					{
@@ -314,6 +314,119 @@ namespace render
 				PlotPixel(renderBuffer, color, x, y);
 			}
 		}
+	}
+
+	/*`     p0
+	 *`     /\			|
+	 *`    /  \			|
+	 *`   /    \		V
+	 *	 /      \	  +ve y (if +ve y is up, this is actually a flat top triangle)
+	 *	p1------p2
+	 */
+	void FillFlatBottomTriangleZwei(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
+	{
+		// LINE 0-->1
+		int xDiff0 = p0.x - p1.x;
+		int yDiff0 = p1.y - p0.y;
+
+		bool isLongDimension0X = (yDiff0 < xDiff0);
+		int longDelta0 = (isLongDimension0X) ? xDiff0 : yDiff0;
+		int shortDelta0 = (isLongDimension0X) ? yDiff0 : xDiff0;
+
+		int negIncrement0 = 2 * shortDelta0;
+		int acc0 = negIncrement0 - longDelta0;
+		int posIncrement0 = negIncrement0 - (2 * longDelta0);
+
+		// LINE 0-->2
+		// Vertical distance for 1-->2 is the same as 0-->2, so no need for a separate yDiff1 variable. Can reuse yDiff0.
+		int xDiff1 = p2.x - p0.x;
+
+		bool isLongDimension1X = (yDiff0 < xDiff1);
+		int longDelta1 = (isLongDimension1X) ? xDiff1 : yDiff0;
+		int shortDelta1 = (isLongDimension1X) ? yDiff0 : xDiff1;
+
+		int negIncrement1 = 2 * shortDelta1;
+		int acc1 = negIncrement1 - longDelta1;
+		int posIncrement1 = negIncrement1 - (2 * longDelta1);
+
+		// Copy the x & y values for p0 & p1 so we can modify them safely inside this function
+		// Note that p0.y == p1.y so we only need one variable for the y position
+		int x0 = p0.x;
+		int x1 = p0.x;
+		for (int y = p0.y; y < p1.y; y += 1)
+		{
+			// draw scanline to fill in triangle between x0 & x1
+			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y);
+
+			// line p0 --> p1: decide to increment x0 or not for current y
+			if (p1.x < x0)
+			{
+				if (isLongDimension0X) // X0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
+				{
+					x0 += -1;
+					if ((acc0 >= 0) && (posIncrement0 < 0))
+					{
+						while ((acc0 >= 0) && (p1.x < x0))
+						{
+							acc0 += posIncrement0;
+							x0 += -1;
+						}
+					}
+					else
+					{
+						acc0 += posIncrement0;
+					}
+				}
+				else
+				{
+					if (acc0 < 0)
+					{
+						acc0 += negIncrement0;
+					}
+					else
+					{
+						acc0 += posIncrement0;
+						x0 += -1;
+					}
+				}
+			}
+
+			// line p0 --> p2: decide to decrement x1 or not for next y
+			if (x1 < p2.x)
+			{
+				if (isLongDimension1X)
+				{
+					x1 += 1;
+					if ((acc1 >= 0) && (posIncrement1 < 0))
+					{
+						while ((acc1 >= 0) && (x1 < p2.x))
+						{
+							acc1 += posIncrement1;
+							x1 += 1;
+						}
+					}
+					else
+					{
+						acc1 += negIncrement1;
+					}
+				}
+				else
+				{
+					if (acc1 < 0)
+					{
+						acc1 += negIncrement1;
+					}
+					else
+					{
+						acc1 += posIncrement1;
+						x1 += 1;
+					}
+				}
+			}
+		}
+
+		// Draw final scanline
+		DrawHorizontalLineInPixels(renderBuffer, color, p1.x, p2.x, p1.y);
 	}
 
 	/*`     p0

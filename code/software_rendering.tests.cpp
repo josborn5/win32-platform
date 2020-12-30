@@ -130,6 +130,45 @@ void RunFillTriangleTestZwei(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<
 	assert(pixelArray[25] == EMPTY);	// Should NEVER get written to
 }
 
+void RunFillTriangleTestDrei(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<int> p2, uint32_t* expectedPixels)
+{
+	uint32_t pixelArray[26] = { EMPTY };	// define pixels as an an array of 26 uint32_t values
+											// NB this array lives on the stack in the scope of the RunSoftwareRenderingTests function only.
+											// The array is sized greater than the RenderBuffer pixel array so it can pick up illegal memory writes to the pixel array
+	ClearPixelArray(pixelArray, 26);
+
+	/**
+	 * Set the RenderBuffer to be a 5x5 grid of pixels (pixel ordinals 0 - 4)
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|-0
+	 *	0 |   |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|-1
+	 *	1 |   |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|-2
+	 *	2 |   |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|-3
+	 *	3 |   |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|-4
+	 *    0   1   2   3   4   5   6
+	 */
+	RenderBuffer renderBuffer;
+	renderBuffer.height = 4;
+	renderBuffer.width = 6;					// Size the buffer to 16 pixels. pixelArray is 25 pixels so the test can tell if the function ever oversteps the bounds of RenderBuffer.
+	renderBuffer.pixels = &pixelArray[1];	// Use the second element in pixelArray so we can tell if the zero-th element ever gets accessed.
+
+	render::FillFlatBottomTriangleZwei(renderBuffer, FILLED, p0, p1, p2);
+
+	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
+
+	for (int i = 0; i < renderBuffer.height * renderBuffer.width; i += 1)
+	{
+		assert(pixelArray[i + 1] == expectedPixels[i]);
+	}
+
+	assert(pixelArray[25] == EMPTY);	// Should NEVER get written to
+}
+
 void RunSoftwareRenderingTests()
 {
 	/**
@@ -361,6 +400,28 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
 	RunLineDrawTest(math::Vec2<int>{ 1, 1 }, math::Vec2<int>{ 3, 0 }, el10);
+
+	/**
+	 * SHORT, SHALLOW GRADIENT - LEFT TO RIGHT
+	 *
+	 *	    0   1   2   3
+	 *	  |---|---|---|---|
+	 *	0 |   |   |   | O |
+	 *	  |---|---|---|---|
+	 *	1 |   | x | x |   |
+	 *	  |---|---|---|---|
+	 *	2 | O |   |   |   |
+	 *	  |---|---|---|---|
+	 *	3 |   |   |   |   |
+	 *	  |---|---|---|---|
+	 */
+	uint32_t el11[16] = {
+		EMPTY,	EMPTY,	EMPTY,	FILLED,
+		EMPTY,	FILLED,	FILLED,	EMPTY,
+		FILLED,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunLineDrawTest(math::Vec2<int>{ 0, 2 }, math::Vec2<int>{ 3, 0 }, el11);
 
 
 	/**
@@ -730,4 +791,180 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
 	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, et16);
+
+	/**
+	 * NEW FLAT BOTTOM TRIANGLE TEST - NARROW TALL 1
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|
+	 *	0 |   |   | O |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	1 |   | x | x |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	2 |   | x | x | x |   |   |
+	 *	  |---|---|---|---|   |---|
+	 *	3 | O | x | x | O |   |   |
+	 *	  |---|---|---|---|---|---|
+	 */
+	uint32_t efb1[24] = {
+		EMPTY,	EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY
+	};
+	RunFillTriangleTestDrei(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 3, 0 }, efb1);
+
+	/**
+	 * NEW FLAT BOTTOM TRIANGLE TEST - NARROW TALL 2
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|
+	 *	0 |   | O |   |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	1 |   | x | x |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	2 | x | x | x |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	3 | O | x | x | O |   |   |
+	 *	  |---|---|---|---|---|---|
+	 */
+	uint32_t efb2[24] = {
+		EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY
+	};
+	RunFillTriangleTestDrei(math::Vec3<int>{ 1, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 3, 0 }, efb2);
+
+	/**
+	 * NEW FLAT BOTTOM TRIANGLE TEST - SHORT WIDE
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|
+	 *	0 |   |   | O |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	1 | O | x | x | x | O |   |
+	 *	  |---|---|---|---|---|---|
+	 *	2 |   |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	3 |   |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 */
+	uint32_t efb3[24] = {
+		EMPTY,	EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunFillTriangleTestDrei(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 0, 1, 0 }, math::Vec3<int>{ 4, 1, 0 }, efb3);
+
+	/**
+	 * NEW FLAT BOTTOM TRIANGLE TEST - SHORT WIDE
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|
+	 *	0 |   |   | O |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	1 |   | x | x | x | x |   |
+	 *	  |---|---|---|---|---|---|
+	 *	2 | O | x | x | x | x | O |
+	 *	  |---|---|---|---|---|---|
+	 *	3 |   |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 */
+	uint32_t efb4[24] = {
+		EMPTY,	EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
+		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunFillTriangleTestDrei(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 5, 2, 0 }, efb4);
+
+	/**
+	 * NEW FLAT BOTTOM TRIANGLE TEST - MIXED GRADIENTS
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|
+	 *	0 |   | O |   |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	1 | x | x | x | x |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	2 | O | x | x | x | x | O |
+	 *	  |---|---|---|---|---|---|
+	 *	3 |   |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 */
+	uint32_t efb5[24] = {
+		EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunFillTriangleTestDrei(math::Vec3<int>{ 1, 0, 0 }, math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 5, 2, 0 }, efb5);
+
+	/**
+	 * NEW FLAT BOTTOM TRIANGLE TEST - MIXED GRADIENTS 2
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|
+	 *	0 |   |   |   |   | O |   |
+	 *	  |---|---|---|---|---|---|
+	 *	1 |   |   | x | x | x |   |
+	 *	  |---|---|---|---|---|---|
+	 *	2 | O | x | x | x | x | O |
+	 *	  |---|---|---|---|---|---|
+	 *	3 |   |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 */
+	uint32_t efb6[24] = {
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,
+		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunFillTriangleTestDrei(math::Vec3<int>{ 4, 0, 0 }, math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 5, 2, 0 }, efb6);
+
+	/**
+	 * NEW FLAT BOTTOM TRIANGLE TEST - RIGHT HAND RIGHT ANGLE
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|
+	 *	0 |   |   |   |   |   | O |
+	 *	  |---|---|---|---|---|---|
+	 *	1 |   |   |   | x | x | x |
+	 *	  |---|---|---|---|---|---|
+	 *	2 |   |   | x | x | x | x |
+	 *	  |---|---|---|---|---|---|
+	 *	3 | O | x | x | x | x | O |
+	 *	  |---|---|---|---|---|---|
+	 */
+	uint32_t efb7[24] = {
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED,
+		EMPTY,	EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,
+		EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,
+		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED
+	};
+	RunFillTriangleTestDrei(math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb7);
+
+	/**
+	 * NEW FLAT BOTTOM TRIANGLE TEST - LEFT HAND RIGHT ANGLE
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|
+	 *	0 | O |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	1 | x | x | x |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	2 | x | x | x | x |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	3 | O | x | x | x | x | O |
+	 *	  |---|---|---|---|---|---|
+	 */
+	uint32_t efb8[24] = {
+		FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED
+	};
+	RunFillTriangleTestDrei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb8);
 }
