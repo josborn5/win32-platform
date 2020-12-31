@@ -205,7 +205,7 @@ namespace render
 		// LINE 1-->2
 		// Vertical distance for 1-->2 is the same as 0-->2, so no need for a separate yDiff1 variable. Can reuse yDiff0.
 		bool p2IsLeftOfP1 = (p2.x < p1.x);
-		int xDiff1 = (p2IsLeftOfP1) ? p1.x - p2.x : p1.x - p2.x;
+		int xDiff1 = (p2IsLeftOfP1) ? p1.x - p2.x : p2.x - p1.x;
 
 		bool isLongDimension1X = (yDiff0 < xDiff1);
 		int longDelta1 = (isLongDimension1X) ? xDiff1 : yDiff0;

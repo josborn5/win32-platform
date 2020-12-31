@@ -91,7 +91,7 @@ void RunFillTriangleTest(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<int>
 	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
 }
 
-void RunFillTriangleTestZwei(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<int> p2, uint32_t* expectedPixels)
+void RunFillFlatTopTriangleTest(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<int> p2, uint32_t* expectedPixels)
 {
 	uint32_t pixelArray[26] = { EMPTY };	// define pixels as an an array of 26 uint32_t values
 											// NB this array lives on the stack in the scope of the RunSoftwareRenderingTests function only.
@@ -130,7 +130,7 @@ void RunFillTriangleTestZwei(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<
 	assert(pixelArray[25] == EMPTY);	// Should NEVER get written to
 }
 
-void RunFillTriangleTestDrei(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<int> p2, uint32_t* expectedPixels)
+void RunFillFlatBottomTriangleTest(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<int> p2, uint32_t* expectedPixels)
 {
 	uint32_t pixelArray[26] = { EMPTY };	// define pixels as an an array of 26 uint32_t values
 											// NB this array lives on the stack in the scope of the RunSoftwareRenderingTests function only.
@@ -636,7 +636,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, eft1);
+	RunFillFlatTopTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, eft1);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - NARROW TALL 2
@@ -658,7 +658,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 1, 3, 0 }, eft2);
+	RunFillFlatTopTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 1, 3, 0 }, eft2);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - SHORT WIDE
@@ -680,7 +680,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 4, 0, 0 }, math::Vec3<int>{ 2, 1, 0 }, eft3);
+	RunFillFlatTopTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 4, 0, 0 }, math::Vec3<int>{ 2, 1, 0 }, eft3);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - SHORT WIDE
@@ -702,7 +702,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 2, 2, 0 }, eft4);
+	RunFillFlatTopTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 2, 2, 0 }, eft4);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - MIXED GRADIENTS
@@ -724,7 +724,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 1, 2, 0 }, eft5);
+	RunFillFlatTopTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 1, 2, 0 }, eft5);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - MIXED GRADIENTS 2
@@ -746,7 +746,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 4, 2, 0 }, eft6);
+	RunFillFlatTopTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 4, 2, 0 }, eft6);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - RIGHT HAND RIGHT ANGLE
@@ -768,7 +768,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED,	FILLED,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 5, 3, 0 }, eft7);
+	RunFillFlatTopTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 5, 3, 0 }, eft7);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - LEFT HAND RIGHT ANGLE
@@ -790,7 +790,51 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
 		FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, eft8);
+	RunFillFlatTopTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, eft8);
+
+	/**
+	 * NEW FLAT TOP TRIANGLE TEST - SKEWED LEFT
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|
+	 *	0 |   |   | O | x | x | O |
+	 *	  |---|---|---|---|---|---|
+	 *	1 |   | x | x | x |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	2 |   | x |   |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	3 | O |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 */
+	uint32_t eft9[24] = {
+		EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,
+		EMPTY,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
+		EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
+	};
+	RunFillFlatTopTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, eft9);
+
+	/**
+	 * NEW FLAT TOP TRIANGLE TEST - SKEWED RIGHT
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|
+	 *	0 | O | x | x | O |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	1 |   |   | x | x | x |   |
+	 *	  |---|---|---|---|---|---|
+	 *	2 |   |   |   |   | x |   |
+	 *	  |---|---|---|---|---|---|
+	 *	3 |   |   |   |   |   | O |
+	 *	  |---|---|---|---|---|---|
+	 */
+	uint32_t eft10[24] = {
+		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
+		EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED
+	};
+	RunFillFlatTopTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 5, 3, 0 }, eft10);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - NARROW TALL 1
@@ -812,7 +856,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
 		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestDrei(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 3, 0 }, efb1);
+	RunFillFlatBottomTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 3, 0 }, efb1);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - NARROW TALL 2
@@ -834,7 +878,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestDrei(math::Vec3<int>{ 1, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 3, 0 }, efb2);
+	RunFillFlatBottomTriangleTest(math::Vec3<int>{ 1, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 3, 0 }, efb2);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - SHORT WIDE
@@ -856,7 +900,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestDrei(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 0, 1, 0 }, math::Vec3<int>{ 4, 1, 0 }, efb3);
+	RunFillFlatBottomTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 0, 1, 0 }, math::Vec3<int>{ 4, 1, 0 }, efb3);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - SHORT WIDE
@@ -878,7 +922,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestDrei(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 5, 2, 0 }, efb4);
+	RunFillFlatBottomTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 5, 2, 0 }, efb4);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - MIXED GRADIENTS
@@ -900,7 +944,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestDrei(math::Vec3<int>{ 1, 0, 0 }, math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 5, 2, 0 }, efb5);
+	RunFillFlatBottomTriangleTest(math::Vec3<int>{ 1, 0, 0 }, math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 5, 2, 0 }, efb5);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - MIXED GRADIENTS 2
@@ -922,7 +966,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestDrei(math::Vec3<int>{ 4, 0, 0 }, math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 5, 2, 0 }, efb6);
+	RunFillFlatBottomTriangleTest(math::Vec3<int>{ 4, 0, 0 }, math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 5, 2, 0 }, efb6);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - RIGHT HAND RIGHT ANGLE
@@ -944,7 +988,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED
 	};
-	RunFillTriangleTestDrei(math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb7);
+	RunFillFlatBottomTriangleTest(math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb7);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - LEFT HAND RIGHT ANGLE
@@ -966,7 +1010,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED
 	};
-	RunFillTriangleTestDrei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb8);
+	RunFillFlatBottomTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb8);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - SKEWED LEFT
@@ -988,7 +1032,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
 		EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,	FILLED
 	};
-	RunFillTriangleTestDrei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb9);
+	RunFillFlatBottomTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb9);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - SKEWED RIGHT
@@ -1010,5 +1054,5 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
 		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestDrei(math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 3, 0 }, efb10);
+	RunFillFlatBottomTriangleTest(math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 3, 0 }, efb10);
 }
