@@ -186,7 +186,7 @@ namespace render
 	 *	   \ /	  +ve y (if +ve y is up, this is actually a flat bottom triangle)
 	 *	    p2
 	 */
-	void FillFlatTopTriangleZwei(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
+	void FillFlatTopTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
 	{
 		// LINE 0-->2
 		bool p2IsRightOfP0 = (p0.x < p2.x);
@@ -285,39 +285,6 @@ namespace render
 		}
 	}
 
-	/*	p0------p1
-	 *	\       /	|
-	 *	 \     /	|
-	 *	  \   /		V
-	 *	   \ /	  +ve y (if +ve y is up, this is actually a flat bottom triangle)
-	 *	    p2
-	 */
-	void FillFlatTopTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
-	{
-		if ((p0.x == p1.x && p0.y == p1.y) || (p0.x == p2.x && p0.y == p2.y) || (p1.x == p2.x && p1.y == p2.y))
-		{
-			// TODO: figure out why condition is occurring - is it a float --> int rounding thing when the triangle gets split???
-			return;
-		}
-		// Slopes
-		float m0 = (float)(p2.x - p0.x) / (float)(p2.y - p0.y);
-		float m1 = (float)(p2.x - p1.x) / (float)(p2.y - p1.y);
-
-		// step along the y-axis, drawing a horizontal scanline at each y ordinal
-		for (int y = p0.y; y <= p2.y; y += 1)
-		{
-			// TODO: can I use the line drawing algorithm here instead?
-			const int px0 = (int)std::floor(m0 * (float)(y - p0.y) + (float)p0.x);
-			const int px1 = (int)std::ceil(m1 * (float)(y - p1.y) + (float)p1.x);
-
-			// x: start & end of scanline
-			for (int x = px0; x <= px1; x += 1)
-			{
-				PlotPixel(renderBuffer, color, x, y);
-			}
-		}
-	}
-
 	/*`     p0
 	 *`     /\			|
 	 *`    /  \			|
@@ -325,7 +292,7 @@ namespace render
 	 *	 /      \	  +ve y (if +ve y is up, this is actually a flat top triangle)
 	 *	p1------p2
 	 */
-	void FillFlatBottomTriangleZwei(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
+	void FillFlatBottomTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
 	{
 		// LINE 0-->1
 		bool p1IsLeftOfP0 = (p1.x < p0.x);
@@ -426,36 +393,6 @@ namespace render
 
 		// Draw final scanline
 		// DrawHorizontalLineInPixels(renderBuffer, color, p1.x, p2.x, p1.y);
-	}
-
-	/*`     p0
-	 *`     /\			|
-	 *`    /  \			|
-	 *`   /    \		V
-	 *	 /      \	  +ve y (if +ve y is up, this is actually a flat top triangle)
-	 *	p1------p2
-	 */
-	void FillFlatBottomTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
-	{
-		if ((p0.x == p1.x && p0.y == p1.y) || (p0.x == p2.x && p0.y == p2.y) || (p1.x == p2.x && p1.y == p2.y))
-		{
-			// TODO: figure out why condition is occurring - is it a float --> int rounding thing when the triangle gets split???
-			return;
-		}
-		// Slopes
-		float m2 = (float)(p2.x - p0.x) / (float)(p2.y - p0.y);
-		float m1 = (float)(p1.x - p0.x) / (float)(p1.y - p0.y);
-
-		for (int y = p0.y; y <= p2.y; y += 1)
-		{
-			const int px2 = (int)std::floor(m2 * (float)(y - p2.y) + (float)p2.x);
-			const int px1 = (int)std::ceil(m1 * (float)(y - p1.y) + (float)p1.x);
-
-			for (int x = px1; x <= px2; x += 1)
-			{
-				PlotPixel(renderBuffer, color, x, y);
-			}
-		}
 	}
 
 	void FillTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)

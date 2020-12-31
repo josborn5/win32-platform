@@ -118,7 +118,7 @@ void RunFillFlatTopTriangleTest(math::Vec3<int> p0, math::Vec3<int> p1, math::Ve
 	renderBuffer.width = 6;					// Size the buffer to 16 pixels. pixelArray is 25 pixels so the test can tell if the function ever oversteps the bounds of RenderBuffer.
 	renderBuffer.pixels = &pixelArray[1];	// Use the second element in pixelArray so we can tell if the zero-th element ever gets accessed.
 
-	render::FillFlatTopTriangleZwei(renderBuffer, FILLED, p0, p1, p2);
+	render::FillFlatTopTriangle(renderBuffer, FILLED, p0, p1, p2);
 
 	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
 
@@ -157,7 +157,7 @@ void RunFillFlatBottomTriangleTest(math::Vec3<int> p0, math::Vec3<int> p1, math:
 	renderBuffer.width = 6;					// Size the buffer to 16 pixels. pixelArray is 25 pixels so the test can tell if the function ever oversteps the bounds of RenderBuffer.
 	renderBuffer.pixels = &pixelArray[1];	// Use the second element in pixelArray so we can tell if the zero-th element ever gets accessed.
 
-	render::FillFlatBottomTriangleZwei(renderBuffer, FILLED, p0, p1, p2);
+	render::FillFlatBottomTriangle(renderBuffer, FILLED, p0, p1, p2);
 
 	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
 
