@@ -189,7 +189,8 @@ namespace render
 	void FillFlatTopTriangleZwei(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
 	{
 		// LINE 0-->2
-		int xDiff0 = p2.x - p0.x;
+		bool p2IsRightOfP0 = (p0.x < p2.x);
+		int xDiff0 = (p2IsRightOfP0) ? p2.x - p0.x : p0.x - p2.x;
 		int yDiff0 = p2.y - p0.y;
 
 		bool isLongDimension0X = (yDiff0 < xDiff0);
@@ -199,10 +200,12 @@ namespace render
 		int negIncrement0 = 2 * shortDelta0;
 		int acc0 = negIncrement0 - longDelta0;
 		int posIncrement0 = negIncrement0 - (2 * longDelta0);
+		int x0Increment = (p2IsRightOfP0) ? 1 : -1;
 
 		// LINE 1-->2
 		// Vertical distance for 1-->2 is the same as 0-->2, so no need for a separate yDiff1 variable. Can reuse yDiff0.
-		int xDiff1 = p1.x - p2.x;
+		bool p2IsLeftOfP1 = (p2.x < p1.x);
+		int xDiff1 = (p2IsLeftOfP1) ? p1.x - p2.x : p1.x - p2.x;
 
 		bool isLongDimension1X = (yDiff0 < xDiff1);
 		int longDelta1 = (isLongDimension1X) ? xDiff1 : yDiff0;
@@ -211,6 +214,7 @@ namespace render
 		int negIncrement1 = 2 * shortDelta1;
 		int acc1 = negIncrement1 - longDelta1;
 		int posIncrement1 = negIncrement1 - (2 * longDelta1);
+		int x1Increment = (p2IsLeftOfP1) ? -1 : 1;
 
 		// Copy the x & y values for p0 & p1 so we can modify them safely inside this function
 		// Note that p0.y == p1.y so we only need one variable for the y position
@@ -222,19 +226,19 @@ namespace render
 			// acc0 turning +ve is the indication we should plot.
 			if (isLongDimension0X)
 			{
-				while ((acc0 < 0) && (x0 < p2.x) && (negIncrement0 > 0)) // x0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
+				while ((acc0 < 0) && (negIncrement0 > 0)) // x0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
 				{
 					acc0 += negIncrement0;
-					x0 += 1;
+					x0 += x0Increment;
 				}
 			}
 
 			if (isLongDimension1X)
 			{
-				while ((acc1 < 0) && (p2.x < x1) && (negIncrement1 > 0))
+				while ((acc1 < 0) && (negIncrement1 > 0))
 				{
 					acc1 += negIncrement1;
-					x1 += -1;
+					x1 += x1Increment;
 				}
 			}
 
@@ -242,46 +246,40 @@ namespace render
 			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y);
 
 			// line p0 --> p2: decide to increment x0 or not for next y
-			if (x0 < p2.x)
+			if (isLongDimension0X) // X0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
 			{
-				if (isLongDimension0X) // X0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
+				acc0 += posIncrement0;
+				x0 += x0Increment;
+			}
+			else
+			{
+				if (acc0 < 0)
 				{
-					acc0 += posIncrement0;
-					x0 += 1;
+					acc0 += negIncrement0;
 				}
 				else
 				{
-					if (acc0 < 0)
-					{
-						acc0 += negIncrement0;
-					}
-					else
-					{
-						acc0 += posIncrement0;
-						x0 += 1;
-					}
+					acc0 += posIncrement0;
+					x0 += x0Increment;
 				}
 			}
 
 			// line p1 --> p2: decide to decrement x1 or not for next y
-			if ((p2.x < x1))
+			if (isLongDimension1X)
 			{
-				if (isLongDimension1X)
+				acc1 += posIncrement1;
+				x1 += x1Increment;
+			}
+			else
+			{
+				if (acc1 < 0)
 				{
-					acc1 += posIncrement1;
-					x1 += -1;
+					acc1 += negIncrement1;
 				}
 				else
 				{
-					if (acc1 < 0)
-					{
-						acc1 += negIncrement1;
-					}
-					else
-					{
-						acc1 += posIncrement1;
-						x1 += -1;
-					}
+					acc1 += posIncrement1;
+					x1 += x1Increment;
 				}
 			}
 		}
@@ -330,7 +328,8 @@ namespace render
 	void FillFlatBottomTriangleZwei(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
 	{
 		// LINE 0-->1
-		int xDiff0 = p0.x - p1.x;
+		bool p1IsLeftOfP0 = (p1.x < p0.x);
+		int xDiff0 = (p1IsLeftOfP0) ? p0.x - p1.x : p1.x - p0.x;
 		int yDiff0 = p1.y - p0.y;
 
 		bool isLongDimension0X = (yDiff0 < xDiff0);
@@ -340,10 +339,12 @@ namespace render
 		int negIncrement0 = 2 * shortDelta0;
 		int acc0 = negIncrement0 - longDelta0;
 		int posIncrement0 = negIncrement0 - (2 * longDelta0);
+		int x0Increment = (p1IsLeftOfP0) ? -1 : 1;
 
 		// LINE 0-->2
 		// Vertical distance for 1-->2 is the same as 0-->2, so no need for a separate yDiff1 variable. Can reuse yDiff0.
-		int xDiff1 = p2.x - p0.x;
+		bool p2IsRightOfP0 = (p0.x < p2.x);
+		int xDiff1 = (p2IsRightOfP0) ? p2.x - p0.x : p0.x - p2.x;
 
 		bool isLongDimension1X = (yDiff0 < xDiff1);
 		int longDelta1 = (isLongDimension1X) ? xDiff1 : yDiff0;
@@ -352,6 +353,7 @@ namespace render
 		int negIncrement1 = 2 * shortDelta1;
 		int acc1 = negIncrement1 - longDelta1;
 		int posIncrement1 = negIncrement1 - (2 * longDelta1);
+		int x1Increment = (p2IsRightOfP0) ? 1 : -1;
 
 		// Copy the x & y values for p0 & p1 so we can modify them safely inside this function
 		// Note that p0.y == p1.y so we only need one variable for the y position
@@ -364,19 +366,19 @@ namespace render
 			// acc0 turning +ve is the indication we should plot.
 			if (isLongDimension0X)
 			{
-				while ((acc0 < 0) && (p1.x < x0) && (negIncrement0 > 0)) // x0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
+				while ((acc0 < 0) && (negIncrement0 > 0)) // x0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
 				{
 					acc0 += negIncrement0;
-					x0 += -1;
+					x0 += x0Increment;
 				}
 			}
 
 			if (isLongDimension1X)
 			{
-				while ((acc1 < 0) && (x1 < p2.x) && (negIncrement1 > 0))
+				while ((acc1 < 0) && (negIncrement1 > 0))
 				{
 					acc1 += negIncrement1;
-					x1 += 1;
+					x1 += x1Increment;
 				}
 			}
 
@@ -384,46 +386,40 @@ namespace render
 			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y);
 
 			// line p0 --> p1: decide to increment x0 or not for current y
-			if (p1.x < x0)
+			if (isLongDimension0X)
 			{
-				if (isLongDimension0X)
+				acc0 += posIncrement0;
+				x0 += x0Increment;
+			}
+			else
+			{
+				if (acc0 < 0)
 				{
-					acc0 += posIncrement0;
-					x0 += -1;
+					acc0 += negIncrement0;
 				}
 				else
 				{
-					if (acc0 < 0)
-					{
-						acc0 += negIncrement0;
-					}
-					else
-					{
-						acc0 += posIncrement0;
-						x0 += -1;
-					}
+					acc0 += posIncrement0;
+					x0 += x0Increment;
 				}
 			}
 
 			// line p0 --> p2: decide to decrement x1 or not for next y
-			if (x1 < p2.x)
+			if (isLongDimension1X)
 			{
-				if (isLongDimension1X)
+				acc1 += posIncrement1;
+				x1 += x1Increment;
+			}
+			else
+			{
+				if (acc1 < 0)
 				{
-					acc1 += posIncrement1;
-					x1 += 1;
+					acc1 += negIncrement1;
 				}
 				else
 				{
-					if (acc1 < 0)
-					{
-						acc1 += negIncrement1;
-					}
-					else
-					{
-						acc1 += posIncrement1;
-						x1 += 1;
-					}
+					acc1 += posIncrement1;
+					x1 += x1Increment;
 				}
 			}
 		}

@@ -967,4 +967,48 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED
 	};
 	RunFillTriangleTestDrei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb8);
+
+	/**
+	 * NEW FLAT BOTTOM TRIANGLE TEST - SKEWED LEFT
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|
+	 *	0 | O |   |   |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	1 |   | x | x |   |   |   |
+	 *	  |---|---|---|---|---|---|
+	 *	2 |   | x | x | x | x |   |
+	 *	  |---|---|---|---|---|---|
+	 *	3 |   |   | O | x | x | O |
+	 *	  |---|---|---|---|---|---|
+	 */
+	uint32_t efb9[24] = {
+		FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,	FILLED
+	};
+	RunFillTriangleTestDrei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb9);
+
+	/**
+	 * NEW FLAT BOTTOM TRIANGLE TEST - SKEWED RIGHT
+	 *
+	 *	    0   1   2   3   4   5
+	 *	  |---|---|---|---|---|---|
+	 *	0 |   |   |   |   |   | O |
+	 *	  |---|---|---|---|---|---|
+	 *	1 |   |   |   | x | x |   |
+	 *	  |---|---|---|---|---|---|
+	 *	2 |   | x | x | x | x |   |
+	 *	  |---|---|---|---|---|---|
+	 *	3 | O | x | x | O |   |   |
+	 *	  |---|---|---|---|---|---|
+	 */
+	uint32_t efb10[24] = {
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED,
+		EMPTY,	EMPTY,	EMPTY,	FILLED,	FILLED,	EMPTY,
+		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
+		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY
+	};
+	RunFillTriangleTestDrei(math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 3, 0 }, efb10);
 }
