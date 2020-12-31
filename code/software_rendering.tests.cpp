@@ -630,13 +630,13 @@ void RunSoftwareRenderingTests()
 	 *	3 |   |   | O |   |   |   |
 	 *	  |---|---|---|---|---|---|
 	 */
-	uint32_t et9[24] = {
+	uint32_t eft1[24] = {
 		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
 		EMPTY,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
 		EMPTY,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, et9);
+	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, eft1);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - NARROW TALL 2
@@ -652,13 +652,13 @@ void RunSoftwareRenderingTests()
 	 *	3 |   | O |   |   |   |   |
 	 *	  |---|---|---|---|---|---|
 	 */
-	uint32_t et10[24] = {
+	uint32_t eft2[24] = {
 		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
 		FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 1, 3, 0 }, et10);
+	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 1, 3, 0 }, eft2);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - SHORT WIDE
@@ -667,20 +667,20 @@ void RunSoftwareRenderingTests()
 	 *	  |---|---|---|---|---|---|
 	 *	0 | O | x | x | x | O |   |
 	 *	  |---|---|---|---|---|---|
-	 *	1 |   | x | O | x |   |   |
+	 *	1 |   |   | O |   |   |   |
 	 *	  |---|---|---|---|---|---|
 	 *	2 |   |   |   |   |   |   |
 	 *	  |---|---|---|---|---|---|
 	 *	3 |   |   |   |   |   |   |
 	 *	  |---|---|---|---|---|---|
 	 */
-	uint32_t et11[24] = {
+	uint32_t eft3[24] = {
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
-		EMPTY,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
+		EMPTY,	EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 4, 0, 0 }, math::Vec3<int>{ 2, 1, 0 }, et11);
+	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 4, 0, 0 }, math::Vec3<int>{ 2, 1, 0 }, eft3);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - SHORT WIDE
@@ -689,20 +689,20 @@ void RunSoftwareRenderingTests()
 	 *	  |---|---|---|---|---|---|
 	 *	0 | O | x | x | x | x | O |
 	 *	  |---|---|---|---|---|---|
-	 *	1 |   | x | x | x | x |   |
+	 *	1 |   | x | x | x |   |   |
 	 *	  |---|---|---|---|---|---|
 	 *	2 |   |   | O |   |   |   |
 	 *	  |---|---|---|---|---|---|
 	 *	3 |   |   |   |   |   |   |
 	 *	  |---|---|---|---|---|---|
 	 */
-	uint32_t et12[24] = {
+	uint32_t eft4[24] = {
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
-		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
+		EMPTY,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 2, 2, 0 }, et12);
+	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 2, 2, 0 }, eft4);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - MIXED GRADIENTS
@@ -711,20 +711,20 @@ void RunSoftwareRenderingTests()
 	 *	  |---|---|---|---|---|---|
 	 *	0 | O | x | x | x | x | O |
 	 *	  |---|---|---|---|---|---|
-	 *	1 |   | x | x | x | x |   |
+	 *	1 |   | x | x | x |   |   |
 	 *	  |---|---|---|---|---|---|
-	 *	2 |   | O | x |   |   |   |
+	 *	2 |   | O |   |   |   |   |
 	 *	  |---|---|---|---|---|---|
 	 *	3 |   |   |   |   |   |   |
 	 *	  |---|---|---|---|---|---|
 	 */
-	uint32_t et13[24] = {
+	uint32_t eft5[24] = {
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
-		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
-		EMPTY,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
+		EMPTY,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
+		EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 1, 2, 0 }, et13);
+	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 1, 2, 0 }, eft5);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - MIXED GRADIENTS 2
@@ -733,20 +733,20 @@ void RunSoftwareRenderingTests()
 	 *	  |---|---|---|---|---|---|
 	 *	0 | O | x | x | x | x | O |
 	 *	  |---|---|---|---|---|---|
-	 *	1 |   | x | x | x | x |   |
+	 *	1 |   |   | x | x | x |   |
 	 *	  |---|---|---|---|---|---|
-	 *	2 |   |   |   | x | O |   |
+	 *	2 |   |   |   |   | O |   |
 	 *	  |---|---|---|---|---|---|
 	 *	3 |   |   |   |   |   |   |
 	 *	  |---|---|---|---|---|---|
 	 */
-	uint32_t et14[24] = {
+	uint32_t eft6[24] = {
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
-		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
-		EMPTY,	EMPTY,	EMPTY,	FILLED,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,	EMPTY,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 4, 2, 0 }, et14);
+	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 4, 2, 0 }, eft6);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - RIGHT HAND RIGHT ANGLE
@@ -755,20 +755,20 @@ void RunSoftwareRenderingTests()
 	 *	  |---|---|---|---|---|---|
 	 *	0 | O | x | x | x | x | O |
 	 *	  |---|---|---|---|---|---|
-	 *	1 |   | x | x | x | x | x |
+	 *	1 |   |   | x | x | x | x |
 	 *	  |---|---|---|---|---|---|
-	 *	2 |   |   |   | x | x | x |
+	 *	2 |   |   |   |   | x | x |
 	 *	  |---|---|---|---|---|---|
-	 *	3 |   |   |   |   | x | O |
+	 *	3 |   |   |   |   |   | O |
 	 *	  |---|---|---|---|---|---|
 	 */
-	uint32_t et15[24] = {
+	uint32_t eft7[24] = {
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
-		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
-		EMPTY,	EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,
-		EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED,	FILLED
+		EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED,	FILLED,
+		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 5, 3, 0 }, et15);
+	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 5, 3, 0 }, eft7);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - LEFT HAND RIGHT ANGLE
@@ -777,20 +777,20 @@ void RunSoftwareRenderingTests()
 	 *	  |---|---|---|---|---|---|
 	 *	0 | O | x | x | x | x | O |
 	 *	  |---|---|---|---|---|---|
-	 *	1 | x | x | x | x | x |   |
+	 *	1 | x | x | x | x |   |   |
 	 *	  |---|---|---|---|---|---|
-	 *	2 | x | x | x |   |   |   |
+	 *	2 | x | x |   |   |   |   |
 	 *	  |---|---|---|---|---|---|
-	 *	3 | O | x |   |   |   |   |
+	 *	3 | O |   |   |   |   |   |
 	 *	  |---|---|---|---|---|---|
 	 */
-	uint32_t et16[24] = {
+	uint32_t eft8[24] = {
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
-		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
-		FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
-		FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY
+		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
+		FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
+		FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, et16);
+	RunFillTriangleTestZwei(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, eft8);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - NARROW TALL 1

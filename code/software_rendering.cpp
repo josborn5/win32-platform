@@ -218,66 +218,70 @@ namespace render
 		int x1 = p1.x;
 		for (int y = p0.y; y <= p2.y; y += 1)
 		{
-			// draw scanline to fill in triangle between x0 & x1
-			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y);
-
-			// line p0 --> p2: decide to increment x0 or not for next y
-			if (isLongDimension0X) // X0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
+			// Loop through the x0 / acc0 evaluation until acc0 is +ve.
+			// acc0 turning +ve is the indication we should plot.
+			if (isLongDimension0X)
 			{
-				x0 += 1;
-				if ((acc0 < 0) && (negIncrement0 > 0))
-				{
-					while (acc0 < 0)
-					{
-						acc0 += negIncrement0;
-						x0 += 1;
-					}
-				}
-				else
-				{
-					acc0 += posIncrement0;
-				}
-			}
-			else
-			{
-				if (acc0 < 0)
+				while ((acc0 < 0) && (x0 < p2.x) && (negIncrement0 > 0)) // x0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
 				{
 					acc0 += negIncrement0;
-				}
-				else
-				{
-					acc0 += posIncrement0;
 					x0 += 1;
 				}
 			}
 
-			// line p1 --> p2: decide to decrement x1 or not for next y
 			if (isLongDimension1X)
 			{
-				x1 += -1;
-				if ((acc1 < 0) && (negIncrement1 > 0))
-				{
-					while (acc1 < 0)
-					{
-						acc1 += negIncrement1;
-						x1 += -1;
-					}
-				}
-				else
-				{
-					acc1 += posIncrement1;
-				}
-			}
-			else
-			{
-				if (acc1 < 0)
+				while ((acc1 < 0) && (p2.x < x1) && (negIncrement1 > 0))
 				{
 					acc1 += negIncrement1;
+					x1 += -1;
+				}
+			}
+
+			// draw scanline to fill in triangle between x0 & x1
+			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y);
+
+			// line p0 --> p2: decide to increment x0 or not for next y
+			if (x0 < p2.x)
+			{
+				if (isLongDimension0X) // X0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
+				{
+					acc0 += posIncrement0;
+					x0 += 1;
 				}
 				else
+				{
+					if (acc0 < 0)
+					{
+						acc0 += negIncrement0;
+					}
+					else
+					{
+						acc0 += posIncrement0;
+						x0 += 1;
+					}
+				}
+			}
+
+			// line p1 --> p2: decide to decrement x1 or not for next y
+			if ((p2.x < x1))
+			{
+				if (isLongDimension1X)
 				{
 					acc1 += posIncrement1;
 					x1 += -1;
+				}
+				else
+				{
+					if (acc1 < 0)
+					{
+						acc1 += negIncrement1;
+					}
+					else
+					{
+						acc1 += posIncrement1;
+						x1 += -1;
+					}
 				}
 			}
 		}
