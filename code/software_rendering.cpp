@@ -222,6 +222,9 @@ namespace render
 		int x1 = p1.x;
 		for (int y = p0.y; y <= p2.y; y += 1)
 		{
+			// draw scanline to fill in triangle between x0 & x1
+			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y);
+
 			// Loop through the x0 / acc0 evaluation until acc0 is +ve.
 			// acc0 turning +ve is the indication we should plot.
 			if (isLongDimension0X)
@@ -327,7 +330,7 @@ namespace render
 		int x0 = p0.x;
 		int x1 = p0.x;
 
-		for (int y = p0.y; y <= p1.y; y += 1)
+		for (int y = p0.y; y <= p1.y - 1; y += 1)
 		{
 			// Loop through the x0 / acc0 evaluation until acc0 is +ve.
 			// acc0 turning +ve is the indication we should plot.
@@ -390,6 +393,9 @@ namespace render
 				}
 			}
 		}
+
+		// draw final scanline to fill in triangle between x0 & x1
+		DrawHorizontalLineInPixels(renderBuffer, color, p1.x, p2.x, p1.y);
 	}
 
 	void FillTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
