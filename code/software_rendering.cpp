@@ -390,9 +390,6 @@ namespace render
 				}
 			}
 		}
-
-		// Draw final scanline
-		// DrawHorizontalLineInPixels(renderBuffer, color, p1.x, p2.x, p1.y);
 	}
 
 	void FillTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
