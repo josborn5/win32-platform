@@ -91,7 +91,6 @@ namespace render
 	// Implemented with Bresenham's algorithm
 	static void DrawLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec2<int> &p0, const math::Vec2<int> &p1)
 	{
-		// Make sure writing to the render buffer does not escape its bounds
 		int x0 = p0.x;
 		int y0 = p0.y;
 		int x1 = p1.x;
@@ -244,9 +243,6 @@ namespace render
 					x1 += x1Increment;
 				}
 			}
-
-			// draw scanline to fill in triangle between x0 & x1
-			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y);
 
 			// line p0 --> p2: decide to increment x0 or not for next y
 			if (isLongDimension0X) // X0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
@@ -443,38 +439,123 @@ namespace render
 			}
 			FillFlatBottomTriangle(renderBuffer, color, *pp0, *pp1, *pp2);
 		}
-		else // general triangle - need to split it in two
+		else // general triangle
 		{
-			const float splitFactor = (float)(pp1->y - pp0->y) / (float)(pp2->y - pp0->y);
-			const math::Vec3<int> diff = math::SubtractVectors(*pp2, *pp0);
-			const math::Vec3<float> toSplit = math::MultiplyVectorByScalar(math::Vec3<float>{ (float)diff.x, (float)diff.y, (float)diff.z }, splitFactor);
-			const math::Vec3<int> splitPoint = math::AddVectors(*pp0, math::Vec3<int>{ (int)toSplit.x, (int)toSplit.y, (int)toSplit.z });
+			// Start scanning vertically from the top point (lowest y value) to the center with the flat bottom logic.
+			// Then when we reach the center point, continue scanning but switch to the flat top triangle logic until we reach the bottom point (highest y value).
+			// That should mean there is no need worry about finding the split point.
 
-			if (pp1->x < splitPoint.x)	// major right triangle
+			// At this point we know that p0 has lowest y value. But we need to work out if p1 is left or right of p2 in order to start scanning.
+			bool pp1xIsLessThanPp2X = (pp1->x < pp2->x);
+			const math::Vec3<int>* leftPoint = (pp1xIsLessThanPp2X) ? pp1 : pp2;
+			const math::Vec3<int>* rightPoint = (pp1xIsLessThanPp2X) ? pp2 : pp1;
+
+			// LEFT LINE
+			bool leftPointIsLeftOfP0 = (leftPoint->x < pp0->x);
+			int xDiff0 = (leftPointIsLeftOfP0) ? pp0->x - leftPoint->x : leftPoint->x - pp0->x;
+			int yDiff0 = leftPoint->y - pp0->y;
+
+			bool isLongDimension0X = (yDiff0 < xDiff0);
+			int longDelta0 = (isLongDimension0X) ? xDiff0 : yDiff0;
+			int shortDelta0 = (isLongDimension0X) ? yDiff0 : xDiff0;
+
+			int negIncrement0 = 2 * shortDelta0;
+			int acc0 = negIncrement0 - longDelta0;
+			int posIncrement0 = negIncrement0 - (2 * longDelta0);
+			int x0Increment = (leftPointIsLeftOfP0) ? -1 : 1;
+
+			// RIGHT LINE
+			bool rightPointIsRightOfP0 = (pp0->x < rightPoint->x);
+			int xDiff1 = (rightPointIsRightOfP0) ? rightPoint->x - pp0->x : pp0->x - rightPoint->x;
+			int yDiff1 = rightPoint->y - pp0->y;
+
+			bool isLongDimension1X = (yDiff1 < xDiff1);
+			int longDelta1 = (isLongDimension1X) ? xDiff1 : yDiff1;
+			int shortDelta1 = (isLongDimension1X) ? yDiff1 : xDiff1;
+
+			int negIncrement1 = 2 * shortDelta1;
+			int acc1 = negIncrement1 - longDelta1;
+			int posIncrement1 = negIncrement1 - (2 * longDelta1);
+			int x1Increment = (rightPointIsRightOfP0) ? 1 : -1;
+
+			// Copy the x & y values for leftPoint & rightPoint so we can modify them safely inside this function
+			int x0 = pp0->x;
+			int x1 = pp0->x;
+
+			for (int y = pp0->y; y <= pp1->y - 1; y += 1)	// Note that p1.y has already been sorte to be the vertical mid point of the triangle
 			{
-				/*				p0
-				 *			   / |
-				 *	|		  /  |
-				 *	|		p1---| split
-				 *	V		  \  |
-				 * +ve y	   \ |
-				 *				p2
-				 */
-				FillFlatBottomTriangle(renderBuffer, color, *pp0, *pp1, splitPoint);
-				FillFlatTopTriangle(renderBuffer, color, *pp1, splitPoint, *pp2);
+				// Loop through the x0 / acc0 evaluation until acc0 is +ve.
+				// acc0 turning +ve is the indication we should plot.
+				if (isLongDimension0X)
+				{
+					while ((acc0 < 0) && (negIncrement0 > 0)) // x0 needs to increment AT LEAST once since it's the long dimension. i.e. it needs to increment more than y
+					{
+						acc0 += negIncrement0;
+						x0 += x0Increment;
+					}
+				}
+
+				if (isLongDimension1X)
+				{
+					while ((acc1 < 0) && (negIncrement1 > 0))
+					{
+						acc1 += negIncrement1;
+						x1 += x1Increment;
+					}
+				}
+
+				// draw scanline to fill in triangle between x0 & x1
+				DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y);
+
+				// line p0 --> p1: decide to increment x0 or not for current y
+				if (isLongDimension0X)
+				{
+					acc0 += posIncrement0;
+					x0 += x0Increment;
+				}
+				else
+				{
+					if (acc0 < 0)
+					{
+						acc0 += negIncrement0;
+					}
+					else
+					{
+						acc0 += posIncrement0;
+						x0 += x0Increment;
+					}
+				}
+
+				// line p0 --> p2: decide to decrement x1 or not for next y
+				if (isLongDimension1X)
+				{
+					acc1 += posIncrement1;
+					x1 += x1Increment;
+				}
+				else
+				{
+					if (acc1 < 0)
+					{
+						acc1 += negIncrement1;
+					}
+					else
+					{
+						acc1 += posIncrement1;
+						x1 += x1Increment;
+					}
+				}
 			}
-			else if (splitPoint.x < pp1->x)	// major left triangle
+
+			// Now y is at pp1->y, so draw the scanline. Need to work out if pp1->y is left or right.
+			if (pp1xIsLessThanPp2X) // pp1->y is the leftPoint. i.e. Right major triangle
 			{
-				/*			  p0
-				 *			  | \
-				 *	|		  |  \
-				 *	|	split |---p1
-				 *	V		  |  /
-				 * +ve y	  | /
-				 *			  p2
-				 */
-				FillFlatBottomTriangle(renderBuffer, color, *pp0, splitPoint, *pp1); // !!! TODO - figure out why this can cause ~8000ms rendering times for the teapot !!!
-				FillFlatTopTriangle(renderBuffer, color, splitPoint, *pp1, *pp2);
+				math::Vec3<int> intermediatePoint = { x1, pp1->y, 0 };
+				FillFlatTopTriangle(renderBuffer, color, *pp1, intermediatePoint, *pp2);
+			}
+			else	// pp1->y is the rightPoint. i.e. Left major triangle
+			{
+				math::Vec3<int> intermediatePoint = { x0, pp1->y, 0 };
+				FillFlatTopTriangle(renderBuffer, color, intermediatePoint, *pp1, *pp2);
 			}
 		}
 	}

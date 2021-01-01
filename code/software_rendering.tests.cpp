@@ -577,7 +577,7 @@ void RunSoftwareRenderingTests()
 	 *	  |---|---|---|---|
 	 *	1 |   | x | x |   |
 	 *	  |---|---|---|---|
-	 *	2 | O | x | x |   |
+	 *	2 | O | x | x | x |
 	 *	  |---|---|---|---|
 	 *	3 |   |   | x | O |
 	 *	  |---|---|---|---|
@@ -585,7 +585,7 @@ void RunSoftwareRenderingTests()
 	uint32_t et7[16] = {
 		EMPTY,	EMPTY,	FILLED,	EMPTY,
 		EMPTY,	FILLED,	FILLED,	EMPTY,
-		FILLED,	FILLED,	FILLED,	EMPTY,
+		FILLED,	FILLED,	FILLED,	FILLED,
 		EMPTY,	EMPTY,	FILLED,	FILLED
 	};
 	RunFillTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 2, 0 }, et7);
