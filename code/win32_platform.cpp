@@ -42,11 +42,15 @@ static void Win32_SizeRenderBufferToCurrentWindow(HWND window)
 
 	renderBuffer.width = clientRect.right - clientRect.left;
 	renderBuffer.height = clientRect.bottom - clientRect.top;
-	renderBuffer.bytesPerPixel = 4;
+	renderBuffer.bytesPerPixel = sizeof(uint32_t);
 
 	if (renderBuffer.pixels)
 	{
 		VirtualFree(renderBuffer.pixels, 0, MEM_RELEASE);
+	}
+	if (renderBuffer.depth)
+	{
+		VirtualFree(renderBuffer.depth, 0, MEM_RELEASE);
 	}
 
 	bitmapInfo.bmiHeader.biSize = sizeof(bitmapInfo.bmiHeader);
@@ -56,9 +60,13 @@ static void Win32_SizeRenderBufferToCurrentWindow(HWND window)
 	bitmapInfo.bmiHeader.biBitCount = 32;
 	bitmapInfo.bmiHeader.biCompression = BI_RGB;
 
-	int bitmapMemorySize = (renderBuffer.width * renderBuffer.height) * renderBuffer.bytesPerPixel;
+	int bitmapPixelCount = renderBuffer.width * renderBuffer.height;
+	int bitmapMemorySize = bitmapPixelCount * renderBuffer.bytesPerPixel;
 	renderBuffer.pitch = renderBuffer.width * renderBuffer.bytesPerPixel;
 	renderBuffer.pixels = (uint32_t *)VirtualAlloc(0, bitmapMemorySize, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
+
+	int depthBufferMemorySize = bitmapPixelCount * sizeof(float);
+	renderBuffer.depth = (float *)VirtualAlloc(0, depthBufferMemorySize, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
 }
 
 static void Win32_DisplayRenderBufferInWindow(HDC deviceContext)

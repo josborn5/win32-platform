@@ -26,6 +26,7 @@ struct RenderBuffer
 	int height;
 	int pitch;
 	int bytesPerPixel; // = 4;
+	float* depth;
 };
 
 struct Button
