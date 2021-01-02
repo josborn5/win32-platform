@@ -66,6 +66,39 @@ namespace render
 	 *	|---|---|---|
 	 *	0   1   2   3	position ordinals
 	 *
+	 * x1, x2 & y parameters are the pixel and NOT the position ordinals
+	 */
+	static void DrawHorizontalLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, int x0, int x1, int y, float z)
+	{
+		const int* startX = &x0;
+		const int* endX = &x1;
+		if (x1 < x0)
+		{
+			std::swap(x0, x1);
+		}
+
+		int positionStartOfRow = renderBuffer.width * y;
+		int positionOfX0InRow = positionStartOfRow + *startX;
+		uint32_t* pixelPointer = renderBuffer.pixels + positionOfX0InRow;
+		float* depthPointer = renderBuffer.depth + positionOfX0InRow;
+		for (int i = *startX; i <= *endX; i += 1)
+		{
+			if (*depthPointer < z)
+			{
+				*depthPointer = z;
+				*pixelPointer = color;
+			}
+			pixelPointer++;
+			depthPointer++;
+		}
+	}
+
+	/**
+	 *	|---|---|---|
+	 *	| 0 | 1 | 2 |	pixel ordinals
+	 *	|---|---|---|
+	 *	0   1   2   3	position ordinals
+	 *
 	 * x, y0 & y1 parameters are the pixel and NOT the position ordinals
 	 */
 	static void DrawVerticalLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, int x, int y0, int y1)
@@ -185,7 +218,7 @@ namespace render
 	 *	   \ /	  +ve y (if +ve y is up, this is actually a flat bottom triangle)
 	 *	    p2
 	 */
-	void FillFlatTopTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
+	void FillFlatTopTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2, float z)
 	{
 		// LINE 0-->2
 		bool p2IsRightOfP0 = (p0.x < p2.x);
@@ -222,7 +255,7 @@ namespace render
 		for (int y = p0.y; y <= p2.y; y += 1)
 		{
 			// draw scanline to fill in triangle between x0 & x1
-			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y);
+			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y, z);
 
 			// Loop through the x0 / acc0 evaluation until acc0 is +ve.
 			// acc0 turning +ve is the indication we should plot.
@@ -291,7 +324,7 @@ namespace render
 	 *	 /      \	  +ve y (if +ve y is up, this is actually a flat top triangle)
 	 *	p1------p2
 	 */
-	void FillFlatBottomTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
+	void FillFlatBottomTriangle(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2, float z)
 	{
 		// LINE 0-->1
 		bool p1IsLeftOfP0 = (p1.x < p0.x);
@@ -349,7 +382,7 @@ namespace render
 			}
 
 			// draw scanline to fill in triangle between x0 & x1
-			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y);
+			DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y, z);
 
 			// line p0 --> p1: decide to increment x0 or not for current y
 			if (isLongDimension0X)
@@ -391,10 +424,10 @@ namespace render
 		}
 
 		// draw final scanline to fill in triangle between x0 & x1
-		DrawHorizontalLineInPixels(renderBuffer, color, p1.x, p2.x, p1.y);
+		DrawHorizontalLineInPixels(renderBuffer, color, p1.x, p2.x, p1.y, z);
 	}
 
-	void FillTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2)
+	void FillTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const math::Vec3<int> &p0, const math::Vec3<int> &p1, const math::Vec3<int> &p2, float z)
 	{
 		const math::Vec3<int>* pp0 = &p0;
 		const math::Vec3<int>* pp1 = &p1;
@@ -428,7 +461,7 @@ namespace render
 			{
 				std::swap(pp0, pp1);
 			}
-			FillFlatTopTriangle(renderBuffer, color, *pp0, *pp1, *pp2);
+			FillFlatTopTriangle(renderBuffer, color, *pp0, *pp1, *pp2, z);
 		}
 		else if (pp1->y == pp2->y) // natural flat bottom
 		{
@@ -437,7 +470,7 @@ namespace render
 			{
 				std::swap(pp1, pp2);
 			}
-			FillFlatBottomTriangle(renderBuffer, color, *pp0, *pp1, *pp2);
+			FillFlatBottomTriangle(renderBuffer, color, *pp0, *pp1, *pp2, z);
 		}
 		else // general triangle
 		{
@@ -505,7 +538,7 @@ namespace render
 				}
 
 				// draw scanline to fill in triangle between x0 & x1
-				DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y);
+				DrawHorizontalLineInPixels(renderBuffer, color, x0, x1, y, z);
 
 				// line p0 --> p1: decide to increment x0 or not for current y
 				if (isLongDimension0X)
@@ -550,12 +583,12 @@ namespace render
 			if (pp1xIsLessThanPp2X) // pp1->y is the leftPoint. i.e. Right major triangle
 			{
 				math::Vec3<int> intermediatePoint = { x1, pp1->y, 0 };
-				FillFlatTopTriangle(renderBuffer, color, *pp1, intermediatePoint, *pp2);
+				FillFlatTopTriangle(renderBuffer, color, *pp1, intermediatePoint, *pp2, z);
 			}
 			else	// pp1->y is the rightPoint. i.e. Left major triangle
 			{
 				math::Vec3<int> intermediatePoint = { x0, pp1->y, 0 };
-				FillFlatTopTriangle(renderBuffer, color, intermediatePoint, *pp1, *pp2);
+				FillFlatTopTriangle(renderBuffer, color, intermediatePoint, *pp1, *pp2, z);
 			}
 		}
 	}
@@ -568,16 +601,20 @@ namespace render
 		DrawLineInPixels(renderBuffer, color, p2, p0);
 	}
 
-	void ClearScreen(const RenderBuffer &renderBuffer, int x0, int y0, int x1, int y1, uint32_t color)
+	void ClearScreen(const RenderBuffer &renderBuffer, uint32_t color)
 	{
-		uint32_t *pixel = renderBuffer.pixels;
+		uint32_t* pixel = renderBuffer.pixels;
+		float* depth = renderBuffer.depth;
 
-		for (int y = y0; y < y1; y += 1)
+		for (int y = 0; y < renderBuffer.height; y += 1)
 		{
-			for (int x = x0; x< x1; x += 1)
+			for (int x = 0; x < renderBuffer.width; x += 1)
 			{
 				*pixel = color;
 				pixel++;
+
+				*depth = 0.0f;;
+				depth++;
 			}
 		}
 	}
@@ -743,7 +780,12 @@ namespace render
 				math::Vec3<int> p0Int = { (int)draw.p[0].x, (int)draw.p[0].y };
 				math::Vec3<int> p1Int = { (int)draw.p[1].x, (int)draw.p[1].y };
 				math::Vec3<int> p2Int = { (int)draw.p[2].x, (int)draw.p[2].y };
-				render::FillTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int);
+
+				// Super rough, take the depth as the average z value
+				// For whatever reason, the z values are inverted for the teapot. i.e. closer triangles have a lower Z value.
+				// As an ultra-hack I'm doing 10 minus the z-value to invert them.
+				float z = 10.0f - ((draw.p[0].z + draw.p[1].z + draw.p[2].z) / 3.0f);
+				render::FillTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int, z);
 			}
 		}
 	}

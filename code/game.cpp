@@ -118,7 +118,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 		camera.position.y += positionIncrement;
 	}
 
-	render::ClearScreen(renderBuffer, 0, 0, renderBuffer.width, renderBuffer.height, BACKGROUND_COLOR);
+	render::ClearScreen(renderBuffer, BACKGROUND_COLOR);
 
 	theta += dt;
 	// Initialize the rotation matrices
