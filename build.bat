@@ -13,7 +13,9 @@ SET CODE_DIR=code
 SET OUTPUT_DIR=bin
 
 call "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x64
-IF NOT EXIST %OUTPUT_DIR% mkdir %OUTPUT_DIR%
+
+rmdir /S /Q %OUTPUT_DIR%
+mkdir %OUTPUT_DIR%
 pushd %OUTPUT_DIR%
 
 SET COMMON_COMPILER_FLAGS=-MT -nologo -Gm- -GR- -EHa- -Oi -WX -W4 -wd4100 -wd4201 -DFLAG_SLOW=1 -DFLAG_WIN32=1 -FC -Z7 -Fmwin32_platform.map /EHsc
@@ -27,5 +29,7 @@ REM 64-bit build
 cl %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\unit_tests.cpp /link %COMMON_LINKER_FLAGS%
 
 cl %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\game.cpp /link %COMMON_LINKER_FLAGS%
+
+xcopy ..\%CODE_DIR%\teapot.obj .
 
 popd
