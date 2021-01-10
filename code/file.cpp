@@ -1,14 +1,14 @@
-
 #include <fstream>
 #include <strstream>
 #include <string>
 #include <iostream>
 #include <vector>
+#include "file.hpp"
 
 namespace gentle
 {
 	template<typename T>
-	static bool ReadObjFileToVec4(std::string const &filename, std::vector<gentle::Triangle4d<T>> &triangles)
+	bool ReadObjFileToVec4(std::string const &filename, std::vector<gentle::Triangle4d<T>> &triangles)
 	{
 		std::ifstream objFile;
 		objFile.open(filename);
@@ -33,7 +33,7 @@ namespace gentle
 				gentle::Vec4<T> vertex;
 				// expect line to have syntax 'v x y z' where x, y & z are the ordinals of the point position
 				stringStream >> junk >> vertex.x >> vertex.y >> vertex.z;
-				vertex.w = 1.0f;
+				vertex.w = (T)1.0;
 				vertices.push_back(vertex);
 			}
 
@@ -51,4 +51,7 @@ namespace gentle
 
 		return true;
 	}
+	template bool ReadObjFileToVec4(std::string const &filename, std::vector<Triangle4d<int>> &triangles);
+	template bool ReadObjFileToVec4(std::string const &filename, std::vector<Triangle4d<float>> &triangles);
+	template bool ReadObjFileToVec4(std::string const &filename, std::vector<Triangle4d<double>> &triangles);
 }

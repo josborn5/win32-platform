@@ -4,8 +4,7 @@
 #include "software_rendering.hpp"
 #include "math.hpp"
 #include "geometry.hpp"
-
-#include "obj_file_reader.cpp"
+#include "file.hpp"
 
 gentle::Camera<float> camera;
 gentle::Mesh<float> mesh;

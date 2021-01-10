@@ -1,3 +1,6 @@
+#ifndef SOFTWARE_RENDERING_H
+#define SOFTWARE_RENDERING_H
+
 #include "platform.hpp"
 #include "math.hpp"
 #include "geometry.hpp"
@@ -203,3 +206,5 @@ namespace gentle
 		}
 	}
 }
+
+#endif
