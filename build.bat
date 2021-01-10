@@ -18,7 +18,7 @@ rmdir /S /Q %OUTPUT_DIR%
 mkdir %OUTPUT_DIR%
 pushd %OUTPUT_DIR%
 
-SET COMMON_COMPILER_FLAGS=-MT -nologo -Gm- -GR- -EHa- -Oi -WX -W4 -wd4100 -wd4201 -DFLAG_SLOW=1 -DFLAG_WIN32=1 -FC -Z7 -Fmwin32_platform.map /EHsc
+SET COMMON_COMPILER_FLAGS=-MT -nologo -Gm- -GR- -EHa- -Oi -WX -W4 -wd4100 -wd4201 -DFLAG_SLOW=1 -DFLAG_WIN32=1 -FC -Z7 -Fmwin32_platform.map /EHsc /O2
 SET COMMON_LINKER_FLAGS=-opt:ref user32.lib Gdi32.lib winmm.lib
 
 REM 32-bit build
