@@ -40,7 +40,7 @@ void RunLineDrawTest(gentle::Vec2<int> p0, gentle::Vec2<int> p1, uint32_t* expec
 	renderBuffer.width = 4;					// Size the buffer to 16 pixels. pixelArray is 18 pixels so the test can tell if the function ever oversteps the bounds of RenderBuffer.
 	renderBuffer.pixels = &pixelArray[1];	// Use the second element in pixelArray so we can tell if the zero-th element ever gets accessed.
 
-	render::DrawLineInPixels(renderBuffer, FILLED, p0, p1);
+	gentle::DrawLineInPixels(renderBuffer, FILLED, p0, p1);
 
 	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
 
@@ -79,7 +79,7 @@ void Run4x4FillTriangleTest(gentle::Vec3<int> p0, gentle::Vec3<int> p1, gentle::
 	renderBuffer.width = 4;					// Size the buffer to 16 pixels. pixelArray is 18 pixels so the test can tell if the function ever oversteps the bounds of RenderBuffer.
 	renderBuffer.pixels = &pixelArray[1];	// Use the second element in pixelArray so we can tell if the zero-th element ever gets accessed.
 
-	render::FillTriangleInPixels(renderBuffer, FILLED, p0, p1, p2, 0.0f);
+	gentle::FillTriangleInPixels(renderBuffer, FILLED, p0, p1, p2, 0.0f);
 
 	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
 
@@ -118,7 +118,7 @@ void Run6x4FillTriangleTest(gentle::Vec3<int> p0, gentle::Vec3<int> p1, gentle::
 	renderBuffer.width = 6;					// Size the buffer to 16 pixels. pixelArray is 25 pixels so the test can tell if the function ever oversteps the bounds of RenderBuffer.
 	renderBuffer.pixels = &pixelArray[1];	// Use the second element in pixelArray so we can tell if the zero-th element ever gets accessed.
 
-	render::FillTriangleInPixels(renderBuffer, FILLED, p0, p1, p2, 0.0f);
+	gentle::FillTriangleInPixels(renderBuffer, FILLED, p0, p1, p2, 0.0f);
 
 	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
 

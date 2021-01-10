@@ -117,7 +117,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 		camera.position.y += positionIncrement;
 	}
 
-	render::ClearScreen(renderBuffer, BACKGROUND_COLOR);
+	gentle::ClearScreen(renderBuffer, BACKGROUND_COLOR);
 
 	theta += dt;
 	// Initialize the rotation matrices
@@ -135,5 +135,5 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	worldMatrix = gentle::MakeIdentityMatrix<float>();
 	worldMatrix = gentle::MultiplyMatrixWithMatrix(worldMatrix, translationMatrix);
 
-	render::TransformAndRenderMesh(renderBuffer, mesh, camera, worldMatrix);
+	gentle::TransformAndRenderMesh(renderBuffer, mesh, camera, worldMatrix);
 }

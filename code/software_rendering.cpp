@@ -2,7 +2,7 @@
 #include "math.hpp"
 #include "geometry.hpp"
 
-namespace render
+namespace gentle
 {
 	/*static int ClampInt(int min, int val, int max)
 	{
@@ -122,7 +122,7 @@ namespace render
 	 * p0 & p1 are pixel and NOT position ordinals
 	 */
 	// Implemented with Bresenham's algorithm
-	static void DrawLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, const gentle::Vec2<int> &p0, const gentle::Vec2<int> &p1)
+	static void DrawLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, const Vec2<int> &p0, const Vec2<int> &p1)
 	{
 		int x0 = p0.x;
 		int y0 = p0.y;
@@ -218,7 +218,7 @@ namespace render
 	 *	   \ /	  +ve y (if +ve y is up, this is actually a flat bottom triangle)
 	 *	    p2
 	 */
-	void FillFlatTopTriangle(const RenderBuffer &renderBuffer, uint32_t color, const gentle::Vec3<int> &p0, const gentle::Vec3<int> &p1, const gentle::Vec3<int> &p2, float z)
+	void FillFlatTopTriangle(const RenderBuffer &renderBuffer, uint32_t color, const Vec3<int> &p0, const Vec3<int> &p1, const Vec3<int> &p2, float z)
 	{
 		// LINE 0-->2
 		bool p2IsRightOfP0 = (p0.x < p2.x);
@@ -324,7 +324,7 @@ namespace render
 	 *	 /      \	  +ve y (if +ve y is up, this is actually a flat top triangle)
 	 *	p1------p2
 	 */
-	void FillFlatBottomTriangle(const RenderBuffer &renderBuffer, uint32_t color, const gentle::Vec3<int> &p0, const gentle::Vec3<int> &p1, const gentle::Vec3<int> &p2, float z)
+	void FillFlatBottomTriangle(const RenderBuffer &renderBuffer, uint32_t color, const Vec3<int> &p0, const Vec3<int> &p1, const Vec3<int> &p2, float z)
 	{
 		// LINE 0-->1
 		bool p1IsLeftOfP0 = (p1.x < p0.x);
@@ -427,11 +427,11 @@ namespace render
 		DrawHorizontalLineInPixels(renderBuffer, color, p1.x, p2.x, p1.y, z);
 	}
 
-	void FillTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const gentle::Vec3<int> &p0, const gentle::Vec3<int> &p1, const gentle::Vec3<int> &p2, float z)
+	void FillTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const Vec3<int> &p0, const Vec3<int> &p1, const Vec3<int> &p2, float z)
 	{
-		const gentle::Vec3<int>* pp0 = &p0;
-		const gentle::Vec3<int>* pp1 = &p1;
-		const gentle::Vec3<int>* pp2 = &p2;
+		const Vec3<int>* pp0 = &p0;
+		const Vec3<int>* pp1 = &p1;
+		const Vec3<int>* pp2 = &p2;
 
 		/* Sort the three points of the triangle by their y co-ordinate
 		 *
@@ -480,8 +480,8 @@ namespace render
 
 			// At this point we know that p0 has lowest y value. But we need to work out if p1 is left or right of p2 in order to start scanning.
 			bool pp1xIsLessThanPp2X = (pp1->x < pp2->x);
-			const gentle::Vec3<int>* leftPoint = (pp1xIsLessThanPp2X) ? pp1 : pp2;
-			const gentle::Vec3<int>* rightPoint = (pp1xIsLessThanPp2X) ? pp2 : pp1;
+			const Vec3<int>* leftPoint = (pp1xIsLessThanPp2X) ? pp1 : pp2;
+			const Vec3<int>* rightPoint = (pp1xIsLessThanPp2X) ? pp2 : pp1;
 
 			// LEFT LINE
 			bool leftPointIsLeftOfP0 = (leftPoint->x < pp0->x);
@@ -582,19 +582,19 @@ namespace render
 			// Now y is at pp1->y, so draw the scanline. Need to work out if pp1->y is left or right.
 			if (pp1xIsLessThanPp2X) // pp1->y is the leftPoint. i.e. Right major triangle
 			{
-				gentle::Vec3<int> intermediatePoint = { x1, pp1->y, 0 };
+				Vec3<int> intermediatePoint = { x1, pp1->y, 0 };
 				FillFlatTopTriangle(renderBuffer, color, *pp1, intermediatePoint, *pp2, z);
 			}
 			else	// pp1->y is the rightPoint. i.e. Left major triangle
 			{
-				gentle::Vec3<int> intermediatePoint = { x0, pp1->y, 0 };
+				Vec3<int> intermediatePoint = { x0, pp1->y, 0 };
 				FillFlatTopTriangle(renderBuffer, color, intermediatePoint, *pp1, *pp2, z);
 			}
 		}
 	}
 
 
-	void DrawTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const gentle::Vec2<int> &p0, const gentle::Vec2<int> &p1, const gentle::Vec2<int> &p2)
+	void DrawTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const Vec2<int> &p0, const Vec2<int> &p1, const Vec2<int> &p2)
 	{
 		DrawLineInPixels(renderBuffer, color, p0, p1);
 		DrawLineInPixels(renderBuffer, color, p1, p2);
@@ -620,45 +620,45 @@ namespace render
 	}
 
 	template<typename T>
-	void TransformAndRenderMesh(const RenderBuffer &renderBuffer, const gentle::Mesh<T> &mesh, const gentle::Camera<T> &camera, const gentle::Matrix4x4<T> transformMatrix)
+	void TransformAndRenderMesh(const RenderBuffer &renderBuffer, const Mesh<T> &mesh, const Camera<T> &camera, const Matrix4x4<T> transformMatrix)
 	{
 		const int RED = 0;
 		const int GREEN = 255;
 		const int BLUE = 0;
 
 		// Camera matrix
-		gentle::Vec4<T> target = AddVectors(camera.position, camera.direction);
-		gentle::Matrix4x4<float> cameraMatrix = PointAt(camera.position, target, camera.up);
+		Vec4<T> target = AddVectors(camera.position, camera.direction);
+		Matrix4x4<float> cameraMatrix = PointAt(camera.position, target, camera.up);
 
 		// View matrix
-		gentle::Matrix4x4<float> viewMatrix = LookAt(cameraMatrix);
+		Matrix4x4<float> viewMatrix = LookAt(cameraMatrix);
 
-		std::vector<gentle::Triangle4d<float>> trianglesToDraw;
+		std::vector<Triangle4d<float>> trianglesToDraw;
 
-		for (gentle::Triangle4d<float> tri : mesh.triangles)
+		for (Triangle4d<float> tri : mesh.triangles)
 		{
-			gentle::Triangle4d<float> transformed;
-			gentle::Triangle4d<float> viewed;
-			gentle::Triangle4d<float> projected; // TODO: switch this to Triangle4d so the depth information is kept and can be used in a depth buffer to prevent double rendering of triangles behind each other
+			Triangle4d<float> transformed;
+			Triangle4d<float> viewed;
+			Triangle4d<float> projected; // TODO: switch this to Triangle4d so the depth information is kept and can be used in a depth buffer to prevent double rendering of triangles behind each other
 
 			// Transform the triangle in the mesh
-			gentle::MultiplyVectorWithMatrix(tri.p[0], transformed.p[0], transformMatrix);
-			gentle::MultiplyVectorWithMatrix(tri.p[1], transformed.p[1], transformMatrix);
-			gentle::MultiplyVectorWithMatrix(tri.p[2], transformed.p[2], transformMatrix);
+			MultiplyVectorWithMatrix(tri.p[0], transformed.p[0], transformMatrix);
+			MultiplyVectorWithMatrix(tri.p[1], transformed.p[1], transformMatrix);
+			MultiplyVectorWithMatrix(tri.p[2], transformed.p[2], transformMatrix);
 
 			// Work out the normal of the triangle
-			gentle::Vec4<float> line1 = SubtractVectors(transformed.p[1], transformed.p[0]);
-			gentle::Vec4<float> line2 = SubtractVectors(transformed.p[2], transformed.p[0]);
-			gentle::Vec4<float> normal = gentle::UnitVector(gentle::CrossProduct(line1, line2));
+			Vec4<float> line1 = SubtractVectors(transformed.p[1], transformed.p[0]);
+			Vec4<float> line2 = SubtractVectors(transformed.p[2], transformed.p[0]);
+			Vec4<float> normal = UnitVector(CrossProduct(line1, line2));
 
-			gentle::Vec4<float> fromCameraToTriangle = gentle::SubtractVectors(transformed.p[0], camera.position);
+			Vec4<float> fromCameraToTriangle = SubtractVectors(transformed.p[0], camera.position);
 			float dot = DotProduct(normal, fromCameraToTriangle);
 
 			if (dot >= 0.0f)
 			{
-				gentle::Vec4<float> lightDirection = { 0.0f, 0.0f, 1.0f };
-				gentle::Vec4<float> normalizedLightDirection = UnitVector(lightDirection);
-				float shade = gentle::DotProduct(normal, normalizedLightDirection);
+				Vec4<float> lightDirection = { 0.0f, 0.0f, 1.0f };
+				Vec4<float> normalizedLightDirection = UnitVector(lightDirection);
+				float shade = DotProduct(normal, normalizedLightDirection);
 				// Use bitwise operators to construct a single uint32_t value from three 0-255 RGB values.
 				// There are 32 bits to fill up.
 				// Each 0-255 value is a single byte, or 8 bits. So the 32 bits will be split into 4 segments (32 bits / 8 bits = 4).
@@ -677,25 +677,25 @@ namespace render
 				uint32_t triangleColor = (uint32_t)(0x000000 + (int(RED * shade) << 16) + (int(GREEN * shade) << 8) + int(BLUE * shade));
 
 				// Convert the triangle position from world space to view space
-				gentle::MultiplyVectorWithMatrix(transformed.p[0], viewed.p[0], viewMatrix);
-				gentle::MultiplyVectorWithMatrix(transformed.p[1], viewed.p[1], viewMatrix);
-				gentle::MultiplyVectorWithMatrix(transformed.p[2], viewed.p[2], viewMatrix);
+				MultiplyVectorWithMatrix(transformed.p[0], viewed.p[0], viewMatrix);
+				MultiplyVectorWithMatrix(transformed.p[1], viewed.p[1], viewMatrix);
+				MultiplyVectorWithMatrix(transformed.p[2], viewed.p[2], viewMatrix);
 
 				// Clip the triangles before they get projected. Define a plane just in fron of the camera to clip against
-				gentle::Triangle4d<float> clipped[2];
-				gentle::Plane<float> inFrontOfScreen = { 0.0f, 0.0f, 0.1f,	 0.0f, 0.0f, 1.0f };
+				Triangle4d<float> clipped[2];
+				Plane<float> inFrontOfScreen = { 0.0f, 0.0f, 0.1f,	 0.0f, 0.0f, 1.0f };
 				int clippedTriangleCount = ClipTriangleAgainstPlane(inFrontOfScreen, viewed, clipped[0], clipped[1]);
 
 				for (int i = 0; i < clippedTriangleCount; i += 1)
 				{
 					// Project each triangle in 3D space onto the 2D space triangle to render
-					gentle::Project3DPointTo2D(clipped[i].p[0], projected.p[0], projectionMatrix);
-					gentle::Project3DPointTo2D(clipped[i].p[1], projected.p[1], projectionMatrix);
-					gentle::Project3DPointTo2D(clipped[i].p[2], projected.p[2], projectionMatrix);
+					Project3DPointTo2D(clipped[i].p[0], projected.p[0], projectionMatrix);
+					Project3DPointTo2D(clipped[i].p[1], projected.p[1], projectionMatrix);
+					Project3DPointTo2D(clipped[i].p[2], projected.p[2], projectionMatrix);
 
 					// Scale to view
 					const float sf = 500.0f;
-					gentle::Triangle4d<float> triToRender = projected;
+					Triangle4d<float> triToRender = projected;
 					triToRender.p[0].x *= sf;
 					triToRender.p[0].y *= sf;
 					triToRender.p[1].x *= sf;
@@ -716,10 +716,10 @@ namespace render
 			}
 		}
 
-		for (gentle::Triangle4d<float> triToRender : trianglesToDraw)
+		for (Triangle4d<float> triToRender : trianglesToDraw)
 		{
-			gentle::Triangle4d<float> clipped[2];
-			std::list<gentle::Triangle4d<float>> triangleQueue;
+			Triangle4d<float> clipped[2];
+			std::list<Triangle4d<float>> triangleQueue;
 			triangleQueue.push_back(triToRender);
 			int newTriangles = 1;
 
@@ -729,14 +729,14 @@ namespace render
 				int trianglesToAdd = 0;
 				while (newTriangles > 0)
 				{
-					gentle::Triangle4d<float> test = triangleQueue.front();
+					Triangle4d<float> test = triangleQueue.front();
 					triangleQueue.pop_front();
 					newTriangles -= 1;
 
-					gentle::Plane<float> bottomOfScreen = { 0.0f, 0.0f, 0.0f,								0.0f, 1.0f, 0.0f };
-					gentle::Plane<float> topOfScreen = { 0.0f, (float)(renderBuffer.height - 1), 0.0f,		0.0f, -1.0f, 0.0f };
-					gentle::Plane<float> leftOfScreen = { 0.0f, 0.0f, 0.0f,									1.0f, 0.0f, 0.0f };
-					gentle::Plane<float> rightOfScreen = { (float)(renderBuffer.width - 1), 0.0f, 0.0f,		-1.0f, 0.0f, 0.0f };
+					Plane<float> bottomOfScreen = { 0.0f, 0.0f, 0.0f,								0.0f, 1.0f, 0.0f };
+					Plane<float> topOfScreen = { 0.0f, (float)(renderBuffer.height - 1), 0.0f,		0.0f, -1.0f, 0.0f };
+					Plane<float> leftOfScreen = { 0.0f, 0.0f, 0.0f,									1.0f, 0.0f, 0.0f };
+					Plane<float> rightOfScreen = { (float)(renderBuffer.width - 1), 0.0f, 0.0f,		-1.0f, 0.0f, 0.0f };
 					switch (edge)
 					{
 						case 0:
@@ -770,22 +770,22 @@ namespace render
 				newTriangles = (int)triangleQueue.size();
 			}
 
-			for (gentle::Triangle4d<float> draw : triangleQueue)
+			for (Triangle4d<float> draw : triangleQueue)
 			{
-				// gentle::Vec2<int> p0Int = { (int)draw.p[0].x, (int)draw.p[0].y };
-				// gentle::Vec2<int> p1Int = { (int)draw.p[1].x, (int)draw.p[1].y };
-				// gentle::Vec2<int> p2Int = { (int)draw.p[2].x, (int)draw.p[2].y };
-				// render::DrawTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int);
+				// Vec2<int> p0Int = { (int)draw.p[0].x, (int)draw.p[0].y };
+				// Vec2<int> p1Int = { (int)draw.p[1].x, (int)draw.p[1].y };
+				// Vec2<int> p2Int = { (int)draw.p[2].x, (int)draw.p[2].y };
+				// DrawTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int);
 
-				gentle::Vec3<int> p0Int = { (int)draw.p[0].x, (int)draw.p[0].y };
-				gentle::Vec3<int> p1Int = { (int)draw.p[1].x, (int)draw.p[1].y };
-				gentle::Vec3<int> p2Int = { (int)draw.p[2].x, (int)draw.p[2].y };
+				Vec3<int> p0Int = { (int)draw.p[0].x, (int)draw.p[0].y };
+				Vec3<int> p1Int = { (int)draw.p[1].x, (int)draw.p[1].y };
+				Vec3<int> p2Int = { (int)draw.p[2].x, (int)draw.p[2].y };
 
 				// Super rough, take the depth as the average z value
 				// For whatever reason, the z values are inverted for the teapot. i.e. closer triangles have a lower Z value.
 				// As an ultra-hack I'm doing 10 minus the z-value to invert them.
 				float z = 10.0f - ((draw.p[0].z + draw.p[1].z + draw.p[2].z) / 3.0f);
-				render::FillTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int, z);
+				FillTriangleInPixels(renderBuffer, draw.color, p0Int, p1Int, p2Int, z);
 			}
 		}
 	}
