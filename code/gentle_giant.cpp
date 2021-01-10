@@ -1,5 +1,2 @@
 #include "geometry.cpp"
-#include "math.hpp"
-#include "obj_file_reader.cpp"
 #include "software_rendering.cpp"
-#include "win32_platform.cpp"

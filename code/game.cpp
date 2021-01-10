@@ -1,10 +1,11 @@
 #include <math.h>
 #include <list>
-#include "win32_platform.cpp"
-#include "software_rendering.cpp"
 
+#include "win32_platform.cpp"
+
+#include "software_rendering.hpp"
 #include "math.hpp"
-#include "geometry.cpp"
+#include "geometry.hpp"
 
 #include "obj_file_reader.cpp"
 

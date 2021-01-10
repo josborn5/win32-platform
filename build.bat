@@ -30,7 +30,7 @@ cl.exe %COMMON_COMPILER_FLAGS% /c ..\%CODE_DIR%\gentle_giant.cpp
 REM use the 'lib.exe' tool to create a lib file from the bj files
 lib.exe -nologo gentle_giant.obj
 
-cl.exe %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\game.cpp /link %COMMON_LINKER_FLAGS%
+cl.exe %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\game.cpp /link %COMMON_LINKER_FLAGS% gentle_giant.lib
 
 xcopy ..\%CODE_DIR%\teapot.obj .
 
