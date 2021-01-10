@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include "math.tests.cpp"
 #include "software_rendering.tests.cpp"
-#include "geometry_tests.cpp"
+#include "geometry.tests.cpp"
 
 int main()
 {
