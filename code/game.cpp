@@ -19,7 +19,7 @@ bool isTeapot = true;
 
 void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuffer)
 {
-	ReadObjFileToVec4("teapot.obj", mesh.triangles);
+	gentle::ReadObjFileToVec4("teapot.obj", mesh.triangles);
 	
 	// Using a clockwise winding convention
 	if (!isTeapot)
