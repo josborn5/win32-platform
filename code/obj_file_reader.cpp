@@ -15,7 +15,7 @@ static bool ReadObjFileToVec4(std::string const &filename, std::vector<Triangle4
 		return false;
 	}
 
-	std::vector<math::Vec4<T>> vertices;
+	std::vector<gentle::Vec4<T>> vertices;
 
 	while (!objFile.eof())
 	{
@@ -28,7 +28,7 @@ static bool ReadObjFileToVec4(std::string const &filename, std::vector<Triangle4
 
 		if (line[0] == 'v')
 		{
-			math::Vec4<T> vertex;
+			gentle::Vec4<T> vertex;
 			// expect line to have syntax 'v x y z' where x, y & z are the ordinals of the point position
 			stringStream >> junk >> vertex.x >> vertex.y >> vertex.z;
 			vertex.w = 1.0f;

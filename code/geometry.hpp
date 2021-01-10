@@ -7,21 +7,21 @@
 template<typename T>
 struct Triangle2d
 {
-	math::Vec2<T> p[3];
+	gentle::Vec2<T> p[3];
 };
 
 template<typename T>
 struct Triangle4d
 {
-	math::Vec4<T> p[3];
+	gentle::Vec4<T> p[3];
 	uint32_t color;
 };
 
 template<typename T>
 struct Plane
 {
-	math::Vec3<T> position;
-	math::Vec3<T> normal;
+	gentle::Vec3<T> position;
+	gentle::Vec3<T> normal;
 };
 
 template<typename T>
@@ -33,15 +33,15 @@ struct Mesh
 template<typename T>
 struct Camera
 {
-	math::Vec4<T> position;
-	math::Vec4<T> direction;
-	math::Vec4<T> up;
+	gentle::Vec4<T> position;
+	gentle::Vec4<T> direction;
+	gentle::Vec4<T> up;
 };
 
 template<typename T>
-math::Matrix4x4<T> MakeIdentityMatrix()
+gentle::Matrix4x4<T> MakeIdentityMatrix()
 {
-	math::Matrix4x4<T> matrix;
+	gentle::Matrix4x4<T> matrix;
 	matrix.m[0][0] = 1;
 	matrix.m[1][1] = 1;
 	matrix.m[2][2] = 1;
@@ -50,9 +50,9 @@ math::Matrix4x4<T> MakeIdentityMatrix()
 }
 
 template<typename T>
-math::Matrix4x4<T> MakeTranslationMatrix(T dispX, T dispY, T dispZ)
+gentle::Matrix4x4<T> MakeTranslationMatrix(T dispX, T dispY, T dispZ)
 {
-	math::Matrix4x4<T> matrix = MakeIdentityMatrix<T>();
+	gentle::Matrix4x4<T> matrix = MakeIdentityMatrix<T>();
 	matrix.m[3][0] = dispX;
 	matrix.m[3][1] = dispY;
 	matrix.m[3][2] = dispZ;
@@ -67,23 +67,23 @@ math::Matrix4x4<T> MakeTranslationMatrix(T dispX, T dispY, T dispZ)
  * | Tx | Ty | Tz | 1 |
  */
 template<typename T>
-math::Matrix4x4<T> PointAt(const math::Vec4<T> &position, const math::Vec4<T> &target, const math::Vec4<T> &up)
+gentle::Matrix4x4<T> PointAt(const gentle::Vec4<T> &position, const gentle::Vec4<T> &target, const gentle::Vec4<T> &up)
 {
 	// Vector from the position to the target is the new forward direction
-	math::Vec4<T> forwardUnit = math::SubtractVectors(target, position);
-	forwardUnit = math::UnitVector(forwardUnit);
+	gentle::Vec4<T> forwardUnit = gentle::SubtractVectors(target, position);
+	forwardUnit = gentle::UnitVector(forwardUnit);
 
 	// Calculate the new up direction of the new forward direction
 	T newUpScalar = DotProduct(up, forwardUnit);
-	math::Vec4<T> newUpTemp = MultiplyVectorByScalar(forwardUnit, newUpScalar);
-	math::Vec4<T> upUnit = SubtractVectors(up, newUpTemp);
-	upUnit = math::UnitVector(upUnit);
+	gentle::Vec4<T> newUpTemp = MultiplyVectorByScalar(forwardUnit, newUpScalar);
+	gentle::Vec4<T> upUnit = SubtractVectors(up, newUpTemp);
+	upUnit = gentle::UnitVector(upUnit);
 
 	// Calculate the new right direction for the new up & forward directions
-	math::Vec4<T> rightUnit = CrossProduct(upUnit, forwardUnit);
+	gentle::Vec4<T> rightUnit = CrossProduct(upUnit, forwardUnit);
 
 	// Construct the new transformation matrix
-	math::Matrix4x4<T> pointAt;
+	gentle::Matrix4x4<T> pointAt;
 	pointAt.m[0][0] = rightUnit.x;		pointAt.m[0][1] = rightUnit.y;		pointAt.m[0][2] = rightUnit.z;		pointAt.m[0][3] = 0;
 	pointAt.m[1][0] = upUnit.x;			pointAt.m[1][1] = upUnit.y;			pointAt.m[1][2] = upUnit.z;			pointAt.m[1][3] = 0;
 	pointAt.m[2][0] = forwardUnit.x;	pointAt.m[2][1] = forwardUnit.y;	pointAt.m[2][2] = forwardUnit.z;	pointAt.m[2][3] = 0;
@@ -99,13 +99,13 @@ math::Matrix4x4<T> PointAt(const math::Vec4<T> &position, const math::Vec4<T> &t
  * | -T.A | -T.B | -T.C | 1 |
  */
 template<typename T>
-math::Matrix4x4<T> LookAt(math::Matrix4x4<T> const &pointAt)
+gentle::Matrix4x4<T> LookAt(gentle::Matrix4x4<T> const &pointAt)
 {
 	T tDotA = (pointAt.m[3][0] * pointAt.m[0][0]) + (pointAt.m[3][1] * pointAt.m[0][1]) + (pointAt.m[3][2] * pointAt.m[0][2]);
 	T tDotB = (pointAt.m[3][0] * pointAt.m[1][0]) + (pointAt.m[3][1] * pointAt.m[1][1]) + (pointAt.m[3][2] * pointAt.m[1][2]);
 	T tDotC = (pointAt.m[3][0] * pointAt.m[2][0]) + (pointAt.m[3][1] * pointAt.m[2][1]) + (pointAt.m[3][2] * pointAt.m[2][2]);
 
-	math::Matrix4x4<T> lookAt;
+	gentle::Matrix4x4<T> lookAt;
 	lookAt.m[0][0] = pointAt.m[0][0];	lookAt.m[0][1] = pointAt.m[1][0];	lookAt.m[0][2] = pointAt.m[2][0];	lookAt.m[0][3] = 0;
 	lookAt.m[1][0] = pointAt.m[0][1];	lookAt.m[1][1] = pointAt.m[1][1];	lookAt.m[1][2] = pointAt.m[2][1];	lookAt.m[1][3] = 0;
 	lookAt.m[2][0] = pointAt.m[0][2];	lookAt.m[2][1] = pointAt.m[1][2];	lookAt.m[2][2] = pointAt.m[2][2];	lookAt.m[2][3] = 0;
@@ -114,33 +114,33 @@ math::Matrix4x4<T> LookAt(math::Matrix4x4<T> const &pointAt)
 }
 
 template<typename T>
-math::Vec4<T> IntersectPlane(const Plane<T> &plane, const math::Vec4<T> &lineStart, const math::Vec4<T> lineEnd)
+gentle::Vec4<T> IntersectPlane(const Plane<T> &plane, const gentle::Vec4<T> &lineStart, const gentle::Vec4<T> lineEnd)
 {
-	math::Vec3<T> normalizedPlaneN = math::UnitVector(plane.normal);
+	gentle::Vec3<T> normalizedPlaneN = gentle::UnitVector(plane.normal);
 	T planeD = DotProduct(normalizedPlaneN, plane.position);
 	T ad = DotProduct(normalizedPlaneN, lineStart);
 	T bd = DotProduct(normalizedPlaneN, lineEnd);
 	T t = (planeD - ad) / (bd - ad);
-	math::Vec4<T> lineStartToEnd = SubtractVectors(lineEnd, lineStart);
-	math::Vec4<T> lineToIntersect = MultiplyVectorByScalar(lineStartToEnd, t);
+	gentle::Vec4<T> lineStartToEnd = SubtractVectors(lineEnd, lineStart);
+	gentle::Vec4<T> lineToIntersect = MultiplyVectorByScalar(lineStartToEnd, t);
 	return AddVectors(lineStart, lineToIntersect);
 }
 
 template<typename T>
-T ShortestDistanceFromPointToPlane(const math::Vec4<T> &point, const math::Vec3<T> &planeP, const math::Vec3<T> &unitNormalToPlane)
+T ShortestDistanceFromPointToPlane(const gentle::Vec4<T> &point, const gentle::Vec3<T> &planeP, const gentle::Vec3<T> &unitNormalToPlane)
 {
-	T distance = math::DotProduct(unitNormalToPlane, point) - math::DotProduct(unitNormalToPlane, planeP);
+	T distance = gentle::DotProduct(unitNormalToPlane, point) - gentle::DotProduct(unitNormalToPlane, planeP);
 	return distance;
 }
 
 template<typename T>
 int ClipTriangleAgainstPlane(const Plane<T> &plane, Triangle4d<T> &inputTriangle, Triangle4d<T> &outputTriangle1, Triangle4d<T> &outputTriangle2)
 {
-	math::Vec3<T> unitNormalToPlane = math::UnitVector(plane.normal);
+	gentle::Vec3<T> unitNormalToPlane = gentle::UnitVector(plane.normal);
 
 	// Two baskets to store points that are inside the plane and points that are outside
-	math::Vec4<T>* insidePoints[3];
-	math::Vec4<T>* outsidePoints[3];
+	gentle::Vec4<T>* insidePoints[3];
+	gentle::Vec4<T>* outsidePoints[3];
 	int insidePointCount = 0;
 	int outsidePointCount = 0;
 
@@ -206,5 +206,19 @@ int ClipTriangleAgainstPlane(const Plane<T> &plane, Triangle4d<T> &inputTriangle
 
 	return 0;
 }
+
+gentle::Matrix4x4<float> MakeProjectionMatrix(float fieldOfVewDeg, float aspectRatio, float nearPlane, float farPlane);
+
+void SetZAxisRotationMatrix(float theta, gentle::Matrix4x4<float> &matrix);
+
+gentle::Matrix4x4<float> MakeZAxisRotationMatrix(float theta);
+
+void SetYAxisRotationMatrix(float theta, gentle::Matrix4x4<float> &matrix);
+
+gentle::Matrix4x4<float> MakeYAxisRotationMatrix(float theta);
+
+void SetXAxisRotationMatrix(float theta, gentle::Matrix4x4<float> &matrix);
+
+gentle::Matrix4x4<float> MakeXAxisRotationMatrix(float theta);
 
 #endif

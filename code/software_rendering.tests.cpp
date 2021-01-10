@@ -13,7 +13,7 @@ void ClearPixelArray(uint32_t* pixelArray, int arrayLength)
 	}
 }
 
-void RunLineDrawTest(math::Vec2<int> p0, math::Vec2<int> p1, uint32_t* expectedPixels)
+void RunLineDrawTest(gentle::Vec2<int> p0, gentle::Vec2<int> p1, uint32_t* expectedPixels)
 {
 	uint32_t pixelArray[18] = { EMPTY };	// define pixels as an an array of 16 uint32_t values
 											// NB this array lives on the stack in the scope of the RunSoftwareRenderingTests function only.
@@ -52,7 +52,7 @@ void RunLineDrawTest(math::Vec2<int> p0, math::Vec2<int> p1, uint32_t* expectedP
 	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
 }
 
-void Run4x4FillTriangleTest(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<int> p2, uint32_t* expectedPixels)
+void Run4x4FillTriangleTest(gentle::Vec3<int> p0, gentle::Vec3<int> p1, gentle::Vec3<int> p2, uint32_t* expectedPixels)
 {
 	uint32_t pixelArray[18] = { EMPTY };	// define pixels as an an array of 16 uint32_t values
 											// NB this array lives on the stack in the scope of the RunSoftwareRenderingTests function only.
@@ -91,7 +91,7 @@ void Run4x4FillTriangleTest(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<i
 	assert(pixelArray[17] == EMPTY);	// Should NEVER get written to
 }
 
-void Run6x4FillTriangleTest(math::Vec3<int> p0, math::Vec3<int> p1, math::Vec3<int> p2, uint32_t* expectedPixels)
+void Run6x4FillTriangleTest(gentle::Vec3<int> p0, gentle::Vec3<int> p1, gentle::Vec3<int> p2, uint32_t* expectedPixels)
 {
 	uint32_t pixelArray[26] = { EMPTY };	// define pixels as an an array of 26 uint32_t values
 											// NB this array lives on the stack in the scope of the RunSoftwareRenderingTests function only.
@@ -152,8 +152,8 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	FILLED,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunLineDrawTest(math::Vec2<int>{ 0, 2 }, math::Vec2<int>{ 3, 2 }, el1);
-	RunLineDrawTest(math::Vec2<int>{ 3, 2 }, math::Vec2<int>{ 0, 2 }, el1);
+	RunLineDrawTest(gentle::Vec2<int>{ 0, 2 }, gentle::Vec2<int>{ 3, 2 }, el1);
+	RunLineDrawTest(gentle::Vec2<int>{ 3, 2 }, gentle::Vec2<int>{ 0, 2 }, el1);
 
 	/**
 	 * STRAIGHT VERTICAL LINE TO BOUNDARY OF BUFFER
@@ -175,8 +175,8 @@ void RunSoftwareRenderingTests()
 		FILLED,	EMPTY,	EMPTY,	EMPTY,
 		FILLED,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunLineDrawTest(math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 0, 0 }, el2);
-	RunLineDrawTest(math::Vec2<int>{ 0, 0 }, math::Vec2<int>{ 0, 3 }, el2);
+	RunLineDrawTest(gentle::Vec2<int>{ 0, 3 }, gentle::Vec2<int>{ 0, 0 }, el2);
+	RunLineDrawTest(gentle::Vec2<int>{ 0, 0 }, gentle::Vec2<int>{ 0, 3 }, el2);
 
 	/**
 	 * DIAGONAL LINE TO BOUNDARY OF BUFFER
@@ -199,8 +199,8 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	FILLED,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	FILLED
 	};
-	RunLineDrawTest(math::Vec2<int>{ 0, 0 }, math::Vec2<int>{ 3, 3 }, el3);
-	RunLineDrawTest(math::Vec2<int>{ 3, 3 }, math::Vec2<int>{ 0, 0 }, el3);
+	RunLineDrawTest(gentle::Vec2<int>{ 0, 0 }, gentle::Vec2<int>{ 3, 3 }, el3);
+	RunLineDrawTest(gentle::Vec2<int>{ 3, 3 }, gentle::Vec2<int>{ 0, 0 }, el3);
 
 	/**
 	 * DIAGONAL LINE TO BOUNDARY OF BUFFER
@@ -223,8 +223,8 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	EMPTY,	EMPTY,
 		FILLED,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunLineDrawTest(math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 3, 0 }, el4);
-	RunLineDrawTest(math::Vec2<int>{ 3, 0 }, math::Vec2<int>{ 0, 3 }, el4);
+	RunLineDrawTest(gentle::Vec2<int>{ 0, 3 }, gentle::Vec2<int>{ 3, 0 }, el4);
+	RunLineDrawTest(gentle::Vec2<int>{ 3, 0 }, gentle::Vec2<int>{ 0, 3 }, el4);
 
 	/**
 	 * STEEP GRADIENT, X +VE INCREMENT, Y +VE INCREMENT
@@ -246,8 +246,8 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	FILLED,	EMPTY,
 		EMPTY,	EMPTY,	FILLED,	EMPTY
 	};
-	RunLineDrawTest(math::Vec2<int>{ 1, 0 }, math::Vec2<int>{ 2, 3 }, el5);
-	RunLineDrawTest(math::Vec2<int>{ 2, 3 }, math::Vec2<int>{ 1, 0 }, el5);
+	RunLineDrawTest(gentle::Vec2<int>{ 1, 0 }, gentle::Vec2<int>{ 2, 3 }, el5);
+	RunLineDrawTest(gentle::Vec2<int>{ 2, 3 }, gentle::Vec2<int>{ 1, 0 }, el5);
 
 	/**
 	 * SHALLOW GRADIENT, X +VE INCREMENT, Y +VE INCREMENT
@@ -269,8 +269,8 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	FILLED,	FILLED,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunLineDrawTest(math::Vec2<int>{ 0, 1 }, math::Vec2<int>{ 3, 2 }, el6);
-	RunLineDrawTest(math::Vec2<int>{ 3, 2 }, math::Vec2<int>{ 0, 1 }, el6);
+	RunLineDrawTest(gentle::Vec2<int>{ 0, 1 }, gentle::Vec2<int>{ 3, 2 }, el6);
+	RunLineDrawTest(gentle::Vec2<int>{ 3, 2 }, gentle::Vec2<int>{ 0, 1 }, el6);
 
 	/**
 	 * SHALLOW GRADIENT, X +VE INCREMENT, Y -VE INCREMENT
@@ -292,8 +292,8 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	FILLED,	FILLED,
 		FILLED,	FILLED,	EMPTY,	EMPTY
 	};
-	RunLineDrawTest(math::Vec2<int>{ 0, 3 }, math::Vec2<int>{ 3, 2 }, el7);
-	RunLineDrawTest(math::Vec2<int>{ 3, 2 }, math::Vec2<int>{ 0, 3 }, el7);
+	RunLineDrawTest(gentle::Vec2<int>{ 0, 3 }, gentle::Vec2<int>{ 3, 2 }, el7);
+	RunLineDrawTest(gentle::Vec2<int>{ 3, 2 }, gentle::Vec2<int>{ 0, 3 }, el7);
 
 	/**
 	 * STEEP GRADIENT, X +VE INCREMENT, Y +VE INCREMENT
@@ -315,8 +315,8 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	FILLED,	EMPTY,
 		EMPTY,	FILLED,	EMPTY,	EMPTY
 	};
-	RunLineDrawTest(math::Vec2<int>{ 3, 0 }, math::Vec2<int>{ 1, 3 }, el8);
-	RunLineDrawTest(math::Vec2<int>{ 1, 3 }, math::Vec2<int>{ 3, 0 }, el8);
+	RunLineDrawTest(gentle::Vec2<int>{ 3, 0 }, gentle::Vec2<int>{ 1, 3 }, el8);
+	RunLineDrawTest(gentle::Vec2<int>{ 1, 3 }, gentle::Vec2<int>{ 3, 0 }, el8);
 
 	/**
 	 * SHORT, SHALLOW GRADIENT - RIGHT TO LEFT
@@ -338,7 +338,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunLineDrawTest(math::Vec2<int>{ 3, 0 }, math::Vec2<int>{ 1, 1 }, el9);
+	RunLineDrawTest(gentle::Vec2<int>{ 3, 0 }, gentle::Vec2<int>{ 1, 1 }, el9);
 
 	/**
 	 * SHORT, SHALLOW GRADIENT - LEFT TO RIGHT
@@ -360,7 +360,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunLineDrawTest(math::Vec2<int>{ 1, 1 }, math::Vec2<int>{ 3, 0 }, el10);
+	RunLineDrawTest(gentle::Vec2<int>{ 1, 1 }, gentle::Vec2<int>{ 3, 0 }, el10);
 
 	/**
 	 * SHORT, SHALLOW GRADIENT - LEFT TO RIGHT
@@ -382,7 +382,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	RunLineDrawTest(math::Vec2<int>{ 0, 2 }, math::Vec2<int>{ 3, 0 }, el11);
+	RunLineDrawTest(gentle::Vec2<int>{ 0, 2 }, gentle::Vec2<int>{ 3, 0 }, el11);
 
 
 	/**
@@ -405,9 +405,9 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	FILLED,	FILLED,
 		EMPTY,	EMPTY,	EMPTY,	FILLED
 	};
-	Run4x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, et1);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, et1);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, et1);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 3, 0, 0 }, gentle::Vec3<int>{ 3, 3, 0 }, et1);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 3, 3, 0 }, gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 3, 0, 0 }, et1);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 3, 0, 0 }, gentle::Vec3<int>{ 3, 3, 0 }, gentle::Vec3<int>{ 0, 0, 0 }, et1);
 
 	/**
 	 * FLAT TOP LEFT HAND SIDE RIGHT ANGLED TRIANGLE
@@ -429,9 +429,9 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	EMPTY,	EMPTY,
 		FILLED,	EMPTY,	EMPTY,	EMPTY
 	};
-	Run4x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, et2);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, et2);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, et2);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 3, 0, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, et2);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 3, 0, 0 }, et2);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 3, 0, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 0, 0, 0 }, et2);
 
 	/**
 	 * FLAT TOP TRIANGLE
@@ -453,9 +453,9 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	EMPTY,
 		EMPTY,	EMPTY,	FILLED,	EMPTY
 	};
-	Run4x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, et3);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 2, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, et3);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, et3);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 3, 0, 0 }, gentle::Vec3<int>{ 2, 3, 0 }, et3);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 2, 3, 0 }, gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 3, 0, 0 }, et3);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 3, 0, 0 }, gentle::Vec3<int>{ 2, 3, 0 }, gentle::Vec3<int>{ 0, 0, 0 }, et3);
 
 	/**
 	 * FLAT BOTTOM RIGHT HAND SIDE RIGHT ANGLED TRIANGLE
@@ -477,9 +477,9 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	FILLED,
 		FILLED,	FILLED,	FILLED,	FILLED
 	};
-	Run4x4FillTriangleTest(math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, et4);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 0, 0 }, et4);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 3, 0 }, et4);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 3, 0, 0 }, gentle::Vec3<int>{ 3, 3, 0 }, et4);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 3, 3, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 3, 0, 0 }, et4);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 3, 0, 0 }, gentle::Vec3<int>{ 3, 3, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, et4);
 
 	/**
 	 * FLAT BOTTOM LEFT HAND SIDE RIGHT ANGLED TRIANGLE
@@ -501,9 +501,9 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	EMPTY,
 		FILLED,	FILLED,	FILLED,	FILLED
 	};
-	Run4x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 3, 0 }, et5);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, et5);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 0, 0, 0 }, et5);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 3, 3, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, et5);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 3, 3, 0 }, et5);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 3, 3, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 0, 0, 0 }, et5);
 
 	/**
 	 * FLAT BOTTOM TRIANGLE
@@ -525,9 +525,9 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	FILLED,
 		FILLED,	FILLED,	FILLED,	FILLED
 	};
-	Run4x4FillTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 3, 0 }, et6);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, et6);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 2, 0, 0 }, et6);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 2, 0, 0 }, gentle::Vec3<int>{ 3, 3, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, et6);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 2, 0, 0 }, gentle::Vec3<int>{ 3, 3, 0 }, et6);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 3, 3, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 2, 0, 0 }, et6);
 
 	/**
 	 * RIGHT MAJOR TRIANGLE
@@ -549,9 +549,9 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	FILLED,
 		EMPTY,	EMPTY,	FILLED,	FILLED
 	};
-	Run4x4FillTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 2, 0 }, et7);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 3, 0 }, et7);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 3, 3, 0 }, math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 2, 0, 0 }, et7);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 2, 0, 0 }, gentle::Vec3<int>{ 3, 3, 0 }, gentle::Vec3<int>{ 0, 2, 0 }, et7);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 0, 2, 0 }, gentle::Vec3<int>{ 2, 0, 0 }, gentle::Vec3<int>{ 3, 3, 0 }, et7);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 3, 3, 0 }, gentle::Vec3<int>{ 0, 2, 0 }, gentle::Vec3<int>{ 2, 0, 0 }, et7);
 
 	/**
 	 * LEFT MAJOR TRIANGLE
@@ -573,9 +573,9 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	FILLED,
 		FILLED,	FILLED,	EMPTY,	EMPTY
 	};
-	Run4x4FillTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 2, 0 }, math::Vec3<int>{ 0, 3, 0 }, et8);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 3, 2, 0 }, et8);
-	Run4x4FillTriangleTest(math::Vec3<int>{ 3, 2, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 2, 0, 0 }, et8);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 2, 0, 0 }, gentle::Vec3<int>{ 3, 2, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, et8);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 2, 0, 0 }, gentle::Vec3<int>{ 3, 2, 0 }, et8);
+	Run4x4FillTriangleTest(gentle::Vec3<int>{ 3, 2, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 2, 0, 0 }, et8);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - NARROW TALL 1
@@ -597,7 +597,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, eft1);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 3, 0, 0 }, gentle::Vec3<int>{ 2, 3, 0 }, eft1);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - NARROW TALL 2
@@ -619,7 +619,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 1, 3, 0 }, eft2);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 3, 0, 0 }, gentle::Vec3<int>{ 1, 3, 0 }, eft2);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - SHORT WIDE
@@ -641,7 +641,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 4, 0, 0 }, math::Vec3<int>{ 2, 1, 0 }, eft3);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 4, 0, 0 }, gentle::Vec3<int>{ 2, 1, 0 }, eft3);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - SHORT WIDE
@@ -663,7 +663,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 2, 2, 0 }, eft4);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 5, 0, 0 }, gentle::Vec3<int>{ 2, 2, 0 }, eft4);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - MIXED GRADIENTS
@@ -685,7 +685,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 1, 2, 0 }, eft5);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 5, 0, 0 }, gentle::Vec3<int>{ 1, 2, 0 }, eft5);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - MIXED GRADIENTS 2
@@ -707,7 +707,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	FILLED,	FILLED,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 4, 2, 0 }, eft6);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 5, 0, 0 }, gentle::Vec3<int>{ 4, 2, 0 }, eft6);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - RIGHT HAND RIGHT ANGLE
@@ -729,7 +729,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 5, 3, 0 }, eft7);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 5, 0, 0 }, gentle::Vec3<int>{ 5, 3, 0 }, eft7);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - LEFT HAND RIGHT ANGLE
@@ -751,7 +751,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, eft8);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 5, 0, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, eft8);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - SKEWED LEFT
@@ -773,7 +773,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		FILLED,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, eft9);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 2, 0, 0 }, gentle::Vec3<int>{ 5, 0, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, eft9);
 
 	/**
 	 * NEW FLAT TOP TRIANGLE TEST - SKEWED RIGHT
@@ -795,7 +795,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	FILLED,	FILLED,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	FILLED
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 3, 0, 0 }, math::Vec3<int>{ 5, 3, 0 }, eft10);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 3, 0, 0 }, gentle::Vec3<int>{ 5, 3, 0 }, eft10);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - NARROW TALL 1
@@ -817,7 +817,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,
 		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 3, 0 }, efb1);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 2, 0, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 3, 3, 0 }, efb1);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - NARROW TALL 2
@@ -839,7 +839,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY,	EMPTY,
 		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 1, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 3, 0 }, efb2);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 1, 0, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 3, 3, 0 }, efb2);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - SHORT WIDE
@@ -861,7 +861,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 0, 1, 0 }, math::Vec3<int>{ 4, 1, 0 }, efb3);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 2, 0, 0 }, gentle::Vec3<int>{ 0, 1, 0 }, gentle::Vec3<int>{ 4, 1, 0 }, efb3);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - SHORT WIDE
@@ -883,7 +883,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 2, 0, 0 }, math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 5, 2, 0 }, efb4);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 2, 0, 0 }, gentle::Vec3<int>{ 0, 2, 0 }, gentle::Vec3<int>{ 5, 2, 0 }, efb4);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - MIXED GRADIENTS
@@ -905,7 +905,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 1, 0, 0 }, math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 5, 2, 0 }, efb5);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 1, 0, 0 }, gentle::Vec3<int>{ 0, 2, 0 }, gentle::Vec3<int>{ 5, 2, 0 }, efb5);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - MIXED GRADIENTS 2
@@ -927,7 +927,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
 		EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 4, 0, 0 }, math::Vec3<int>{ 0, 2, 0 }, math::Vec3<int>{ 5, 2, 0 }, efb6);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 4, 0, 0 }, gentle::Vec3<int>{ 0, 2, 0 }, gentle::Vec3<int>{ 5, 2, 0 }, efb6);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - RIGHT HAND RIGHT ANGLE
@@ -949,7 +949,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED,
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb7);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 5, 0, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 5, 3, 0 }, efb7);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - LEFT HAND RIGHT ANGLE
@@ -971,7 +971,7 @@ void RunSoftwareRenderingTests()
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
 		FILLED,	FILLED,	FILLED,	FILLED,	FILLED,	FILLED
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb8);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 5, 3, 0 }, efb8);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - SKEWED LEFT
@@ -993,7 +993,7 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
 		EMPTY,	EMPTY,	FILLED,	FILLED,	FILLED,	FILLED
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 0, 0, 0 }, math::Vec3<int>{ 2, 3, 0 }, math::Vec3<int>{ 5, 3, 0 }, efb9);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 0, 0, 0 }, gentle::Vec3<int>{ 2, 3, 0 }, gentle::Vec3<int>{ 5, 3, 0 }, efb9);
 
 	/**
 	 * NEW FLAT BOTTOM TRIANGLE TEST - SKEWED RIGHT
@@ -1015,5 +1015,5 @@ void RunSoftwareRenderingTests()
 		EMPTY,	FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,
 		FILLED,	FILLED,	FILLED,	FILLED,	EMPTY,	EMPTY
 	};
-	Run6x4FillTriangleTest(math::Vec3<int>{ 5, 0, 0 }, math::Vec3<int>{ 0, 3, 0 }, math::Vec3<int>{ 3, 3, 0 }, efb10);
+	Run6x4FillTriangleTest(gentle::Vec3<int>{ 5, 0, 0 }, gentle::Vec3<int>{ 0, 3, 0 }, gentle::Vec3<int>{ 3, 3, 0 }, efb10);
 }

@@ -1,11 +1,12 @@
 #include "math.hpp"
 #include <math.h>
+#include "geometry.hpp"
 
-math::Matrix4x4<float> MakeProjectionMatrix(float fieldOfVewDeg, float aspectRatio, float nearPlane, float farPlane)
+gentle::Matrix4x4<float> MakeProjectionMatrix(float fieldOfVewDeg, float aspectRatio, float nearPlane, float farPlane)
 {
 	float inverseTangent = 1.0f / std::tanf(fieldOfVewDeg * 0.5f * 3.14159f / 180.0f);
 
-	math::Matrix4x4<float> matrix;
+	gentle::Matrix4x4<float> matrix;
 	matrix.m[0][0] = aspectRatio * inverseTangent;
 	matrix.m[1][1] = inverseTangent;
 	matrix.m[2][2] = farPlane / (farPlane - nearPlane);
@@ -16,7 +17,7 @@ math::Matrix4x4<float> MakeProjectionMatrix(float fieldOfVewDeg, float aspectRat
 	return matrix;
 }
 
-void SetZAxisRotationMatrix(float theta, math::Matrix4x4<float> &matrix)
+void SetZAxisRotationMatrix(float theta, gentle::Matrix4x4<float> &matrix)
 {
 	float cos = std::cosf(theta);
 	float sin = std::sinf(theta);
@@ -26,14 +27,14 @@ void SetZAxisRotationMatrix(float theta, math::Matrix4x4<float> &matrix)
 	matrix.m[1][1] = cos;
 }
 
-math::Matrix4x4<float> MakeZAxisRotationMatrix(float theta)
+gentle::Matrix4x4<float> MakeZAxisRotationMatrix(float theta)
 {
-	math::Matrix4x4<float> matrix = MakeIdentityMatrix<float>();
+	gentle::Matrix4x4<float> matrix = MakeIdentityMatrix<float>();
 	SetZAxisRotationMatrix(theta, matrix);
 	return matrix;
 }
 
-void SetYAxisRotationMatrix(float theta, math::Matrix4x4<float> &matrix)
+void SetYAxisRotationMatrix(float theta, gentle::Matrix4x4<float> &matrix)
 {
 	float cos = std::cosf(theta);
 	float sin = std::sinf(theta);
@@ -43,14 +44,14 @@ void SetYAxisRotationMatrix(float theta, math::Matrix4x4<float> &matrix)
 	matrix.m[2][2] = cos;
 }
 
-math::Matrix4x4<float> MakeYAxisRotationMatrix(float theta)
+gentle::Matrix4x4<float> MakeYAxisRotationMatrix(float theta)
 {
-	math::Matrix4x4<float> matrix = MakeIdentityMatrix<float>();
+	gentle::Matrix4x4<float> matrix = MakeIdentityMatrix<float>();
 	SetYAxisRotationMatrix(theta, matrix);
 	return matrix;
 }
 
-void SetXAxisRotationMatrix(float theta, math::Matrix4x4<float> &matrix)
+void SetXAxisRotationMatrix(float theta, gentle::Matrix4x4<float> &matrix)
 {
 	float cos = std::cosf(theta);
 	float sin = std::sinf(theta);
@@ -60,9 +61,9 @@ void SetXAxisRotationMatrix(float theta, math::Matrix4x4<float> &matrix)
 	matrix.m[2][2] = cos;
 }
 
-math::Matrix4x4<float> MakeXAxisRotationMatrix(float theta)
+gentle::Matrix4x4<float> MakeXAxisRotationMatrix(float theta)
 {
-	math::Matrix4x4<float> matrix = MakeIdentityMatrix<float>();
+	gentle::Matrix4x4<float> matrix = MakeIdentityMatrix<float>();
 	SetXAxisRotationMatrix(theta, matrix);
 	return matrix;
 }

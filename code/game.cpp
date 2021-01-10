@@ -4,14 +4,13 @@
 #include "software_rendering.cpp"
 
 #include "math.hpp"
-#include "geometry.hpp"
 #include "geometry.cpp"
 
 #include "obj_file_reader.cpp"
 
 Camera<float> camera;
 Mesh<float> mesh;
-math::Matrix4x4<float> projectionMatrix;
+gentle::Matrix4x4<float> projectionMatrix;
 
 float theta = 0.0f;
 float cameraYaw = 0.0f;
@@ -82,12 +81,12 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	}
 
 	// Apply the camera yaw to the camera.direction vector
-	math::Vec4<float> target = { 0.0f, 0.0f, 1.0f };
-	math::Matrix4x4<float> cameraYawMatrix = MakeYAxisRotationMatrix(cameraYaw);
-	math::MultiplyVectorWithMatrix(target, camera.direction, cameraYawMatrix);
+	gentle::Vec4<float> target = { 0.0f, 0.0f, 1.0f };
+	gentle::Matrix4x4<float> cameraYawMatrix = MakeYAxisRotationMatrix(cameraYaw);
+	gentle::MultiplyVectorWithMatrix(target, camera.direction, cameraYawMatrix);
 
 	// Next process any forwards or backwards movement
-	math::Vec4<float> cameraPositionForwardBack = MultiplyVectorByScalar(camera.direction, positionIncrement);
+	gentle::Vec4<float> cameraPositionForwardBack = MultiplyVectorByScalar(camera.direction, positionIncrement);
 	if (input.buttons[KEY_S].isDown)
 	{
 		camera.position = SubtractVectors(camera.position, cameraPositionForwardBack);
@@ -98,7 +97,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	}
 
 	// Strafing - use the cross product between the camera direction and up to get a normal vector to the direction being faced
-	math::Vec4<float> cameraPositionStrafe = CrossProduct(camera.up, camera.direction);
+	gentle::Vec4<float> cameraPositionStrafe = CrossProduct(camera.up, camera.direction);
 	if (input.buttons[KEY_LEFT].isDown)
 	{
 		camera.position = SubtractVectors(camera.position, cameraPositionStrafe);
@@ -122,16 +121,16 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 	theta += dt;
 	// Initialize the rotation matrices
-	math::Matrix4x4<float> rotationMatrixX = MakeXAxisRotationMatrix(theta);
-	math::Matrix4x4<float> rotationMatrixY = MakeYAxisRotationMatrix(theta);
-	math::Matrix4x4<float> rotationMatrixZ = MakeZAxisRotationMatrix(theta);
+	gentle::Matrix4x4<float> rotationMatrixX = MakeXAxisRotationMatrix(theta);
+	gentle::Matrix4x4<float> rotationMatrixY = MakeYAxisRotationMatrix(theta);
+	gentle::Matrix4x4<float> rotationMatrixZ = MakeZAxisRotationMatrix(theta);
 
 	// Initialize the translation matrix
 	// Push back away from the camera which is implicitly located at z: 0. This ensures we're not trying to render trinagles behind the camera
-	math::Matrix4x4<float> translationMatrix = MakeTranslationMatrix(0.0f, 0.0f, zOffset);
+	gentle::Matrix4x4<float> translationMatrix = MakeTranslationMatrix(0.0f, 0.0f, zOffset);
 
 	// Combine all the rotation and translation matrices into a single world transfomration matrix
-	math::Matrix4x4<float> worldMatrix;
+	gentle::Matrix4x4<float> worldMatrix;
 	// worldMatrix = MultiplyMatrixWithMatrix(rotationMatrixZ, rotationMatrixX);
 	worldMatrix = MakeIdentityMatrix<float>();
 	worldMatrix = MultiplyMatrixWithMatrix(worldMatrix, translationMatrix);

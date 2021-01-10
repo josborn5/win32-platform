@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-namespace math
+namespace gentle
 {
 	template<typename T>
 	struct Vec2
