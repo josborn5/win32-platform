@@ -1,4 +1,4 @@
-#include "math.hpp"
+#include "math.cpp"
 #include <assert.h>
 
 void run_Vec4_tests()

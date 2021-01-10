@@ -30,16 +30,10 @@ namespace gentle
 	};
 
 	template<typename T>
-	Vec4<T> AddVectors(const Vec4<T> &v1, const Vec4<T> &v2)
-	{
-		return Vec4<T>{v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
-	}
+	Vec4<T> AddVectors(const Vec4<T> &v1, const Vec4<T> &v2);
 
 	template<typename T>
-	Vec3<T> AddVectors(const Vec3<T> &v1, const Vec3<T> &v2)
-	{
-		return Vec3<T>{v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
-	}
+	Vec3<T> AddVectors(const Vec3<T> &v1, const Vec3<T> &v2);
 
 	template<typename T>
 	Vec4<T> SubtractVectors(const Vec4<T> &v1, const Vec4<T> &v2)
