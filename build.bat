@@ -21,14 +21,16 @@ pushd %OUTPUT_DIR%
 SET COMMON_COMPILER_FLAGS=-MT -nologo -Gm- -GR- -EHa- -Oi -WX -W4 -wd4100 -wd4201 -FC -Z7 -Fmwin32_platform.map /EHsc /O2
 SET COMMON_LINKER_FLAGS=-opt:ref user32.lib Gdi32.lib winmm.lib
 
-REM 32-bit build
-REM cl %COMMON_COMPILER_FLAGS% ..\code\win32_platform.cpp /link -subsystem:windows,5.1  %COMMON_LINKER_FLAGS%
-
-
 REM 64-bit build
-cl %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\unit_tests.cpp /link %COMMON_LINKER_FLAGS%
+cl.exe %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\unit_tests.cpp /link %COMMON_LINKER_FLAGS%
 
-cl %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\game.cpp /link %COMMON_LINKER_FLAGS%
+REM using the '/c' flag to skip linking and create only the '.obj' file
+cl.exe %COMMON_COMPILER_FLAGS% /c ..\%CODE_DIR%\gentle_giant.cpp
+
+REM use the 'lib.exe' tool to create a lib file from the bj files
+lib.exe -nologo gentle_giant.obj
+
+cl.exe %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\game.cpp /link %COMMON_LINKER_FLAGS%
 
 xcopy ..\%CODE_DIR%\teapot.obj .
 
