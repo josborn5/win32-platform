@@ -15,16 +15,6 @@ namespace platform
 
 #define DEBUG_BUFFER_SIZE 256
 
-/**
- * FLAG_SLOW
- * 0 - No slow code allowed
- * 1 - Slow code welcome
- */
-#if FLAG_SLOW
-	#define Assert(expression) if (!(expression)) { *(int*)0 = 0; }
-#else
-	#define Assert(expression)
-#endif
 #define Kilobytes(value) ((value) * 1024LL)
 #define Megabytes(value) (Kilobytes(value) * 1024LL)
 #define Gigabytes(value) (Megabytes(value) * 1024LL)
@@ -100,7 +90,7 @@ LRESULT CALLBACK Win32_MainWindowCallback(HWND window, UINT Message, WPARAM wPar
 		case WM_KEYDOWN:
 		case WM_KEYUP:
 		{
-			Assert(!"NOOOOOOOO");
+
 		} break;
 		case WM_PAINT:
 		{
