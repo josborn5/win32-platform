@@ -1,8 +1,6 @@
 #include <math.h>
 #include <list>
 
-#include "win32_platform.cpp"
-
 #include "software_rendering.hpp"
 #include "math.hpp"
 #include "geometry.hpp"
