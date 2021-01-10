@@ -8,8 +8,8 @@
 
 #include "obj_file_reader.cpp"
 
-Camera<float> camera;
-Mesh<float> mesh;
+gentle::Camera<float> camera;
+gentle::Mesh<float> mesh;
 gentle::Matrix4x4<float> projectionMatrix;
 
 float theta = 0.0f;
@@ -52,7 +52,7 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 	}
 
 	// Initialize the projection matrix
-	projectionMatrix = MakeProjectionMatrix(90.0f, 1.0f, 0.1f, 1000.0f);
+	projectionMatrix = gentle::MakeProjectionMatrix(90.0f, 1.0f, 0.1f, 1000.0f);
 
 	// Initialize the camera
 	camera.up = { 0.0f, 1.0f, 0.0f };
@@ -82,7 +82,7 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 	// Apply the camera yaw to the camera.direction vector
 	gentle::Vec4<float> target = { 0.0f, 0.0f, 1.0f };
-	gentle::Matrix4x4<float> cameraYawMatrix = MakeYAxisRotationMatrix(cameraYaw);
+	gentle::Matrix4x4<float> cameraYawMatrix = gentle::MakeYAxisRotationMatrix(cameraYaw);
 	gentle::MultiplyVectorWithMatrix(target, camera.direction, cameraYawMatrix);
 
 	// Next process any forwards or backwards movement
@@ -121,19 +121,19 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 
 	theta += dt;
 	// Initialize the rotation matrices
-	gentle::Matrix4x4<float> rotationMatrixX = MakeXAxisRotationMatrix(theta);
-	gentle::Matrix4x4<float> rotationMatrixY = MakeYAxisRotationMatrix(theta);
-	gentle::Matrix4x4<float> rotationMatrixZ = MakeZAxisRotationMatrix(theta);
+	gentle::Matrix4x4<float> rotationMatrixX = gentle::MakeXAxisRotationMatrix(theta);
+	gentle::Matrix4x4<float> rotationMatrixY = gentle::MakeYAxisRotationMatrix(theta);
+	gentle::Matrix4x4<float> rotationMatrixZ = gentle::MakeZAxisRotationMatrix(theta);
 
 	// Initialize the translation matrix
 	// Push back away from the camera which is implicitly located at z: 0. This ensures we're not trying to render trinagles behind the camera
-	gentle::Matrix4x4<float> translationMatrix = MakeTranslationMatrix(0.0f, 0.0f, zOffset);
+	gentle::Matrix4x4<float> translationMatrix = gentle::MakeTranslationMatrix(0.0f, 0.0f, zOffset);
 
 	// Combine all the rotation and translation matrices into a single world transfomration matrix
 	gentle::Matrix4x4<float> worldMatrix;
 	// worldMatrix = MultiplyMatrixWithMatrix(rotationMatrixZ, rotationMatrixX);
-	worldMatrix = MakeIdentityMatrix<float>();
-	worldMatrix = MultiplyMatrixWithMatrix(worldMatrix, translationMatrix);
+	worldMatrix = gentle::MakeIdentityMatrix<float>();
+	worldMatrix = gentle::MultiplyMatrixWithMatrix(worldMatrix, translationMatrix);
 
 	render::TransformAndRenderMesh(renderBuffer, mesh, camera, worldMatrix);
 }

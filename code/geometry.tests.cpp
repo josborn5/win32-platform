@@ -24,7 +24,7 @@ void RunGeometryTests()
 
 
 	// IntersectPlane test
-	Plane<float> plane;
+	gentle::Plane<float> plane;
 	plane.position = { 0.0f, 1.0f, 0.0f };
 	plane.normal = { 0.0f, -1.0f, 0.0f };
 	gentle::Vec4<float> lineStart = { 0.0f, 0.0f, 0.0f, 1.0f };

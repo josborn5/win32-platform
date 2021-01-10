@@ -620,7 +620,7 @@ namespace render
 	}
 
 	template<typename T>
-	void TransformAndRenderMesh(const RenderBuffer &renderBuffer, const Mesh<T> &mesh, const Camera<T> &camera, const gentle::Matrix4x4<T> transformMatrix)
+	void TransformAndRenderMesh(const RenderBuffer &renderBuffer, const gentle::Mesh<T> &mesh, const gentle::Camera<T> &camera, const gentle::Matrix4x4<T> transformMatrix)
 	{
 		const int RED = 0;
 		const int GREEN = 255;
@@ -633,13 +633,13 @@ namespace render
 		// View matrix
 		gentle::Matrix4x4<float> viewMatrix = LookAt(cameraMatrix);
 
-		std::vector<Triangle4d<float>> trianglesToDraw;
+		std::vector<gentle::Triangle4d<float>> trianglesToDraw;
 
-		for (Triangle4d<float> tri : mesh.triangles)
+		for (gentle::Triangle4d<float> tri : mesh.triangles)
 		{
-			Triangle4d<float> transformed;
-			Triangle4d<float> viewed;
-			Triangle4d<float> projected; // TODO: switch this to Triangle4d so the depth information is kept and can be used in a depth buffer to prevent double rendering of triangles behind each other
+			gentle::Triangle4d<float> transformed;
+			gentle::Triangle4d<float> viewed;
+			gentle::Triangle4d<float> projected; // TODO: switch this to Triangle4d so the depth information is kept and can be used in a depth buffer to prevent double rendering of triangles behind each other
 
 			// Transform the triangle in the mesh
 			gentle::MultiplyVectorWithMatrix(tri.p[0], transformed.p[0], transformMatrix);
@@ -682,8 +682,8 @@ namespace render
 				gentle::MultiplyVectorWithMatrix(transformed.p[2], viewed.p[2], viewMatrix);
 
 				// Clip the triangles before they get projected. Define a plane just in fron of the camera to clip against
-				Triangle4d<float> clipped[2];
-				Plane<float> inFrontOfScreen = { 0.0f, 0.0f, 0.1f,	 0.0f, 0.0f, 1.0f };
+				gentle::Triangle4d<float> clipped[2];
+				gentle::Plane<float> inFrontOfScreen = { 0.0f, 0.0f, 0.1f,	 0.0f, 0.0f, 1.0f };
 				int clippedTriangleCount = ClipTriangleAgainstPlane(inFrontOfScreen, viewed, clipped[0], clipped[1]);
 
 				for (int i = 0; i < clippedTriangleCount; i += 1)
@@ -695,7 +695,7 @@ namespace render
 
 					// Scale to view
 					const float sf = 500.0f;
-					Triangle4d<float> triToRender = projected;
+					gentle::Triangle4d<float> triToRender = projected;
 					triToRender.p[0].x *= sf;
 					triToRender.p[0].y *= sf;
 					triToRender.p[1].x *= sf;
@@ -716,10 +716,10 @@ namespace render
 			}
 		}
 
-		for (Triangle4d<float> triToRender : trianglesToDraw)
+		for (gentle::Triangle4d<float> triToRender : trianglesToDraw)
 		{
-			Triangle4d<float> clipped[2];
-			std::list<Triangle4d<float>> triangleQueue;
+			gentle::Triangle4d<float> clipped[2];
+			std::list<gentle::Triangle4d<float>> triangleQueue;
 			triangleQueue.push_back(triToRender);
 			int newTriangles = 1;
 
@@ -729,14 +729,14 @@ namespace render
 				int trianglesToAdd = 0;
 				while (newTriangles > 0)
 				{
-					Triangle4d<float> test = triangleQueue.front();
+					gentle::Triangle4d<float> test = triangleQueue.front();
 					triangleQueue.pop_front();
 					newTriangles -= 1;
 
-					Plane<float> bottomOfScreen = { 0.0f, 0.0f, 0.0f,								0.0f, 1.0f, 0.0f };
-					Plane<float> topOfScreen = { 0.0f, (float)(renderBuffer.height - 1), 0.0f,		0.0f, -1.0f, 0.0f };
-					Plane<float> leftOfScreen = { 0.0f, 0.0f, 0.0f,									1.0f, 0.0f, 0.0f };
-					Plane<float> rightOfScreen = { (float)(renderBuffer.width - 1), 0.0f, 0.0f,		-1.0f, 0.0f, 0.0f };
+					gentle::Plane<float> bottomOfScreen = { 0.0f, 0.0f, 0.0f,								0.0f, 1.0f, 0.0f };
+					gentle::Plane<float> topOfScreen = { 0.0f, (float)(renderBuffer.height - 1), 0.0f,		0.0f, -1.0f, 0.0f };
+					gentle::Plane<float> leftOfScreen = { 0.0f, 0.0f, 0.0f,									1.0f, 0.0f, 0.0f };
+					gentle::Plane<float> rightOfScreen = { (float)(renderBuffer.width - 1), 0.0f, 0.0f,		-1.0f, 0.0f, 0.0f };
 					switch (edge)
 					{
 						case 0:
@@ -770,7 +770,7 @@ namespace render
 				newTriangles = (int)triangleQueue.size();
 			}
 
-			for (Triangle4d<float> draw : triangleQueue)
+			for (gentle::Triangle4d<float> draw : triangleQueue)
 			{
 				// gentle::Vec2<int> p0Int = { (int)draw.p[0].x, (int)draw.p[0].y };
 				// gentle::Vec2<int> p1Int = { (int)draw.p[1].x, (int)draw.p[1].y };
