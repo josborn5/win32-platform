@@ -26,7 +26,7 @@ cl.exe %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\unit_tests.cpp
 REM using the '/c' flag to skip linking and create only the '.obj' file
 cl.exe %COMMON_COMPILER_FLAGS% /c ..\%CODE_DIR%\gentle_giant.cpp
 
-REM use the 'lib.exe' tool to create a lib file from the bj files
+REM use the 'lib.exe' tool to create a lib file from the obj files
 lib.exe -nologo gentle_giant.obj
 
 REM copy the library header files to the output director
