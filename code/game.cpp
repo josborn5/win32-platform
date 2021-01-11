@@ -1,5 +1,4 @@
 #include <math.h>
-#include <list>
 
 #include "gentle_giant.hpp"
 
@@ -130,5 +129,5 @@ void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const
 	worldMatrix = gentle::MakeIdentityMatrix<float>();
 	worldMatrix = gentle::MultiplyMatrixWithMatrix(worldMatrix, translationMatrix);
 
-	gentle::TransformAndRenderMesh(renderBuffer, mesh, camera, worldMatrix);
+	gentle::TransformAndRenderMesh(renderBuffer, mesh, camera, worldMatrix, projectionMatrix);
 }
