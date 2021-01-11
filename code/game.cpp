@@ -1,10 +1,7 @@
 #include <math.h>
 #include <list>
 
-#include "software_rendering.hpp"
-#include "math.hpp"
-#include "geometry.hpp"
-#include "file.hpp"
+#include "gentle_giant.hpp"
 
 gentle::Camera<float> camera;
 gentle::Mesh<float> mesh;
