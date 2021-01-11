@@ -631,6 +631,11 @@ namespace gentle
 
 		std::vector<Triangle4d<T>> trianglesToDraw;
 
+		Plane<T> bottomOfScreen = { (T)0, (T)0, (T)0,							(T)0, (T)1, (T)0 };
+		Plane<T> topOfScreen = { (T)0, (T)(renderBuffer.height - 1), (T)0,		(T)0, (T)-1, (T)0 };
+		Plane<T> leftOfScreen = { (T)0, (T)0, (T)0,								(T)1, (T)0, (T)0 };
+		Plane<T> rightOfScreen = { (T)(renderBuffer.width - 1), (T)0, (T)0,		(T)-1, (T)0, (T)0 };
+
 		for (Triangle4d<T> tri : mesh.triangles)
 		{
 			Triangle4d<T> transformed;
@@ -679,7 +684,7 @@ namespace gentle
 
 				// Clip the triangles before they get projected. Define a plane just in fron of the camera to clip against
 				Triangle4d<T> clipped[2];
-				Plane<T> inFrontOfScreen = { (T)0, (T)0, (T)0,	 (T)0, (T)0, (T)1 };
+				Plane<T> inFrontOfScreen = { (T)0, (T)0, (T)0.1,	 (T)0, (T)0, (T)1 };
 				int clippedTriangleCount = ClipTriangleAgainstPlane(inFrontOfScreen, viewed, clipped[0], clipped[1]);
 
 				for (int i = 0; i < clippedTriangleCount; i += 1)
@@ -729,10 +734,6 @@ namespace gentle
 					triangleQueue.pop_front();
 					newTriangles -= 1;
 
-					Plane<T> bottomOfScreen = { (T)0, (T)0, (T)0,							(T)0, (T)1, (T)0 };
-					Plane<T> topOfScreen = { (T)0, (T)(renderBuffer.height - 1), (T)0,		(T)0, (T)-1, (T)0 };
-					Plane<T> leftOfScreen = { (T)0, (T)0, (T)0,								(T)1, (T)0, (T)0 };
-					Plane<T> rightOfScreen = { (T)(renderBuffer.width - 1), (T)0, (T)0,		(T)-1, (T)0, (T)0 };
 					switch (edge)
 					{
 						case 0:
