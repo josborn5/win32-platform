@@ -35,6 +35,8 @@ namespace gentle
 
 	void ClearScreen(const RenderBuffer &renderBuffer, uint32_t color);
 
+	uint32_t GetColorFromRGB(int red, int green, int blue);
+
 	template<typename T>
 	void TransformAndRenderMesh(const RenderBuffer &renderBuffer, const Mesh<T> &mesh, const Camera<T> &camera, const Matrix4x4<T> transformMatrix, const Matrix4x4<T> projectionMatrix);
 }
