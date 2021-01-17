@@ -11,7 +11,7 @@ float cameraYaw = 0.0f;
 
 bool isTeapot = true;
 
-void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuffer)
+void gentle::Initialize(const GameMemory &gameMemory, const RenderBuffer &renderBuffer)
 {
 	gentle::ReadObjFileToVec4("teapot.obj", mesh.triangles);
 	
@@ -54,7 +54,7 @@ void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuff
 	camera.direction = { 0.0f, 0.0f, 1.0f };
 }
 
-void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const RenderBuffer &renderBuffer, float dt)
+void gentle::UpdateAndRender(const GameMemory &gameMemory, const Input &input, const RenderBuffer &renderBuffer, float dt)
 {
 	const uint32_t BACKGROUND_COLOR = 0x000000;
 

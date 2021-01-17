@@ -6,5 +6,6 @@
 #include "math.hpp"
 #include "platform.hpp"
 #include "software_rendering.hpp"
+#include "game.hpp"
 
 #endif

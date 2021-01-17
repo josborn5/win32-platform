@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "platform.hpp"
+#include "game.hpp"
 
 void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuffer);
 void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const RenderBuffer &renderBuffer, float dt);
@@ -297,7 +298,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 			LARGE_INTEGER LastCounter = platform::Win32_GetWallClock();
 			int64_t LastCycleCount = __rdtsc();
 
-			GameInitialize(GameMemory, platform::renderBuffer);
+			gentle::Initialize(GameMemory, platform::renderBuffer);
 
 			// Main loop
 			while (successfulMemoryAllocation && platform::IsRunning)
@@ -312,7 +313,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 				gameInput.mouse.y = platform::renderBuffer.height - mousePointer.y;
 
 
-				GameUpdateAndRender(GameMemory, gameInput, platform::renderBuffer, lastDt);
+				gentle::UpdateAndRender(GameMemory, gameInput, platform::renderBuffer, lastDt);
 
 
 				platform::ResetButtons(&gameInput);
