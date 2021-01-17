@@ -15,7 +15,7 @@ namespace gentle
 	 *
 	 * x & y parameters are the pixel and NOT the position ordinals
 	 */
-	static void PlotPixel(const RenderBuffer &renderBuffer, uint32_t color, int x, int y)
+	void PlotPixel(const RenderBuffer &renderBuffer, uint32_t color, int x, int y)
 	{
 		// Make sure writing to the render buffer does not escape its bounds
 		if (x < 0 || x >(renderBuffer.width - 1) || y < 0 || y >(renderBuffer.height - 1))
@@ -97,7 +97,7 @@ namespace gentle
 	 *
 	 * x, y0 & y1 parameters are the pixel and NOT the position ordinals
 	 */
-	static void DrawVerticalLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, int x, int y0, int y1)
+	void DrawVerticalLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, int x, int y0, int y1)
 	{
 		int yDiff = y1 - y0;
 		int yDiffMod = (yDiff < 0) ? -1 * yDiff : yDiff;
@@ -118,7 +118,7 @@ namespace gentle
 	 * p0 & p1 are pixel and NOT position ordinals
 	 */
 	// Implemented with Bresenham's algorithm
-	static void DrawLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, const Vec2<int> &p0, const Vec2<int> &p1)
+	void DrawLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, const Vec2<int> &p0, const Vec2<int> &p1)
 	{
 		int x0 = p0.x;
 		int y0 = p0.y;

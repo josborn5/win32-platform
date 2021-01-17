@@ -15,7 +15,7 @@ namespace gentle
 	 *
 	 * x & y parameters are the pixel and NOT the position ordinals
 	 */
-	static void PlotPixel(const RenderBuffer &renderBuffer, uint32_t color, int x, int y);
+	void PlotPixel(const RenderBuffer &renderBuffer, uint32_t color, int x, int y);
 
 	/**
 	 *	|---|---|---|
@@ -26,7 +26,7 @@ namespace gentle
 	 * p0 & p1 are pixel and NOT position ordinals
 	 */
 	// Implemented with Bresenham's algorithm
-	static void DrawLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, const Vec2<int> &p0, const Vec2<int> &p1);
+	void DrawLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, const Vec2<int> &p0, const Vec2<int> &p1);
 
 	void FillTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const Vec3<int> &p0, const Vec3<int> &p1, const Vec3<int> &p2, float z);
 
