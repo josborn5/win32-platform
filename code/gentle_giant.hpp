@@ -4,6 +4,7 @@
 #include "file.hpp"
 #include "geometry.hpp"
 #include "math.hpp"
+#include "collision.hpp"
 #include "platform.hpp"
 #include "software_rendering.hpp"
 #include "game.hpp"
