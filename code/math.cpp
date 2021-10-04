@@ -22,6 +22,15 @@ namespace gentle
 	template Vec3<double> AddVectors(const Vec3<double> &v1, const Vec3<double> &v2);
 
 	template<typename T>
+	Vec2<T> AddVectors(const Vec2<T> &v1, const Vec2<T> &v2)
+	{
+		return Vec2<T>{v1.x + v2.x, v1.y + v2.y };
+	}
+	template Vec2<int> AddVectors(const Vec2<int> &v1, const Vec2<int> &v2);
+	template Vec2<float> AddVectors(const Vec2<float> &v1, const Vec2<float> &v2);
+	template Vec2<double> AddVectors(const Vec2<double> &v1, const Vec2<double> &v2);
+
+	template<typename T>
 	Vec4<T> SubtractVectors(const Vec4<T> &v1, const Vec4<T> &v2)
 	{
 		return Vec4<T>{v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
@@ -38,6 +47,15 @@ namespace gentle
 	template Vec3<int> SubtractVectors(const Vec3<int> &v1, const Vec3<int> &v2);
 	template Vec3<float> SubtractVectors(const Vec3<float> &v1, const Vec3<float> &v2);
 	template Vec3<double> SubtractVectors(const Vec3<double> &v1, const Vec3<double> &v2);
+
+	template<typename T>
+	Vec2<T> SubtractVectors(const Vec2<T> &v1, const Vec2<T> &v2)
+	{
+		return Vec2<T>{v1.x - v2.x, v1.y - v2.y};
+	}
+	template Vec2<int> SubtractVectors(const Vec2<int> &v1, const Vec2<int> &v2);
+	template Vec2<float> SubtractVectors(const Vec2<float> &v1, const Vec2<float> &v2);
+	template Vec2<double> SubtractVectors(const Vec2<double> &v1, const Vec2<double> &v2);
 
 	
 	template<typename T>
@@ -57,6 +75,15 @@ namespace gentle
 	template Vec3<int> MultiplyVectorByScalar(const Vec3<int> &vec, int sca);
 	template Vec3<float> MultiplyVectorByScalar(const Vec3<float> &vec, float sca);
 	template Vec3<double> MultiplyVectorByScalar(const Vec3<double> &vec, double sca);
+
+	template<typename T>
+	Vec2<T> MultiplyVectorByScalar(const Vec2<T> &vec, T sca)
+	{
+		return Vec2<T>{ vec.x * sca, vec.y * sca };
+	}
+	template Vec2<int> MultiplyVectorByScalar(const Vec2<int> &vec, int sca);
+	template Vec2<float> MultiplyVectorByScalar(const Vec2<float> &vec, float sca);
+	template Vec2<double> MultiplyVectorByScalar(const Vec2<double> &vec, double sca);
 
 	template<typename T>
 	T DotProduct(const Vec4<T> &v1, const Vec4<T> &v2)

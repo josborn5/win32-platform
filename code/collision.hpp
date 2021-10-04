@@ -13,7 +13,7 @@ namespace gentle
 	};
 	
 	template<typename T>
-	void CheckBlockAndXLineCollisionFromNegativeY(
+	void CheckRectAndXLineCollisionFromNegativeY(
 		float wallYPos,
 		Vec2<T> movingRectHalfSize,
 		Vec2<T> prevMovingRectPosition,
@@ -77,7 +77,7 @@ namespace gentle
 		Vec2<T> bPosition0,
 		Vec2<T> bVelocity,
 		float *maxCollisionTime,
-		int *collisionResult,
+		CollisionSide *collisionResult,
 		Vec2<T> *bPosition1
 	);
 }

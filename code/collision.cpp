@@ -38,7 +38,7 @@ namespace gentle
 	}
 
 	template<typename T>
-	void CheckBlockAndXLineCollisionFromNegativeY(
+	void CheckRectAndXLineCollisionFromNegativeY(
 		float wallYPos,
 		Vec2<T> movingRectHalfSize,
 		Vec2<T> prevMovingRectPosition,
@@ -165,7 +165,7 @@ namespace gentle
 
 		// Check for collision between block side and ball path
 		// 1. Top/bottom side
-		int horizontalCollisionResult = None;
+		CollisionSide horizontalCollisionResult = None;
 		float yCollisionCheckPos = 0.0f;
 		if (movingRectVelocity.y > 0)
 		{
@@ -196,7 +196,7 @@ namespace gentle
 		}
 
 		// 2. Left/right side, 
-		int verticalCollisionResult = None;
+		CollisionSide verticalCollisionResult = None;
 		float xCollisionCheckPos = 0.0f;
 		if (movingRectVelocity.x > 0)
 		{
@@ -237,14 +237,14 @@ namespace gentle
 		Vec2<T> bPosition0,
 		Vec2<T> bVelocity,
 		float *maxCollisionTime,
-		int *collisionResult,
+		CollisionSide *collisionResult,
 		Vec2<T> *bPosition1
 	)
 	{
 		// Calculate relative velocity as between a & b, as if a is static. i.e. the origin of our co-ordinate system is fixed to whereever object 'a' is
 		Vec2<T> aRelBVelocity = SubtractVectors(bVelocity, aVelocity);
 
-		bool result = CheckBlockAndBallCollision(aHalfSize, aPosition0, bHalfSize, bPosition0, aRelBVelocity, maxCollisionTime, collisionResult, bPosition1);
+		bool result = CheckStaticAndMovingRectCollision(aHalfSize, aPosition0, bHalfSize, bPosition0, aRelBVelocity, maxCollisionTime, collisionResult, bPosition1);
 
 		// Translate bPosition1 from the co-ordinate system whose origin is on 'a' back to the static co-ordinate system
 		if (result)
