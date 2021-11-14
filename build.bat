@@ -1,13 +1,8 @@
+@echo off
+
 REM https://youtu.be/HXSuNxpCzdM?t=3199
 REM https://www.youtube.com/watch?v=HyVc0X9JKpg
 REM https://people.sc.fsu.edu/~jburkardt/data/obj/obj.html
-
-REM VS 2015:
-REM call "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x64
-
-REM VS 2017:
-call "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Professional\VC\Auxiliary\Build\vcvarsall.bat" x64
-@echo off
 
 SET CODE_DIR=code
 SET OUTPUT_DIR=bin
@@ -29,7 +24,7 @@ cl.exe %COMMON_COMPILER_FLAGS% /c ..\%CODE_DIR%\gentle_giant.cpp
 REM use the 'lib.exe' tool to create a lib file from the obj files
 lib.exe -nologo gentle_giant.obj
 
-REM copy the library header files to the output director
+REM copy the library header files to the output directory
 xcopy ..\%CODE_DIR%\*.hpp .
 
 REM build the game.exe file using the gentle_giant.lib
