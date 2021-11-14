@@ -13,6 +13,15 @@ void ClearPixelArray(uint32_t* pixelArray, int arrayLength)
 	}
 }
 
+void ClearPixelAndDepthArray(uint32_t* pixelArray, float* depthArray, int arrayLength)
+{
+	for (int i = 0; i < arrayLength; i += 1)
+	{
+		pixelArray[i] = EMPTY;
+		depthArray[i] = 0.0f;
+	}
+}
+
 void RunLineDrawTest(gentle::Vec2<int> p0, gentle::Vec2<int> p1, uint32_t* expectedPixels)
 {
 	uint32_t pixelArray[18] = { EMPTY };	// define pixels as an an array of 16 uint32_t values
@@ -57,7 +66,8 @@ void Run4x4FillTriangleTest(gentle::Vec3<int> p0, gentle::Vec3<int> p1, gentle::
 	uint32_t pixelArray[18] = { EMPTY };	// define pixels as an an array of 16 uint32_t values
 											// NB this array lives on the stack in the scope of the RunSoftwareRenderingTests function only.
 											// The array is sized greater than the RenderBuffer pixel array so it can pick up illegal memory writes to the pixel array
-	ClearPixelArray(pixelArray, 18);
+	float depthArray[18] = { 0.0f };		// define a depth array also
+	ClearPixelAndDepthArray(pixelArray, depthArray, 18);
 
 	/**
 	 * Set the RenderBuffer to be a 4x4 grid of pixels (pixel ordinals 0 - 3)
@@ -78,8 +88,9 @@ void Run4x4FillTriangleTest(gentle::Vec3<int> p0, gentle::Vec3<int> p1, gentle::
 	renderBuffer.height = 4;
 	renderBuffer.width = 4;					// Size the buffer to 16 pixels. pixelArray is 18 pixels so the test can tell if the function ever oversteps the bounds of RenderBuffer.
 	renderBuffer.pixels = &pixelArray[1];	// Use the second element in pixelArray so we can tell if the zero-th element ever gets accessed.
+	renderBuffer.depth = &depthArray[1];	// Use the second element in depthArray so we can tell if the zero-th element ever gets accessed.
 
-	gentle::FillTriangleInPixels(renderBuffer, FILLED, p0, p1, p2, 0.0f);
+	gentle::FillTriangleInPixels(renderBuffer, FILLED, p0, p1, p2, 1.0f);
 
 	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
 
@@ -96,7 +107,8 @@ void Run6x4FillTriangleTest(gentle::Vec3<int> p0, gentle::Vec3<int> p1, gentle::
 	uint32_t pixelArray[26] = { EMPTY };	// define pixels as an an array of 26 uint32_t values
 											// NB this array lives on the stack in the scope of the RunSoftwareRenderingTests function only.
 											// The array is sized greater than the RenderBuffer pixel array so it can pick up illegal memory writes to the pixel array
-	ClearPixelArray(pixelArray, 26);
+	float depthArray[26] = { 0.0f };
+	ClearPixelAndDepthArray(pixelArray, depthArray, 26);
 
 	/**
 	 * Set the RenderBuffer to be a 5x5 grid of pixels (pixel ordinals 0 - 4)
@@ -117,8 +129,9 @@ void Run6x4FillTriangleTest(gentle::Vec3<int> p0, gentle::Vec3<int> p1, gentle::
 	renderBuffer.height = 4;
 	renderBuffer.width = 6;					// Size the buffer to 16 pixels. pixelArray is 25 pixels so the test can tell if the function ever oversteps the bounds of RenderBuffer.
 	renderBuffer.pixels = &pixelArray[1];	// Use the second element in pixelArray so we can tell if the zero-th element ever gets accessed.
+	renderBuffer.depth = &depthArray[1];
 
-	gentle::FillTriangleInPixels(renderBuffer, FILLED, p0, p1, p2, 0.0f);
+	gentle::FillTriangleInPixels(renderBuffer, FILLED, p0, p1, p2, 1.0f);
 
 	assert(pixelArray[0] == EMPTY);	// Should NEVER get written to
 
