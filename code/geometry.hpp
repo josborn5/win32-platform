@@ -16,7 +16,7 @@ namespace gentle
 	struct Triangle4d
 	{
 		Vec4<T> p[3];
-		uint32_t color;
+		unsigned int color;
 	};
 
 	template<typename T>

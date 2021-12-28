@@ -615,25 +615,25 @@ namespace gentle
 		}
 	}
 
-	uint32_t GetColorFromRGB(int red, int green, int blue)
+	unsigned int GetColorFromRGB(int red, int green, int blue)
 	{
 		// Use bitwise operators to construct a single uint32_t value from three 0-255 RGB values.
-				// There are 32 bits to fill up.
-				// Each 0-255 value is a single byte, or 8 bits. So the 32 bits will be split into 4 segments (32 bits / 8 bits = 4).
-				// |--1--|--2--|--3--|--4--|	bytes
-				// 1     8     16    24    32	bits
-				//
-				// So the 0xRRGGBB value is made by constructing:
-				// 1. the RR value and shifting it 16 places to the left
-				//		|00|00|00|RR|	--> |00|RR|00|00|
-				// 2. the GG value and shifting it 8 places to the left
-				//		|00|00|00|GG|	-->	|00|00|GG|00|
-				// 3. the BB value
-				//							|00|00|00|BB|
-				// Adding these together gives us the 0xRRGGBB value:
-				//		|0x|00|00|00| + |00|RR|00|00| + |00|00|GG|00| + |00|00|00|BB| = |0x|RR|GG|BB|
-				uint32_t color = (uint32_t)(0x000000 + (red << 16) + (green << 8) + blue);
-				return color;
+		// There are 32 bits to fill up.
+		// Each 0-255 value is a single byte, or 8 bits. So the 32 bits will be split into 4 segments (32 bits / 8 bits = 4).
+		// |--1--|--2--|--3--|--4--|	bytes
+		// 1     8     16    24    32	bits
+		//
+		// So the 0xRRGGBB value is made by constructing:
+		// 1. the RR value and shifting it 16 places to the left
+		//		|00|00|00|RR|	--> |00|RR|00|00|
+		// 2. the GG value and shifting it 8 places to the left
+		//		|00|00|00|GG|	-->	|00|00|GG|00|
+		// 3. the BB value
+		//							|00|00|00|BB|
+		// Adding these together gives us the 0xRRGGBB value:
+		//		|0x|00|00|00| + |00|RR|00|00| + |00|00|GG|00| + |00|00|00|BB| = |0x|RR|GG|BB|
+		uint32_t color = (uint32_t)(0x000000 + (red << 16) + (green << 8) + blue);
+		return (unsigned int)color;
 	}
 
 	template<typename T>
@@ -682,7 +682,7 @@ namespace gentle
 				Vec4<T> normalizedLightDirection = UnitVector(lightDirection);
 				T shade = DotProduct(normal, normalizedLightDirection);
 
-				uint32_t triangleColor = GetColorFromRGB(int(RED * shade), int(GREEN * shade), int(BLUE * shade));
+				unsigned int triangleColor = GetColorFromRGB(int(RED * shade), int(GREEN * shade), int(BLUE * shade));
 
 				// Convert the triangle position from world space to view space
 				MultiplyVectorWithMatrix(transformed.p[0], viewed.p[0], viewMatrix);

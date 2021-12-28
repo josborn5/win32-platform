@@ -21,7 +21,7 @@ enum KEY
 
 struct RenderBuffer
 {
-	uint32_t* pixels;
+	unsigned int* pixels;
 	int width;
 	int height;
 	int pitch;
@@ -51,8 +51,8 @@ struct Input
 struct GameMemory
 {
 	bool IsInitialized;
-	uint64_t PermanentStorageSpace;
-	uint64_t TransientStorageSpace;
+	unsigned long PermanentStorageSpace;
+	unsigned long TransientStorageSpace;
 	void* PermanentStorage;
 	void* TransientStorage;
 };
