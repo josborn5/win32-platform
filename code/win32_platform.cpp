@@ -1,17 +1,12 @@
-#ifndef WIN32_PLATFORM_H
-#define WIN32_PLATFORM_H
-
 #include <windows.h>
 #include <stdint.h>
 #include <stdio.h>
 
+#include "gentle_giant_win32.hpp"
 #include "platform.hpp"
 #include "game.hpp"
 
-void GameInitialize(const GameMemory &gameMemory, const RenderBuffer &renderBuffer);
-void GameUpdateAndRender(const GameMemory &gameMemory, const Input &input, const RenderBuffer &renderBuffer, float dt);
-
-namespace platform
+namespace gentle
 {
 
 #define DEBUG_BUFFER_SIZE 256
@@ -22,50 +17,50 @@ namespace platform
 #define Terabytes(value) (Gigabytes(value) * 1024LL)
 
 static bool IsRunning = false;
-static RenderBuffer renderBuffer = {0};
+static RenderBuffer globalRenderBuffer = {0};
 static BITMAPINFO bitmapInfo = {0};	// platform dependent
 static int64_t GlobalPerfCountFrequency;
 
-static void Win32_SizeRenderBufferToCurrentWindow(HWND window)
+static void Win32_SizeglobalRenderBufferToCurrentWindow(HWND window)
 {
 	RECT clientRect = {0};
 	GetClientRect(window, &clientRect);
 
-	renderBuffer.width = clientRect.right - clientRect.left;
-	renderBuffer.height = clientRect.bottom - clientRect.top;
-	renderBuffer.bytesPerPixel = sizeof(uint32_t);
+	globalRenderBuffer.width = clientRect.right - clientRect.left;
+	globalRenderBuffer.height = clientRect.bottom - clientRect.top;
+	globalRenderBuffer.bytesPerPixel = sizeof(uint32_t);
 
-	if (renderBuffer.pixels)
+	if (globalRenderBuffer.pixels)
 	{
-		VirtualFree(renderBuffer.pixels, 0, MEM_RELEASE);
+		VirtualFree(globalRenderBuffer.pixels, 0, MEM_RELEASE);
 	}
-	if (renderBuffer.depth)
+	if (globalRenderBuffer.depth)
 	{
-		VirtualFree(renderBuffer.depth, 0, MEM_RELEASE);
+		VirtualFree(globalRenderBuffer.depth, 0, MEM_RELEASE);
 	}
 
 	bitmapInfo.bmiHeader.biSize = sizeof(bitmapInfo.bmiHeader);
-	bitmapInfo.bmiHeader.biWidth = renderBuffer.width;
-	bitmapInfo.bmiHeader.biHeight = renderBuffer.height;
+	bitmapInfo.bmiHeader.biWidth = globalRenderBuffer.width;
+	bitmapInfo.bmiHeader.biHeight = globalRenderBuffer.height;
 	bitmapInfo.bmiHeader.biPlanes = 1;
 	bitmapInfo.bmiHeader.biBitCount = 32;
 	bitmapInfo.bmiHeader.biCompression = BI_RGB;
 
-	int bitmapPixelCount = renderBuffer.width * renderBuffer.height;
-	int bitmapMemorySize = bitmapPixelCount * renderBuffer.bytesPerPixel;
-	renderBuffer.pitch = renderBuffer.width * renderBuffer.bytesPerPixel;
-	renderBuffer.pixels = (uint32_t *)VirtualAlloc(0, bitmapMemorySize, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
+	int bitmapPixelCount = globalRenderBuffer.width * globalRenderBuffer.height;
+	int bitmapMemorySize = bitmapPixelCount * globalRenderBuffer.bytesPerPixel;
+	globalRenderBuffer.pitch = globalRenderBuffer.width * globalRenderBuffer.bytesPerPixel;
+	globalRenderBuffer.pixels = (uint32_t *)VirtualAlloc(0, bitmapMemorySize, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
 
 	int depthBufferMemorySize = bitmapPixelCount * sizeof(float);
-	renderBuffer.depth = (float *)VirtualAlloc(0, depthBufferMemorySize, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
+	globalRenderBuffer.depth = (float *)VirtualAlloc(0, depthBufferMemorySize, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
 }
 
-static void Win32_DisplayRenderBufferInWindow(HDC deviceContext)
+static void Win32_DisplayglobalRenderBufferInWindow(HDC deviceContext)
 {
 	StretchDIBits(deviceContext,
-		0, 0, renderBuffer.width, renderBuffer.height,
-		0, 0, renderBuffer.width, renderBuffer.height,
-		renderBuffer.pixels, &bitmapInfo, DIB_RGB_COLORS, SRCCOPY);
+		0, 0, globalRenderBuffer.width, globalRenderBuffer.height,
+		0, 0, globalRenderBuffer.width, globalRenderBuffer.height,
+		globalRenderBuffer.pixels, &bitmapInfo, DIB_RGB_COLORS, SRCCOPY);
 }
 
 LRESULT CALLBACK Win32_MainWindowCallback(HWND window, UINT Message, WPARAM wParam, LPARAM lParam)
@@ -76,7 +71,7 @@ LRESULT CALLBACK Win32_MainWindowCallback(HWND window, UINT Message, WPARAM wPar
 	{
 		case WM_SIZE:
 		{
-			Win32_SizeRenderBufferToCurrentWindow(window);
+			Win32_SizeglobalRenderBufferToCurrentWindow(window);
 		} break;
 		case WM_DESTROY:
 		{
@@ -97,7 +92,7 @@ LRESULT CALLBACK Win32_MainWindowCallback(HWND window, UINT Message, WPARAM wPar
 		{
 			PAINTSTRUCT paint = {0};
 			HDC deviceContext = BeginPaint(window, &paint);
-			Win32_DisplayRenderBufferInWindow(deviceContext);
+			Win32_DisplayglobalRenderBufferInWindow(deviceContext);
 			EndPaint(window, &paint);
 		} break;
 		default:
@@ -237,14 +232,11 @@ inline float Win32_GetSecondsElapsed(LARGE_INTEGER Start, LARGE_INTEGER End)
 	return SecondsElapsedForWork;
 }
 
-}
-
-// NB this needs to be outside of the namespace declaration so the linker can see it as the entry points
-int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine, int showCode)
+int Win32Main(HINSTANCE instance)
 {
 	LARGE_INTEGER PerfCounterFrequencyResult;
 	QueryPerformanceFrequency(&PerfCounterFrequencyResult);
-	platform::GlobalPerfCountFrequency = PerfCounterFrequencyResult.QuadPart;
+	GlobalPerfCountFrequency = PerfCounterFrequencyResult.QuadPart;
 
 	// Set the Windows schedular granularity to 1ms to help our Sleep() function call be granular
 	UINT DesiredSchedulerMS = 1;
@@ -253,7 +245,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 
 	WNDCLASSA windowClass = {0};
 	windowClass.style = CS_OWNDC|CS_HREDRAW|CS_VREDRAW;
-	windowClass.lpfnWndProc = platform::Win32_MainWindowCallback;
+	windowClass.lpfnWndProc = Win32_MainWindowCallback;
 	windowClass.hInstance = instance;
 	windowClass.lpszClassName = "Window Class";
 
@@ -268,13 +260,12 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 									1280, 720, 0, 0, 0, 0);
 		if(window)
 		{
-			platform::IsRunning = true;
+			IsRunning = true;
 
 			// Initialize Visual
-			platform::Win32_SizeRenderBufferToCurrentWindow(window);
+			Win32_SizeglobalRenderBufferToCurrentWindow(window);
 
 			// Initialize general use memory
-			
 			GameMemory GameMemory;
 			GameMemory.PermanentStorageSpace = Megabytes(1);
 			GameMemory.TransientStorageSpace = Megabytes((uint64_t)1);
@@ -285,7 +276,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 			if(GameMemory.PermanentStorage == NULL)
 			{
 				successfulMemoryAllocation = false;
-				platform::DisplayLastWin32Error();
+				DisplayLastWin32Error();
 			}
 
 			GameMemory.TransientStorage = (uint8_t*)GameMemory.PermanentStorage + GameMemory.PermanentStorageSpace;
@@ -295,36 +286,36 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 
 			// Initialize timers
 			float lastDt = targetSecondsPerFrame;
-			LARGE_INTEGER LastCounter = platform::Win32_GetWallClock();
+			LARGE_INTEGER LastCounter = Win32_GetWallClock();
 			int64_t LastCycleCount = __rdtsc();
 
-			gentle::Initialize(GameMemory, platform::renderBuffer);
+			Initialize(GameMemory, globalRenderBuffer);
 
 			// Main loop
-			while (successfulMemoryAllocation && platform::IsRunning)
+			while (successfulMemoryAllocation && IsRunning)
 			{
-				platform::Win32_ProcessPendingMessages(&gameInput);
+				Win32_ProcessPendingMessages(&gameInput);
 
 				// Get mouse position
 				POINT mousePointer;
 				GetCursorPos(&mousePointer);	// mousePointer in screen coord
 				ScreenToClient(window, &mousePointer);	// convert screen coord to window coord
 				gameInput.mouse.x = mousePointer.x;
-				gameInput.mouse.y = platform::renderBuffer.height - mousePointer.y;
+				gameInput.mouse.y = globalRenderBuffer.height - mousePointer.y;
 
 
-				gentle::UpdateAndRender(GameMemory, gameInput, platform::renderBuffer, lastDt);
+				UpdateAndRender(GameMemory, gameInput, globalRenderBuffer, lastDt);
 
 
-				platform::ResetButtons(&gameInput);
+				ResetButtons(&gameInput);
 
 				// render visual
 				HDC deviceContext = GetDC(window);
-				platform::Win32_DisplayRenderBufferInWindow(deviceContext);
+				Win32_DisplayglobalRenderBufferInWindow(deviceContext);
 				ReleaseDC(window, deviceContext);
 
 				// wait before starting next frame
-				float secondsElapsedForFrame = platform::Win32_GetSecondsElapsed(LastCounter, platform::Win32_GetWallClock());
+				float secondsElapsedForFrame = Win32_GetSecondsElapsed(LastCounter, Win32_GetWallClock());
 				float workTime = 1000.0f * secondsElapsedForFrame;
 				if (secondsElapsedForFrame < targetSecondsPerFrame)
 				{
@@ -338,7 +329,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 					}
 					while(secondsElapsedForFrame < targetSecondsPerFrame)
 					{
-						secondsElapsedForFrame = platform::Win32_GetSecondsElapsed(LastCounter, platform::Win32_GetWallClock());
+						secondsElapsedForFrame = Win32_GetSecondsElapsed(LastCounter, Win32_GetWallClock());
 					}
 				}
 				else
@@ -347,15 +338,15 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 				}
 
 				// Take end of frame measurements
-				LARGE_INTEGER EndCounter = platform::Win32_GetWallClock();
+				LARGE_INTEGER EndCounter = Win32_GetWallClock();
 				int64_t EndCycleCount = __rdtsc();
 
 				// Work out elapsed time for current frame
-				lastDt = platform::Win32_GetSecondsElapsed(LastCounter, EndCounter);
+				lastDt = Win32_GetSecondsElapsed(LastCounter, EndCounter);
 
 				// Output frame tine information
 				uint64_t counterElapsed = LastCounter.QuadPart - EndCounter.QuadPart;
-				double FPS = (double)platform::GlobalPerfCountFrequency / (double)counterElapsed;
+				double FPS = (double)GlobalPerfCountFrequency / (double)counterElapsed;
 				int64_t CyclesElapsed = EndCycleCount - LastCycleCount;
 				double MCPF = (double)CyclesElapsed / (1000.0f * 1000.0f);
 
@@ -382,4 +373,4 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 	return (0);
 }
 
-#endif
+}

@@ -1,7 +1,7 @@
 #include <math.h>
 
 #include "gentle_giant.hpp"
-#include "win32_platform.cpp"
+#include "game_win32.cpp"
 
 gentle::Camera<float> camera;
 gentle::Mesh<float> mesh;
@@ -10,7 +10,7 @@ gentle::Matrix4x4<float> projectionMatrix;
 float theta = 0.0f;
 float cameraYaw = 0.0f;
 
-bool isTeapot = true;
+bool isTeapot = false;
 
 void gentle::Initialize(const GameMemory &gameMemory, const RenderBuffer &renderBuffer)
 {

@@ -34,6 +34,9 @@ namespace gentle
 	Vec3<T> AddVectors(const Vec3<T> &v1, const Vec3<T> &v2);
 
 	template<typename T>
+	Vec2<T> AddVectors(const Vec2<T> &v1, const Vec2<T> &v2);
+
+	template<typename T>
 	Vec4<T> SubtractVectors(const Vec4<T> &v1, const Vec4<T> &v2);
 
 	template<typename T>
@@ -44,6 +47,9 @@ namespace gentle
 
 	template<typename T>
 	Vec3<T> MultiplyVectorByScalar(const Vec3<T> &vec, T sca);
+
+	template<typename T>
+	Vec2<T> MultiplyVectorByScalar(const Vec2<T> &vec, T sca);
 
 	template<typename T>
 	T DotProduct(const Vec4<T> &v1, const Vec4<T> &v2);

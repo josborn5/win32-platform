@@ -37,6 +37,7 @@ namespace gentle
 		return ((aPos.x + aHalfSize.x) > horizontalPos && (aPos.x - aHalfSize.x) < horizontalPos);
 	}
 
+	// Checks for collision with a horizontal (X) line for a rect moving with a positive vertical (Y) velocity
 	template<typename T>
 	void CheckRectAndXLineCollisionFromNegativeY(
 		float wallYPos,
@@ -64,6 +65,7 @@ namespace gentle
 		}
 	}
 
+	// Checks for collision with a horizontal (X) line for a rect moving with a negative vertical (Y) velocity
 	template<typename T>
 	void CheckRectAndXLineCollisionFromPositiveY(
 		float wallYPos,
@@ -91,6 +93,7 @@ namespace gentle
 		}
 	}
 
+	// Checks for collision with a veritcal (Y) line for a rect moving with a negative horizontal (X) velocity
 	template<typename T>
 	void CheckRectAndYLineCollisionFromPositiveX(
 		float wallXPos,
@@ -118,6 +121,7 @@ namespace gentle
 		}
 	}
 
+	// Checks for collision with a vertical (Y) line for a rect moving with a positive horizontal (X) velocity
 	template<typename T>
 	void CheckRectAndYLineCollisionFromNegativeX(
 		float wallXPos,
