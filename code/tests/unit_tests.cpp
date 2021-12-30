@@ -1,9 +1,9 @@
 #include <iostream>
 #include <stdint.h>
-#include "math.tests.cpp"
-#include "software_rendering.tests.cpp"
-#include "geometry.tests.cpp"
-#include "collision.tests.cpp"
+#include "../math.tests.cpp"
+#include "../software_rendering.tests.cpp"
+#include "../geometry.tests.cpp"
+#include "../collision.tests.cpp"
 
 int main()
 {

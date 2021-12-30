@@ -16,8 +16,10 @@ pushd %OUTPUT_DIR%
 SET COMMON_COMPILER_FLAGS=-MT -nologo -Gm- -GR- -EHa- -Oi -WX -W4 -wd4100 -wd4201 -FC -Z7 -Fmwin32_platform.map /EHsc /O2
 
 REM 64-bit build
-cl.exe %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\unit_tests.cpp
+REM Build tests
+cl.exe %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\tests\unit_tests.cpp
 
+REM Build the library
 REM using the '/c' flag to skip linking and create only the '.obj' file
 cl.exe %COMMON_COMPILER_FLAGS% /c ..\%CODE_DIR%\gentle_giant.cpp
 
@@ -27,10 +29,10 @@ lib.exe -nologo gentle_giant.obj
 REM copy the library header files to the output directory
 xcopy ..\%CODE_DIR%\*.hpp .
 
-REM build the game.exe file using the gentle_giant.lib
+REM build the demo using the gentle_giant.lib
 SET COMMON_LINKER_FLAGS=-opt:ref user32.lib Gdi32.lib winmm.lib
-cl.exe %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\game.cpp /link %COMMON_LINKER_FLAGS% gentle_giant.lib
+cl.exe %COMMON_COMPILER_FLAGS% ..\%CODE_DIR%\demo\game.cpp /link %COMMON_LINKER_FLAGS% gentle_giant.lib
 
-xcopy ..\%CODE_DIR%\teapot.obj .
+xcopy ..\%CODE_DIR%\demo\teapot.obj .
 
 popd

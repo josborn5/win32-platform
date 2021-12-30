@@ -3,4 +3,4 @@
 #include "math.cpp"
 #include "collision.cpp"
 #include "software_rendering.cpp"
-#include "win32_platform.cpp"
+#include "gentle_giant_win32.cpp"

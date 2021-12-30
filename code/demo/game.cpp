@@ -1,6 +1,6 @@
 #include <math.h>
 
-#include "gentle_giant.hpp"
+#include "../gentle_giant.hpp"
 #include "game_win32.cpp"
 
 gentle::Camera<float> camera;
