@@ -20,6 +20,6 @@ int main()
 	std::cout << "geometry tests passed.\n";
 
 	std::cout << "Starting collision tests.\n";
-	gentle::RunCollisionTests();
+	RunCollisionTests();
 	std::cout << "collision tests passed.\n";
 }

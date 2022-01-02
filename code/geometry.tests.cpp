@@ -1,4 +1,4 @@
-#include "geometry.cpp"
+#include "geometry.hpp"
 
 void RunGeometryTests()
 {

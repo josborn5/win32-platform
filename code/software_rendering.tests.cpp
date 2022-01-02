@@ -1,4 +1,4 @@
-#include "software_rendering.cpp"
+#include "software_rendering.hpp"
 #include <assert.h>
 
 const uint32_t EMPTY = 0x000000;

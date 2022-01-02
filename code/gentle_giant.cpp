@@ -1,6 +1,4 @@
 #include "file.cpp"
 #include "geometry.cpp"
 #include "math.cpp"
-#include "collision.cpp"
 #include "software_rendering.cpp"
-#include "gentle_giant_win32.cpp"

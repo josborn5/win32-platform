@@ -43,6 +43,9 @@ namespace gentle
 	Vec3<T> SubtractVectors(const Vec3<T> &v1, const Vec3<T> &v2);
 
 	template<typename T>
+	Vec2<T> SubtractVectors(const Vec2<T> &v1, const Vec2<T> &v2);
+
+	template<typename T>
 	Vec4<T> MultiplyVectorByScalar(const Vec4<T> &vec, T sca);
 
 	template<typename T>
