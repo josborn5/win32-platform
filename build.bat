@@ -7,12 +7,13 @@ REM https://people.sc.fsu.edu/~jburkardt/data/obj/obj.html
 SET CODE_DIR=code
 SET OUTPUT_DIR=bin
 
-call "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x64
+call "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvarsall.bat" x64
 
 rmdir /S /Q %OUTPUT_DIR%
 mkdir %OUTPUT_DIR%
 pushd %OUTPUT_DIR%
 
+REM https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-alphabetically
 SET COMMON_COMPILER_FLAGS=-MT -nologo -Gm- -GR- -EHa- -Oi -WX -W4 -wd4100 -wd4201 -FC -Z7 /EHsc /O2 -Fm
 
 REM 64-bit build
