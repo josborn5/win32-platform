@@ -1,5 +1,5 @@
-#ifndef GAME_H
-#define GAME_H
+#ifndef GENTLE_GAME_H
+#define GENTLE_GAME_H
 
 namespace gentle
 {

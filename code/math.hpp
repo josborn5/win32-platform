@@ -1,5 +1,5 @@
-#ifndef MATH_H
-#define MATH_H
+#ifndef GENTLE_MATH_H
+#define GENTLE_MATH_H
 
 namespace gentle
 {
