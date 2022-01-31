@@ -109,6 +109,24 @@ namespace gentle
 		}
 	}
 
+	void CheckRectAndXLineCollision(
+		float wallYPos,
+		Rect<float> &rect,
+		float *maxCollisionTime,
+		CollisionSide *collisionSide
+	)
+	{
+		if (rect.velocity.y == 0.0) {
+			return;
+		}
+
+		if (rect.velocity.y > 0) {
+			CheckRectAndXLineCollisionFromNegativeY(wallYPos, rect.halfSize, rect.prevPosition, rect.velocity, maxCollisionTime, collisionSide, &rect.position);
+		} else {
+			CheckRectAndXLineCollisionFromPositiveY(wallYPos, rect.halfSize, rect.prevPosition, rect.velocity, maxCollisionTime, collisionSide, &rect.position);
+		}
+	}
+
 	// Checks for collision with a veritcal (Y) line for a rect moving with a negative horizontal (X) velocity
 	template<typename T>
 	void CheckRectAndYLineCollisionFromPositiveX(

@@ -7,6 +7,15 @@
 namespace gentle
 {
 	template<typename T>
+	struct Rect
+	{
+		Vec2<T> position;
+		Vec2<T> halfSize;
+		Vec2<T> velocity;
+		Vec2<T> prevPosition;
+	};
+
+	template<typename T>
 	struct Triangle2d
 	{
 		Vec2<T> p[3];
