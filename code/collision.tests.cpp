@@ -71,48 +71,32 @@ void RunCheckCollisionBetweenMovingRectsTests(Vec2<float> aVelocity, Vec2<float>
 	assert(bPosition1.y == expectedCollisionPosition.y);
 }
 
-void RunCheckRectAndXLineCollisionFromPositiveYTest(Vec2<float> blockPosition0, Vec2<float> blockVelocity, float expectedCollisionTime, int expectedCollisionResult, Vec2<float> expectedCollisionPosition)
+void RunCheckRectAndXLineCollisionTest(Vec2<float> blockPosition0, Vec2<float> blockVelocity, float expectedCollisionTime, int expectedCollisionResult, Vec2<float> expectedCollisionPosition)
 {
 	float wallYPos = 0.0f;
-	Vec2<float> blockHalfSize = oneByOneHalfSize;
-
-	Vec2<float> blockPosition1;
-	blockPosition1.x = blockPosition0.x;
-	blockPosition1.y = blockPosition0.y;
 	float collisionTime = originalCollisionTime;
 	CollisionSide collisionResult = None;
+	Rect<float> rect;
+	rect.velocity = blockVelocity;
+	rect.halfSize = oneByOneHalfSize;
+	rect.prevPosition = blockPosition0;
+	rect.position = Vec2<float> { blockPosition0.x, blockPosition0.y };
 
-	CheckRectAndXLineCollisionFromPositiveY(wallYPos, blockHalfSize, blockPosition0, blockVelocity, &collisionTime, &collisionResult, &blockPosition1);
+	CheckRectAndXLineCollision(
+		wallYPos,
+		rect,
+		collisionTime,
+		collisionResult
+	);
+
 	printf("collisionResult is %d\n", collisionResult);
 	printf("collisionTime is %f\n", collisionTime);
-	printf("collisionPosition.x is %f\n", blockPosition1.x);
-	printf("collisionPosition.y is %f\n\n", blockPosition1.y);
+	printf("collisionPosition.x is %f\n", rect.position.x);
+	printf("collisionPosition.y is %f\n\n", rect.position.y);
 	assert(collisionResult == expectedCollisionResult);
 	assert(collisionTime == expectedCollisionTime);
-	assert(blockPosition1.x == expectedCollisionPosition.x);
-	assert(blockPosition1.y == expectedCollisionPosition.y);
-}
-
-void RunCheckRectAndXLineCollisionFromNegativeYTest(Vec2<float> blockPosition0, Vec2<float> blockVelocity, float expectedCollisionTime, int expectedCollisionResult, Vec2<float> expectedCollisionPosition)
-{
-	float wallYPos = 0.0f;
-	Vec2<float> blockHalfSize = oneByOneHalfSize;
-
-	Vec2<float> blockPosition1;
-	blockPosition1.x = blockPosition0.x;
-	blockPosition1.y = blockPosition0.y;
-	float collisionTime = originalCollisionTime;
-	CollisionSide collisionResult = None;
-
-	CheckRectAndXLineCollisionFromNegativeY(wallYPos, blockHalfSize, blockPosition0, blockVelocity, &collisionTime, &collisionResult, &blockPosition1);
-	printf("collisionResult is %d\n", collisionResult);
-	printf("collisionTime is %f\n", collisionTime);
-	printf("collisionPosition.x is %f\n", blockPosition1.x);
-	printf("collisionPosition.y is %f\n\n", blockPosition1.y);
-	assert(collisionResult == expectedCollisionResult);
-	assert(collisionTime == expectedCollisionTime);
-	assert(blockPosition1.x == expectedCollisionPosition.x);
-	assert(blockPosition1.y == expectedCollisionPosition.y);
+	assert(rect.position.x == expectedCollisionPosition.x);
+	assert(rect.position.y == expectedCollisionPosition.y);
 }
 
 void RunCollisionTests()
@@ -311,31 +295,31 @@ void RunCollisionTests()
 	* V
 	*---
 	*/
-	RunCheckRectAndXLineCollisionFromPositiveYTest(Vec2<float> { 10.0f, 4.0f }, movingDown, 1.5f, Top, Vec2<float> { 10.0f, 1.0f });
+	RunCheckRectAndXLineCollisionTest(Vec2<float> { 10.0f, 4.0f }, movingDown, 1.5f, Top, Vec2<float> { 10.0f, 1.0f });
 
 	/* B
 	*---
 	* |
 	* V
 	*/
-	RunCheckRectAndXLineCollisionFromPositiveYTest(Vec2<float> { -10.0f, 1.0f }, movingDown, 0.0f, Top, Vec2<float> { -10.0f, 1.0f });
+	RunCheckRectAndXLineCollisionTest(Vec2<float> { -10.0f, 1.0f }, movingDown, 0.0f, Top, Vec2<float> { -10.0f, 1.0f });
 
 	/* Λ
 	* |
 	* B
 	*---
 	*/
-	RunCheckRectAndXLineCollisionFromPositiveYTest(Vec2<float> { 0.0f, 1.0f }, movingUp, originalCollisionTime, None, Vec2<float> { 0.0f, 1.0f });
+	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, 1.0f }, movingUp, originalCollisionTime, None, Vec2<float> { 0.0f, 1.0f });
 
 	/* B-->
 	*------
 	*/
-	RunCheckRectAndXLineCollisionFromPositiveYTest(Vec2<float> { 0.0f, 1.0f }, movingRight, originalCollisionTime, None, Vec2<float> { 0.0f, 1.0f });
+	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, 1.0f }, movingRight, originalCollisionTime, None, Vec2<float> { 0.0f, 1.0f });
 
 	/* <--B
 	*------
 	*/
-	RunCheckRectAndXLineCollisionFromPositiveYTest(Vec2<float> { 0.0f, 1.0f }, movingLeft, originalCollisionTime, None, Vec2<float> { 0.0f, 1.0f });
+	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, 1.0f }, movingLeft, originalCollisionTime, None, Vec2<float> { 0.0f, 1.0f });
 
 
 	/*
@@ -348,29 +332,29 @@ void RunCollisionTests()
 	* |
 	* B
 	*/
-	RunCheckRectAndXLineCollisionFromNegativeYTest(Vec2<float> { 10.0f, -4.0f }, movingUp, 1.5f, Bottom, Vec2<float> { 10.0f, -1.0f });
+	RunCheckRectAndXLineCollisionTest(Vec2<float> { 10.0f, -4.0f }, movingUp, 1.5f, Bottom, Vec2<float> { 10.0f, -1.0f });
 
 	/* Λ
 	* |
 	*---
 	* B
 	*/
-	RunCheckRectAndXLineCollisionFromNegativeYTest(Vec2<float> { -10.0f, -1.0f }, movingUp, 0.0f, Bottom, Vec2<float> { -10.0f, -1.0f });
+	RunCheckRectAndXLineCollisionTest(Vec2<float> { -10.0f, -1.0f }, movingUp, 0.0f, Bottom, Vec2<float> { -10.0f, -1.0f });
 
 	/*---
 	* B
 	* |
 	* V
 	*/
-	RunCheckRectAndXLineCollisionFromNegativeYTest(Vec2<float> { 0.0f, -1.0f }, movingDown, originalCollisionTime, None, Vec2<float> { 0.0f, -1.0f });
+	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, -1.0f }, movingDown, originalCollisionTime, None, Vec2<float> { 0.0f, -1.0f });
 
 	/*------
 	*B-->
 	*/
-	RunCheckRectAndXLineCollisionFromNegativeYTest(Vec2<float> { 0.0f, -1.0f }, movingRight, originalCollisionTime, None, Vec2<float> { 0.0f, -1.0f });
+	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, -1.0f }, movingRight, originalCollisionTime, None, Vec2<float> { 0.0f, -1.0f });
 
 	/*------
 	* <--B
 	*/
-	RunCheckRectAndXLineCollisionFromNegativeYTest(Vec2<float> { 0.0f, -1.0f }, movingLeft, originalCollisionTime, None, Vec2<float> { 0.0f, -1.0f });
+	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, -1.0f }, movingLeft, originalCollisionTime, None, Vec2<float> { 0.0f, -1.0f });
 }

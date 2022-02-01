@@ -109,21 +109,18 @@ namespace gentle
 		}
 	}
 
+	template<typename T>
 	void CheckRectAndXLineCollision(
-		float wallYPos,
-		Rect<float> &rect,
-		float *maxCollisionTime,
-		CollisionSide *collisionSide
+		T wallYPos,
+		Rect<T> &rect,
+		float &maxCollisionTime,
+		CollisionSide &collisionSide
 	)
 	{
-		if (rect.velocity.y == 0.0) {
-			return;
-		}
-
 		if (rect.velocity.y > 0) {
-			CheckRectAndXLineCollisionFromNegativeY(wallYPos, rect.halfSize, rect.prevPosition, rect.velocity, maxCollisionTime, collisionSide, &rect.position);
-		} else {
-			CheckRectAndXLineCollisionFromPositiveY(wallYPos, rect.halfSize, rect.prevPosition, rect.velocity, maxCollisionTime, collisionSide, &rect.position);
+			CheckRectAndXLineCollisionFromNegativeY(wallYPos, rect.halfSize, rect.prevPosition, rect.velocity, &maxCollisionTime, &collisionSide, &rect.position);
+		} else if (rect.velocity.y < 0) {
+			CheckRectAndXLineCollisionFromPositiveY(wallYPos, rect.halfSize, rect.prevPosition, rect.velocity, &maxCollisionTime, &collisionSide, &rect.position);
 		}
 	}
 
