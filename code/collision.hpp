@@ -264,6 +264,21 @@ namespace gentle
 	}
 
 	template<typename T>
+	void CheckRectAndYLineCollision(
+		T wallXPos,
+		Rect<T> &rect,
+		float &maxCollisionTime,
+		CollisionSide &collisionSide
+	)
+	{
+		if (rect.velocity.x > 0) {
+			CheckRectAndYLineCollisionFromNegativeX(wallXPos, rect.halfSize, rect.prevPosition, rect.velocity, &maxCollisionTime, &collisionSide, &rect.position);
+		} else if (rect.velocity.x < 0) {
+			CheckRectAndYLineCollisionFromPositiveX(wallXPos, rect.halfSize, rect.prevPosition, rect.velocity, &maxCollisionTime, &collisionSide, &rect.position);
+		}
+	}
+
+	template<typename T>
 	bool CheckCollisionBetweenMovingRects(
 		Vec2<T> aHalfSize,
 		Vec2<T> aPosition0,
@@ -286,6 +301,28 @@ namespace gentle
 		{
 			Vec2<T> deltaAPosition = MultiplyVectorByScalar(aVelocity, *maxCollisionTime);
 			*bPosition1 = AddVectors(deltaAPosition, *bPosition1);
+		}
+		return result;
+	}
+
+	template<typename T>
+	bool CheckCollisionBetweenRects(
+		Rect<T> &aRect,
+		Rect<T> &bRect,
+		float &maxCollisionTime,
+		CollisionSide &collisionResult
+	)
+	{
+		// Calculate relative velocity as between a & b, as if a is static. i.e. the origin of our co-ordinate system is fixed to whereever object 'a' is
+		Vec2<T> aRelBVelocity = SubtractVectors(bRect.velocity, aRect.velocity);
+
+		bool result = CheckStaticAndMovingRectCollision(aRect.halfSize, aRect.prevPosition, bRect.halfSize, bRect.prevPosition, aRelBVelocity, &maxCollisionTime, &collisionResult, &bRect.position);
+
+		// Translate bPosition1 from the co-ordinate system whose origin is on 'a' back to the static co-ordinate system
+		if (result)
+		{
+			Vec2<T> deltaAPosition = MultiplyVectorByScalar(aRect.velocity, maxCollisionTime);
+			bRect.position = AddVectors(deltaAPosition, bRect.position);
 		}
 		return result;
 	}
