@@ -1,6 +1,8 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
+#include "math.hpp"
+
 enum KEY
 {
 	KEY_ENTER,
@@ -36,15 +38,9 @@ struct Button
 	bool keyUp;
 };
 
-struct Position
-{
-	int x;
-	int y;
-};
-
 struct Input
 {
-	Position mouse;
+	gentle::Vec2<int> mouse;
 	Button buttons[BUTTON_COUNT];
 };
 

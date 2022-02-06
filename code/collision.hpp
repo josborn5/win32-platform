@@ -2,6 +2,7 @@
 #define COLLISION_H
 
 #include "math.hpp"
+#include "geometry.hpp"
 
 // I'm getting linker errors when using separate hpp & cpp files. I don't know why, but these links might provide some info-
 // https://stackoverflow.com/a/33164552
