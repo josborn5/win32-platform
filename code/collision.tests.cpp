@@ -21,25 +21,19 @@ using namespace gentle;
 
 void RunCheckStaticAndMovingRectCollisionTests(Vec2<float> bPosition0, Vec2<float> bVelocity, float expectedCollisionTime, CollisionSide expectedCollisionResult, Vec2<float> expectedCollisionPosition)
 {
-	Vec2<float> aHalfSize = oneByOneHalfSize;
-	Vec2<float> aPosition0 = originPosition;
-
-	Vec2<float> bHalfSize = oneByOneHalfSize;
-
 	Vec2<float> bPosition1;
 	bPosition1.x = bPosition0.x;
 	bPosition1.y = bPosition0.y;
 	float collisionTime = originalCollisionTime;
 	CollisionSide collisionResult = None;
 
-
 	Rect<float> aRect;
-	aRect.halfSize = aHalfSize;
-	aRect.prevPosition = aPosition0;
+	aRect.halfSize = oneByOneHalfSize;
+	aRect.prevPosition = originPosition;
 	aRect.velocity = Vec2<float> { 0.0f, 0.0f };
 
 	Rect<float> bRect;
-	bRect.halfSize = bHalfSize;
+	bRect.halfSize = oneByOneHalfSize;
 	bRect.prevPosition = bPosition0;
 	bRect.velocity = bVelocity;
 	bRect.position = bPosition1;
@@ -60,11 +54,6 @@ void RunCheckStaticAndMovingRectCollisionTests(Vec2<float> bPosition0, Vec2<floa
 
 void RunCheckCollisionBetweenMovingRectsTests(Vec2<float> aVelocity, Vec2<float> bPosition0, Vec2<float> bVelocity, float expectedCollisionTime, CollisionSide expectedCollisionResult, Vec2<float> expectedCollisionPosition)
 {
-	Vec2<float> aHalfSize = oneByOneHalfSize;
-	Vec2<float> aPosition0 = originPosition;
-
-	Vec2<float> bHalfSize = oneByOneHalfSize;
-
 	Vec2<float> bPosition1;
 	bPosition1.x = bPosition0.x;
 	bPosition1.y = bPosition0.y;
@@ -72,12 +61,12 @@ void RunCheckCollisionBetweenMovingRectsTests(Vec2<float> aVelocity, Vec2<float>
 	CollisionSide collisionResult = None;
 
 	Rect<float> aRect;
-	aRect.halfSize = aHalfSize;
-	aRect.prevPosition = aPosition0;
+	aRect.halfSize = oneByOneHalfSize;
+	aRect.prevPosition = originPosition;
 	aRect.velocity = aVelocity;
 
 	Rect<float> bRect;
-	bRect.halfSize = bHalfSize;
+	bRect.halfSize = oneByOneHalfSize;
 	bRect.prevPosition = bPosition0;
 	bRect.velocity = bVelocity;
 	bRect.position = bPosition1;
