@@ -76,13 +76,19 @@ namespace gentle
 	template<typename T>
 	float Length(const Vec4<T> &in)
 	{
-		return std::sqrtf((in.x * in.x) + (in.y * in.y) + (in.z * in.z));
+		return sqrtf((in.x * in.x) + (in.y * in.y) + (in.z * in.z));
 	}
 
 	template<typename T>
 	float Length(const Vec3<T> &in)
 	{
-		return std::sqrtf((in.x * in.x) + (in.y * in.y) + (in.z * in.z));
+		return sqrtf((in.x * in.x) + (in.y * in.y) + (in.z * in.z));
+	}
+
+	template<typename T>
+	float Length(const Vec2<T> &in)
+	{
+		return sqrtf((in.x * in.x) + (in.y * in.y));
 	}
 
 	template<typename T>
