@@ -7,7 +7,7 @@ REM https://people.sc.fsu.edu/~jburkardt/data/obj/obj.html
 SET CODE_DIR=code
 SET OUTPUT_DIR=bin
 
-call "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvarsall.bat" x64
+call "%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
 
 rmdir /S /Q %OUTPUT_DIR%
 mkdir %OUTPUT_DIR%

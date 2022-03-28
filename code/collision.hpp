@@ -21,6 +21,21 @@ namespace gentle
 	};
 
 	template<typename T>
+	struct RectCollision
+	{
+		CollisionSide side = None;
+		Vec2<T> position;
+	};
+
+	template<typename T>
+	struct CollisionResult
+	{
+		float time = 0.0f;
+		RectCollision<T> aRect;
+		RectCollision<T> bRect;
+	};
+
+	template<typename T>
 	bool AABBCollideCornerToCorner(Vec2<T> aTopRight, Vec2<T> aBottomLeft, Vec2<T> bTopRight, Vec2<T> bBottomLeft)
 	{
 		bool verticalCollision = (bBottomLeft.y < aTopRight.y && bTopRight.y > aBottomLeft.y);
@@ -56,73 +71,75 @@ namespace gentle
 
 	// Checks for collision with a horizontal (X) line for a rect moving with a positive vertical (Y) velocity
 	template<typename T>
-	void CheckRectAndXLineCollisionFromNegativeY(
+	CollisionResult<T> CheckRectAndXLineCollisionFromNegativeY(
 		float wallYPos,
-		Vec2<T> movingRectHalfSize,
-		Vec2<T> prevMovingRectPosition,
-		Vec2<T> movingRectVelocity,
-		float *maxCollisionTime,
-		CollisionSide *collisionSide,
-		Vec2<T> *outMovingRectPosition
+		const Vec2<T> &halfSize,
+		const Vec2<T> &position,
+		const Vec2<T> &velocity,
+		float maxCollisionTime
 	)
 	{
-		if (movingRectVelocity.y <= 0) return;
+		CollisionResult<T> result = CollisionResult<T>();
+		if (velocity.y <= 0) return result;
 
 		// Check for collision between ball and underside of wall
-		float yCollisionCheckPos = wallYPos - movingRectHalfSize.y;
+		float yCollisionCheckPos = wallYPos - halfSize.y;
 
-		float tCollision = (yCollisionCheckPos - prevMovingRectPosition.y) / movingRectVelocity.y;
-		if (tCollision >= 0 && tCollision < *maxCollisionTime)
+		float tCollision = (yCollisionCheckPos - position.y) / velocity.y;
+		if (tCollision >= 0 && tCollision < maxCollisionTime)
 		{
-			*maxCollisionTime = tCollision;
-			*collisionSide = Bottom;
-			float xCollisionPos = prevMovingRectPosition.x + (tCollision * movingRectVelocity.x);
-			outMovingRectPosition->x = xCollisionPos;
-			outMovingRectPosition->y = yCollisionCheckPos;
+			result.time = tCollision;
+			RectCollision<T> rectCollision = RectCollision<T>();
+			rectCollision.side = Bottom;
+			float xCollisionPos = position.x + (tCollision * velocity.x);
+			rectCollision.position = Vec2<T> { xCollisionPos, yCollisionCheckPos };
+			result.aRect = rectCollision;
 		}
+
+		return result;
 	}
 
 	// Checks for collision with a horizontal (X) line for a rect moving with a negative vertical (Y) velocity
 	template<typename T>
-	void CheckRectAndXLineCollisionFromPositiveY(
+	CollisionResult<T> CheckRectAndXLineCollisionFromPositiveY(
 		float wallYPos,
-		Vec2<T> movingRectHalfSize,
-		Vec2<T> prevMovingRectPosition,
-		Vec2<T> movingRectVelocity,
-		float *maxCollisionTime,
-		CollisionSide *collisionSide,
-		Vec2<T> *outMovingRectPosition
+		const Vec2<T> &halfSize,
+		const Vec2<T> &position,
+		const Vec2<T> &velocity,
+		float maxCollisionTime
 	)
 	{
-		if (movingRectVelocity.y >= 0) return;
+		CollisionResult<T> result = CollisionResult<T>();
+		if (velocity.y >= 0) return result;
 
 		// Check for collision between ball and topside of wall
-		float yCollisionCheckPos = wallYPos + movingRectHalfSize.y;
-
-		float tCollision = (yCollisionCheckPos - prevMovingRectPosition.y) / movingRectVelocity.y;
-		if (tCollision >= 0 && tCollision < *maxCollisionTime)
+		float yCollisionCheckPos = wallYPos + halfSize.y;
+		float tCollision = (yCollisionCheckPos - position.y) / velocity.y;
+		if (tCollision >= 0 && tCollision < maxCollisionTime)
 		{
-			*maxCollisionTime = tCollision;
-			*collisionSide = Top;
-			float xCollisionPos = prevMovingRectPosition.x + (tCollision * movingRectVelocity.x);
-			outMovingRectPosition->x = xCollisionPos;
-			outMovingRectPosition->y = yCollisionCheckPos;
+			result.time = tCollision;
+			RectCollision<T> rectCollision = RectCollision<T>();
+			rectCollision.side = Bottom;
+			float xCollisionPos = position.x + (tCollision * velocity.x);
+			rectCollision.position = Vec2<T> { xCollisionPos, yCollisionCheckPos };
+			result.aRect = rectCollision;
 		}
+		return result;
 	}
 
 	template<typename T>
-	void CheckRectAndXLineCollision(
+	CollisionResult<T> CheckRectAndXLineCollision(
 		T wallYPos,
-		Rect<T> &rect,
-		float &maxCollisionTime,
-		CollisionSide &collisionSide
+		const Rect<T> &rect,
+		float maxCollisionTime
 	)
 	{
 		if (rect.velocity.y > 0) {
-			CheckRectAndXLineCollisionFromNegativeY(wallYPos, rect.halfSize, rect.prevPosition, rect.velocity, &maxCollisionTime, &collisionSide, &rect.position);
+			return CheckRectAndXLineCollisionFromNegativeY(wallYPos, rect.halfSize, rect.position, rect.velocity, maxCollisionTime);
 		} else if (rect.velocity.y < 0) {
-			CheckRectAndXLineCollisionFromPositiveY(wallYPos, rect.halfSize, rect.prevPosition, rect.velocity, &maxCollisionTime, &collisionSide, &rect.position);
+			return CheckRectAndXLineCollisionFromPositiveY(wallYPos, rect.halfSize, rect.position, rect.velocity, maxCollisionTime);
 		}
+		return CollisionResult<T>();
 	}
 
 	// Checks for collision with a veritcal (Y) line for a rect moving with a negative horizontal (X) velocity
