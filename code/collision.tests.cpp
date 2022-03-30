@@ -21,11 +21,10 @@ using namespace gentle;
 
 void RunCheckStaticAndMovingRectCollisionTests(Vec2<float> bPosition0, Vec2<float> bVelocity, float expectedCollisionTime, CollisionSide expectedCollisionResult, Vec2<float> expectedCollisionPosition)
 {
-/* 	Vec2<float> bPosition1;
+	Vec2<float> bPosition1;
 	bPosition1.x = bPosition0.x;
 	bPosition1.y = bPosition0.y;
 	float collisionTime = originalCollisionTime;
-	CollisionSide collisionResult = None;
 
 	Rect<float> aRect;
 	aRect.halfSize = oneByOneHalfSize;
@@ -38,27 +37,32 @@ void RunCheckStaticAndMovingRectCollisionTests(Vec2<float> bPosition0, Vec2<floa
 	bRect.velocity = bVelocity;
 	bRect.position = bPosition1;
 
-	bool result = CheckCollisionBetweenRects(aRect, bRect, collisionTime, collisionResult);
+	CollisionResult<float> result = CheckCollisionBetweenRects(aRect, bRect, collisionTime);
 
-	bool expectedCollision = (expectedCollisionResult != None);
-	printf("collisionResult is %d\n", collisionResult);
-	printf("collisionTime is %f\n", collisionTime);
-	printf("collisionPosition.x is %f\n", bRect.position.x);
-	printf("collisionPosition.y is %f\n\n", bRect.position.y);
-	assert(result == expectedCollision);
-	assert(collisionResult == expectedCollisionResult);
-	assert(collisionTime == expectedCollisionTime);
-	assert(bRect.position.x == expectedCollisionPosition.x);
-	assert(bRect.position.y == expectedCollisionPosition.y); */
+	printf("actual collisionResult is %d\n", result.bRect.side);
+	printf("expected collisionResult is %d\n", expectedCollisionResult);
+	printf("actual collisionTime is %f\n", result.time);
+	printf("expected collisionTime is %f\n", expectedCollisionTime);
+	assert(result.bRect.side == expectedCollisionResult);
+	assert(result.time == expectedCollisionTime);
+
+	if (expectedCollisionResult != None)
+	{
+		printf("actual collisionPosition.x is %f\n", result.bRect.position.x);
+		printf("expected collisionPosition.x is %f\n", expectedCollisionPosition.x);
+		printf("actual collisionPosition.y is %f\n\n", result.bRect.position.y);
+		printf("expected collisionPosition.y is %f\n", expectedCollisionPosition.y);
+		assert(result.bRect.position.x == expectedCollisionPosition.x);
+		assert(result.bRect.position.y == expectedCollisionPosition.y);
+	}
 }
 
 void RunCheckCollisionBetweenMovingRectsTests(Vec2<float> aVelocity, Vec2<float> bPosition0, Vec2<float> bVelocity, float expectedCollisionTime, CollisionSide expectedCollisionResult, Vec2<float> expectedCollisionPosition)
 {
-/* 	Vec2<float> bPosition1;
+	Vec2<float> bPosition1;
 	bPosition1.x = bPosition0.x;
 	bPosition1.y = bPosition0.y;
 	float collisionTime = originalCollisionTime;
-	CollisionSide collisionResult = None;
 
 	Rect<float> aRect;
 	aRect.halfSize = oneByOneHalfSize;
@@ -71,17 +75,24 @@ void RunCheckCollisionBetweenMovingRectsTests(Vec2<float> aVelocity, Vec2<float>
 	bRect.velocity = bVelocity;
 	bRect.position = bPosition1;
 
-	bool result = CheckCollisionBetweenRects(aRect, bRect, collisionTime, collisionResult);
-	bool expectedCollision = (expectedCollisionResult != None);
-	printf("collisionResult is %d\n", collisionResult);
-	printf("collisionTime is %f\n", collisionTime);
-	printf("collisionPosition.x is %f\n", bRect.position.x);
-	printf("collisionPosition.y is %f\n\n", bRect.position.y);
-	assert(collisionTime == expectedCollisionTime);
-	assert(collisionResult == expectedCollisionResult);
-	assert(result == expectedCollision);
-	assert(bRect.position.x == expectedCollisionPosition.x);
-	assert(bRect.position.y == expectedCollisionPosition.y); */
+	CollisionResult<float> result = CheckCollisionBetweenRects(aRect, bRect, collisionTime);
+
+	printf("actual collisionResult is %d\n", result.bRect.side);
+	printf("expected collisionResult is %d\n", expectedCollisionResult);
+	printf("actual collisionTime is %f\n", result.time);
+	printf("expected collisionTime is %f\n", expectedCollisionTime);
+	assert(result.bRect.side == expectedCollisionResult);
+	assert(result.time == expectedCollisionTime);
+
+	if (expectedCollisionResult != None)
+	{
+		printf("actual collisionPosition.x is %f\n", result.bRect.position.x);
+		printf("expected collisionPosition.x is %f\n", expectedCollisionPosition.x);
+		printf("actual collisionPosition.y is %f\n\n", result.bRect.position.y);
+		printf("expected collisionPosition.y is %f\n", expectedCollisionPosition.y);
+		assert(result.bRect.position.x == expectedCollisionPosition.x);
+		assert(result.bRect.position.y == expectedCollisionPosition.y);
+	}
 }
 
 void RunCheckRectAndXLineCollisionTest(Vec2<float> blockPosition0, Vec2<float> blockVelocity, float expectedCollisionTime, int expectedCollisionResult, Vec2<float> expectedCollisionPosition)
@@ -130,25 +141,25 @@ void RunCollisionTests()
 	RunCheckStaticAndMovingRectCollisionTests(blockRightOfOrigin, movingLeft, 1, Right, Vec2<float> { 2.0f, 0.0f });
 
 	// No collision on x-axis when moving too slow to collide before collision time boundary
-	RunCheckStaticAndMovingRectCollisionTests(blockRightOfOrigin, Vec2<float> { -0.20000001f, 0.0f }, originalCollisionTime, None, Vec2<float> { 4.0f, 0.0f });
+	RunCheckStaticAndMovingRectCollisionTests(blockRightOfOrigin, Vec2<float> { -0.20000001f, 0.0f }, 0.0f, None, Vec2<float> { 4.0f, 0.0f });
 
 	// Collision on x-axis when moving slow to collide on collision time
 	RunCheckStaticAndMovingRectCollisionTests(blockRightOfOrigin, Vec2<float> { -0.20000002f, 0.0f }, 9.99999905f, Right, Vec2<float> { 2.0f, 0.0f });
 
 	// No collision on x axis when moving away from each other
-	RunCheckStaticAndMovingRectCollisionTests(blockRightOfOrigin, movingRight, originalCollisionTime, None, Vec2<float> { 4.0f, 0.0f });
+	RunCheckStaticAndMovingRectCollisionTests(blockRightOfOrigin, movingRight, 0.0f, None, Vec2<float> { 4.0f, 0.0f });
 
 	// Collision on x axis when moving toward each other off center at boundary
 	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 4.0f, 2.0f }, movingLeft, 1, Right, Vec2<float> { 2.0f, 2.0f });
 
 	// No Collision on x axis when moving toward each other off center at boundary
-	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 4.0f, 2.000001f }, movingLeft, originalCollisionTime, None, Vec2<float> { 4.0f, 2.000001f });
+	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 4.0f, 2.000001f }, movingLeft, 0.0f, None, Vec2<float> { 4.0f, 2.000001f });
 
 	// Collision when already touching and moving toward each other
 	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 2.0f, 0.0f }, movingLeft, 0.0f, Right, Vec2<float> { 2.0f, 0.0f });
 
 	// No collision when already touching and moving away from each other
-	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 2.0f, 0.0f }, movingRight, originalCollisionTime, None, Vec2<float> { 2.0f, 0.0f });
+	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 2.0f, 0.0f }, movingRight, 0.0f, None, Vec2<float> { 2.0f, 0.0f });
 
 
 	/* <--B--> A Left Hand Side collisions */
@@ -156,25 +167,25 @@ void RunCollisionTests()
 	RunCheckStaticAndMovingRectCollisionTests(blockLeftOfOrigin, movingRight, 1, Left, Vec2<float> { -2.0f, 0.0f });
 
 	// No collision on x-axis when moving too slow to collide before collision time boundary
-	RunCheckStaticAndMovingRectCollisionTests(blockLeftOfOrigin, Vec2<float> { 0.20000001f, 0.0f }, originalCollisionTime, None, Vec2<float> { -4.0f, 0.0f });
+	RunCheckStaticAndMovingRectCollisionTests(blockLeftOfOrigin, Vec2<float> { 0.20000001f, 0.0f }, 0.0f, None, Vec2<float> { -4.0f, 0.0f });
 
 	// Collision on x-axis when moving slow to collide on collision time
 	RunCheckStaticAndMovingRectCollisionTests(blockLeftOfOrigin, Vec2<float> { 0.20000002f, 0.0f }, 9.99999905f, Left, Vec2<float> { -2.0f, 0.0f });
 
 	// No collision on x axis when moving away from each other
-	RunCheckStaticAndMovingRectCollisionTests(blockLeftOfOrigin, movingLeft, originalCollisionTime, None, Vec2<float> { -4.0f, 0.0f });
+	RunCheckStaticAndMovingRectCollisionTests(blockLeftOfOrigin, movingLeft, 0.0f, None, Vec2<float> { -4.0f, 0.0f });
 
 	// Collision on x axis when moving toward each other off center at boundary
 	RunCheckStaticAndMovingRectCollisionTests(blockLeftOfOrigin, movingRight, 1, Left, Vec2<float> { -2.0f, 0.0f });
 
 	// No Collision on x axis when moving toward each other off center at boundary
-	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { -4.0f, 2.000001f }, movingRight, originalCollisionTime, None, Vec2<float> { -4.0f, 2.000001f });
+	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { -4.0f, 2.000001f }, movingRight, 0.0f, None, Vec2<float> { -4.0f, 2.000001f });
 
 	// Collision when already touching and moving toward each other
 	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { -2.0f, 0.0f }, movingRight, 0.0f, Left, Vec2<float> { -2.0f, 0.0f });
 
 	// No collision when already touching and moving away from each other
-	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { -2.0f, 0.0f }, movingLeft, originalCollisionTime, None, Vec2<float> { -2.0f, 0.0f });
+	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { -2.0f, 0.0f }, movingLeft, 0.0f, None, Vec2<float> { -2.0f, 0.0f });
 
 	/* A	Bottom Side collisions
 	*
@@ -188,25 +199,25 @@ void RunCollisionTests()
 	RunCheckStaticAndMovingRectCollisionTests(blockBelowOrigin, movingUp, 1, Bottom, Vec2<float> { 0.0f, -2.0f });
 
 	// No collision on y-axis when moving too slow to collide before collision time boundary
-	RunCheckStaticAndMovingRectCollisionTests(blockBelowOrigin, Vec2<float> { 0.0f, 0.20000001f }, originalCollisionTime, None, Vec2<float> { 0.0f, -4.0f });
+	RunCheckStaticAndMovingRectCollisionTests(blockBelowOrigin, Vec2<float> { 0.0f, 0.20000001f }, 0.0f, None, Vec2<float> { 0.0f, -4.0f });
 
 	// Collision on y-axis when moving slow to collide on collision time
 	RunCheckStaticAndMovingRectCollisionTests(blockBelowOrigin, Vec2<float> { 0.0f, 0.20000002f }, 9.99999905f, Bottom, Vec2<float> { 0.0f, -2.0f });
 
 	// No collision on y axis when moving away from each other
-	RunCheckStaticAndMovingRectCollisionTests(blockBelowOrigin, movingDown, originalCollisionTime, None, Vec2<float> { 0.0f, -4.0f });
+	RunCheckStaticAndMovingRectCollisionTests(blockBelowOrigin, movingDown, 0.0f, None, Vec2<float> { 0.0f, -4.0f });
 
 	// Collision on y axis when moving toward each other off center at boundary
 	RunCheckStaticAndMovingRectCollisionTests(blockBelowOrigin, movingUp, 1, Bottom, Vec2<float> { 0.0f, -2.0f });
 
 	// No Collision on y axis when moving toward each other off center at boundary
-	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 2.000001f, -4.0f }, movingUp, originalCollisionTime, None, Vec2<float> { 2.000001f, -4.0f });
+	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 2.000001f, -4.0f }, movingUp, 0.0f, None, Vec2<float> { 2.000001f, -4.0f });
 
 	// Collision when already touching and moving toward each other
 	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 0.0f, -2.0f }, movingUp, 0.0f, Bottom, Vec2<float> { 0.0f, -2.0f });
 
 	// No collision when already touching and moving away from each other
-	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 0.0f, -2.0f }, movingDown, originalCollisionTime, None, Vec2<float> { 0.0f, -2.0f });
+	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 0.0f, -2.0f }, movingDown, 0.0f, None, Vec2<float> { 0.0f, -2.0f });
 
 	/* Λ	Top Side collisions
 	* |
@@ -220,25 +231,25 @@ void RunCollisionTests()
 	RunCheckStaticAndMovingRectCollisionTests(blockAboveOrigin, movingDown, 1, Top, Vec2<float> { 0.0f, 2.0f });
 
 	// No collision on y-axis when moving too slow to collide before collision time boundary
-	RunCheckStaticAndMovingRectCollisionTests(blockAboveOrigin, Vec2<float> { 0.0f, -0.20000001f }, originalCollisionTime, None, Vec2<float> { 0.0f, 4.0f });
+	RunCheckStaticAndMovingRectCollisionTests(blockAboveOrigin, Vec2<float> { 0.0f, -0.20000001f }, 0.0f, None, Vec2<float> { 0.0f, 4.0f });
 
 	// Collision on y-axis when moving slow to collide on collision time
 	RunCheckStaticAndMovingRectCollisionTests(blockAboveOrigin, Vec2<float> { 0.0f, -0.20000002f }, 9.99999905f, Top, Vec2<float> { 0.0f, 2.0f });
 
 	// No collision on y axis when moving away from each other
-	RunCheckStaticAndMovingRectCollisionTests(blockAboveOrigin, movingUp, originalCollisionTime, None, Vec2<float> { 0.0f, 4.0f });
+	RunCheckStaticAndMovingRectCollisionTests(blockAboveOrigin, movingUp, 0.0f, None, Vec2<float> { 0.0f, 4.0f });
 
 	// Collision on y axis when moving toward each other off center at boundary
 	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 2.0f, 4.0f }, movingDown, 1, Top, Vec2<float> { 2.0f, 2.0f });
 
 	// No Collision on y axis when moving toward each other off center at boundary
-	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 2.000001f, 4.0f }, movingDown, originalCollisionTime, None, Vec2<float> { 2.000001f, 4.0f });
+	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 2.000001f, 4.0f }, movingDown, 0.0f, None, Vec2<float> { 2.000001f, 4.0f });
 
 	// Collision when already touching and moving toward each other
 	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 0.0f, 2.0f }, movingDown, 0.0f, Top, Vec2<float> { 0.0f, 2.0f });
 
 	// No collision when already touching and moving away from each other
-	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 0.0f, 2.0f }, movingUp, originalCollisionTime, None, Vec2<float> { 0.0f, 2.0f });
+	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 0.0f, 2.0f }, movingUp, 0.0f, None, Vec2<float> { 0.0f, 2.0f });
 
 	/*
 	* CheckCollisionBetweenMovingObjects

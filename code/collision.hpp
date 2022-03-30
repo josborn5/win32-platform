@@ -144,73 +144,88 @@ namespace gentle
 
 	// Checks for collision with a veritcal (Y) line for a rect moving with a negative horizontal (X) velocity
 	template<typename T>
-	void CheckRectAndYLineCollisionFromPositiveX(
+	CollisionResult<T> CheckRectAndYLineCollisionFromPositiveX(
 		float wallXPos,
-		Vec2<T> movingRectHalfSize,
-		Vec2<T> prevMovingRectPosition,
-		Vec2<T> movingRectVelocity,
-		float *maxCollisionTime,
-		CollisionSide *collisionSide,
-		Vec2<T> *outMovingRectPosition
+		const Vec2<T> &halfSize,
+		const Vec2<T> &position,
+		const Vec2<T> &velocity,
+		float maxCollisionTime
 	)
 	{
-		if (movingRectVelocity.x >= 0) return;
+		CollisionResult<T> result = CollisionResult<T>;
+		if (velocity.x >= 0) return result;
 
 		// Check for collision between ball and left wall
-		float xCollisionCheckPos = wallXPos + movingRectHalfSize.x;
+		float xCollisionCheckPos = wallXPos + halfSize.x;
 
-		float tCollision = (xCollisionCheckPos - prevMovingRectPosition.x) / movingRectVelocity.x;
-		if (tCollision >= 0 && tCollision < *maxCollisionTime)
+		float tCollision = (xCollisionCheckPos - position.x) / velocity.x;
+		if (tCollision >= 0 && tCollision < maxCollisionTime)
 		{
-			*maxCollisionTime = tCollision;
-			*collisionSide = Right;
-			float yCollisionPos = prevMovingRectPosition.y + (tCollision * movingRectVelocity.y);
-			outMovingRectPosition->x = xCollisionCheckPos;
-			outMovingRectPosition->y = yCollisionPos;
+			result.time = tCollision;
+			RectCollision<T> rectCollision = RectCollision<T>;
+			rectCollision.side = Right;
+			float yCollisionPos = position.y + (tCollision * velocity.y);
+			rectCollision.position = Vec<T> { xCollisionCheckPos, yCollisionPos };
+			result.aRect = rectCollision;
 		}
+		return result;
 	}
 
 	// Checks for collision with a vertical (Y) line for a rect moving with a positive horizontal (X) velocity
 	template<typename T>
-	void CheckRectAndYLineCollisionFromNegativeX(
+	CollisionResult<T> CheckRectAndYLineCollisionFromNegativeX(
 		float wallXPos,
-		Vec2<T> movingRectHalfSize,
-		Vec2<T> prevMovingRectPosition,
-		Vec2<T> movingRectVelocity,
-		float *maxCollisionTime,
-		CollisionSide *collisionSide,
-		Vec2<T> *outMovingRectPosition
+		Vec2<T> halfSize,
+		Vec2<T> position,
+		Vec2<T> velocity,
+		float maxCollisionTime
 	)
 	{
+		CollisionResult<T> result = CollisionResult<T>;
 		if (movingRectVelocity.x <= 0) return;
 
 		// Check for collision between ball and right wall
-		float xCollisionCheckPos = wallXPos - movingRectHalfSize.x;
+		float xCollisionCheckPos = wallXPos - halfSize.x;
 
-		float tCollision = (xCollisionCheckPos - prevMovingRectPosition.x) / movingRectVelocity.x;
-		if (tCollision >= 0 && tCollision < *maxCollisionTime)
+		float tCollision = (xCollisionCheckPos - position.x) / velocity.x;
+		if (tCollision >= 0 && tCollision < maxCollisionTime)
 		{
-			*maxCollisionTime = tCollision;
-			*collisionSide = Left;
-			float yCollisionPos = prevMovingRectPosition.y + (tCollision * movingRectVelocity.y);
-			outMovingRectPosition->x = xCollisionCheckPos;
-			outMovingRectPosition->y = yCollisionPos;
+			result.time = tCollision;
+			RectCollision<T> rectCollision = RectCollision<T>;
+			rectCollision.side = Left;
+			float yCollisionPos = position.y + (tCollision * velocity.y);
+			rectCollision.position = Vec<T> { xCollisionCheckPos, yCollisionPos };
+			result.aRect = rectCollision;
 		}
+		return result;
 	}
 
 	template<typename T>
-	bool CheckStaticAndMovingRectCollision(
-		Vec2<T> staticRectHalfSize,
-		Vec2<T> staticRectPosition,
-		Vec2<T> movingRectHalfSize,
-		Vec2<T> prevMovingRectPosition,
-		Vec2<T> movingRectVelocity,
-		float *maxCollisionTime,
-		CollisionSide *staticRectCollisionSide,
-		Vec2<T> *outMovingRectPosition
+	CollisionResult<T> CheckRectAndYLineCollision(
+		T wallXPos,
+		const Rect<T> &rect,
+		float maxCollisionTime
 	)
 	{
-		bool collided = false;
+		if (rect.velocity.x > 0) {
+			return CheckRectAndYLineCollisionFromNegativeX(wallXPos, rect.halfSize, rect.position, rect.velocity, maxCollisionTime);
+		} else if (rect.velocity.x < 0) {
+			return CheckRectAndYLineCollisionFromPositiveX(wallXPos, rect.halfSize, rect.position, rect.velocity, maxCollisionTime);
+		}
+		return CollisionResult<T>();
+	}
+
+	template<typename T>
+	CollisionResult<T> CheckStaticAndMovingRectCollision(
+		const Vec2<T> &staticRectHalfSize,
+		const Vec2<T> &staticRectPosition,
+		const Vec2<T> &movingRectHalfSize,
+		const Vec2<T> &movingRectPosition,
+		const Vec2<T> &movingRectVelocity,
+		float maxCollisionTime
+	)
+	{
+		CollisionResult<T> result = CollisionResult<T>();
 		float blockTopSide = staticRectPosition.y + staticRectHalfSize.y + movingRectHalfSize.y;
 		float blockBottomSide = staticRectPosition.y - staticRectHalfSize.y - movingRectHalfSize.y;
 		float blockLeftSide = staticRectPosition.x - staticRectHalfSize.x - movingRectHalfSize.x;
@@ -218,131 +233,113 @@ namespace gentle
 
 		// Check for collision between block side and ball path
 		// 1. Top/bottom side
-		CollisionSide horizontalCollisionResult = None;
+		CollisionSide verCollisionResult = None;
 		float yCollisionCheckPos = 0.0f;
 		if (movingRectVelocity.y > 0)
 		{
 			yCollisionCheckPos = blockBottomSide;
-			horizontalCollisionResult = Bottom;
+			verCollisionResult = Bottom;
 		}
 		if (movingRectVelocity.y < 0)
 		{
 			yCollisionCheckPos = blockTopSide;
-			horizontalCollisionResult = Top;
+			verCollisionResult = Top;
 		}
 
 		if (movingRectVelocity.y != 0)
 		{
-			float tYCollision = (yCollisionCheckPos - prevMovingRectPosition.y) / movingRectVelocity.y;
+			float tYCollision = (yCollisionCheckPos - movingRectPosition.y) / movingRectVelocity.y;
 			if (tYCollision >= 0)
 			{
-				float ballXPosAtCollision = prevMovingRectPosition.x + (tYCollision * movingRectVelocity.x);
-				if (ballXPosAtCollision >= blockLeftSide && ballXPosAtCollision <= blockRightSide && tYCollision < *maxCollisionTime)
+				float ballXPosAtCollision = movingRectPosition.x + (tYCollision * movingRectVelocity.x);
+				if (ballXPosAtCollision >= blockLeftSide && ballXPosAtCollision <= blockRightSide && tYCollision < maxCollisionTime)
 				{
-					*maxCollisionTime = tYCollision;
-					*staticRectCollisionSide = horizontalCollisionResult;
-					collided = true;
-					outMovingRectPosition->x = ballXPosAtCollision;
-					outMovingRectPosition->y = yCollisionCheckPos;
+					result.time = tYCollision;
+					RectCollision<T> movingRect = RectCollision<T>();
+					movingRect.side = verCollisionResult;
+					movingRect.position = Vec2<T> { ballXPosAtCollision, yCollisionCheckPos };
+					result.bRect = movingRect;
 				}
 			}
 		}
 
 		// 2. Left/right side, 
-		CollisionSide verticalCollisionResult = None;
+		CollisionSide horCollisionResult = None;
 		float xCollisionCheckPos = 0.0f;
 		if (movingRectVelocity.x > 0)
 		{
 			xCollisionCheckPos = blockLeftSide;
-			verticalCollisionResult = Left;
+			horCollisionResult = Left;
 		}
 		if (movingRectVelocity.x < 0)
 		{
 			xCollisionCheckPos = blockRightSide;
-			verticalCollisionResult = Right;
+			horCollisionResult = Right;
 		}
 
 		if (movingRectVelocity.x != 0)
 		{
-			float tXCollision = (xCollisionCheckPos - prevMovingRectPosition.x) / movingRectVelocity.x;
+			float tXCollision = (xCollisionCheckPos - movingRectPosition.x) / movingRectVelocity.x;
 			if (tXCollision >= 0)
 			{
-				float ballYPosAtCollision = prevMovingRectPosition.y + (tXCollision * movingRectVelocity.y);
-				if (ballYPosAtCollision >= blockBottomSide && ballYPosAtCollision <= blockTopSide && tXCollision < *maxCollisionTime)
+				float ballYPosAtCollision = movingRectPosition.y + (tXCollision * movingRectVelocity.y);
+				if (ballYPosAtCollision >= blockBottomSide && ballYPosAtCollision <= blockTopSide && tXCollision < maxCollisionTime)
 				{
-					*maxCollisionTime = tXCollision;
-					*staticRectCollisionSide = verticalCollisionResult;
-					collided = true;
-					outMovingRectPosition->x = xCollisionCheckPos;
-					outMovingRectPosition->y = ballYPosAtCollision;
+					result.time = tXCollision;
+					RectCollision<T> movingRect = RectCollision<T>();
+					movingRect.side = horCollisionResult;
+					movingRect.position = Vec2<T> { xCollisionCheckPos, ballYPosAtCollision };
+					result.bRect = movingRect;
 				}
 			}
 		}
-		return collided;
+		return result;
 	}
 
-	template<typename T>
-	void CheckRectAndYLineCollision(
-		T wallXPos,
-		Rect<T> &rect,
-		float &maxCollisionTime,
-		CollisionSide &collisionSide
-	)
-	{
-		if (rect.velocity.x > 0) {
-			CheckRectAndYLineCollisionFromNegativeX(wallXPos, rect.halfSize, rect.prevPosition, rect.velocity, &maxCollisionTime, &collisionSide, &rect.position);
-		} else if (rect.velocity.x < 0) {
-			CheckRectAndYLineCollisionFromPositiveX(wallXPos, rect.halfSize, rect.prevPosition, rect.velocity, &maxCollisionTime, &collisionSide, &rect.position);
-		}
-	}
+
 
 	template<typename T>
-	bool CheckCollisionBetweenMovingRects(
-		Vec2<T> aHalfSize,
-		Vec2<T> aPosition0,
-		Vec2<T> aVelocity,
-		Vec2<T> bHalfSize,
-		Vec2<T> bPosition0,
-		Vec2<T> bVelocity,
-		float *maxCollisionTime,
-		CollisionSide *collisionResult,
-		Vec2<T> *bPosition1
+	CollisionResult<T> CheckCollisionBetweenMovingRects(
+		const Vec2<T> &aHalfSize,
+		const Vec2<T> &aPosition0,
+		const Vec2<T> &aVelocity,
+		const Vec2<T> &bHalfSize,
+		const Vec2<T> &bPosition0,
+		const Vec2<T> &bVelocity,
+		float maxCollisionTime
 	)
 	{
 		// Calculate relative velocity as between a & b, as if a is static. i.e. the origin of our co-ordinate system is fixed to whereever object 'a' is
 		Vec2<T> aRelBVelocity = SubtractVectors(bVelocity, aVelocity);
 
-		bool result = CheckStaticAndMovingRectCollision(aHalfSize, aPosition0, bHalfSize, bPosition0, aRelBVelocity, maxCollisionTime, collisionResult, bPosition1);
+		CollisionResult<T> result = CheckStaticAndMovingRectCollision(aHalfSize, aPosition0, bHalfSize, bPosition0, aRelBVelocity, maxCollisionTime);
 
 		// Translate bPosition1 from the co-ordinate system whose origin is on 'a' back to the static co-ordinate system
-		if (result)
+		if (result.bRect.side != None)
 		{
-			Vec2<T> deltaAPosition = MultiplyVectorByScalar(aVelocity, *maxCollisionTime);
-			*bPosition1 = AddVectors(deltaAPosition, *bPosition1);
+			Vec2<T> deltaAPosition = MultiplyVectorByScalar(aVelocity, result.time);
+			result.bRect.position = AddVectors(deltaAPosition, result.bRect.position);
+			// TODO: set the result.aRect value!
 		}
 		return result;
 	}
 
 	template<typename T>
-	bool CheckCollisionBetweenRects(
-		Rect<T> &aRect,
-		Rect<T> &bRect,
-		float &maxCollisionTime,
-		CollisionSide &collisionResult
+	CollisionResult<T> CheckCollisionBetweenRects(
+		const Rect<T> &aRect,
+		const Rect<T> &bRect,
+		float maxCollisionTime
 	)
 	{
-		// Calculate relative velocity as between a & b, as if a is static. i.e. the origin of our co-ordinate system is fixed to whereever object 'a' is
-		Vec2<T> aRelBVelocity = SubtractVectors(bRect.velocity, aRect.velocity);
-
-		bool result = CheckStaticAndMovingRectCollision(aRect.halfSize, aRect.prevPosition, bRect.halfSize, bRect.prevPosition, aRelBVelocity, &maxCollisionTime, &collisionResult, &bRect.position);
-
-		// Translate bPosition1 from the co-ordinate system whose origin is on 'a' back to the static co-ordinate system
-		if (result)
-		{
-			Vec2<T> deltaAPosition = MultiplyVectorByScalar(aRect.velocity, maxCollisionTime);
-			bRect.position = AddVectors(deltaAPosition, bRect.position);
-		}
-		return result;
+		return CheckCollisionBetweenMovingRects(
+			aRect.halfSize,
+			aRect.position,
+			aRect.velocity,
+			bRect.halfSize,
+			bRect.position,
+			bRect.velocity,
+			maxCollisionTime
+		);
 	}
 }
 
