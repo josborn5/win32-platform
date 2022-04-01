@@ -21,21 +21,17 @@ using namespace gentle;
 
 void RunCheckStaticAndMovingRectCollisionTests(Vec2<float> bPosition0, Vec2<float> bVelocity, float expectedCollisionTime, CollisionSide expectedCollisionResult, Vec2<float> expectedCollisionPosition)
 {
-	Vec2<float> bPosition1;
-	bPosition1.x = bPosition0.x;
-	bPosition1.y = bPosition0.y;
 	float collisionTime = originalCollisionTime;
 
 	Rect<float> aRect;
 	aRect.halfSize = oneByOneHalfSize;
-	aRect.prevPosition = originPosition;
+	aRect.position = originPosition;
 	aRect.velocity = Vec2<float> { 0.0f, 0.0f };
 
 	Rect<float> bRect;
 	bRect.halfSize = oneByOneHalfSize;
-	bRect.prevPosition = bPosition0;
+	bRect.position = bPosition0;
 	bRect.velocity = bVelocity;
-	bRect.position = bPosition1;
 
 	CollisionResult<float> result = CheckCollisionBetweenRects(aRect, bRect, collisionTime);
 
@@ -59,21 +55,17 @@ void RunCheckStaticAndMovingRectCollisionTests(Vec2<float> bPosition0, Vec2<floa
 
 void RunCheckCollisionBetweenMovingRectsTests(Vec2<float> aVelocity, Vec2<float> bPosition0, Vec2<float> bVelocity, float expectedCollisionTime, CollisionSide expectedCollisionResult, Vec2<float> expectedCollisionPosition)
 {
-	Vec2<float> bPosition1;
-	bPosition1.x = bPosition0.x;
-	bPosition1.y = bPosition0.y;
 	float collisionTime = originalCollisionTime;
 
 	Rect<float> aRect;
 	aRect.halfSize = oneByOneHalfSize;
-	aRect.prevPosition = originPosition;
+	aRect.position = originPosition;
 	aRect.velocity = aVelocity;
 
 	Rect<float> bRect;
 	bRect.halfSize = oneByOneHalfSize;
-	bRect.prevPosition = bPosition0;
+	bRect.position = bPosition0;
 	bRect.velocity = bVelocity;
-	bRect.position = bPosition1;
 
 	CollisionResult<float> result = CheckCollisionBetweenRects(aRect, bRect, collisionTime);
 
