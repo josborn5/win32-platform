@@ -33,23 +33,23 @@ void RunCheckStaticAndMovingRectCollisionTests(Vec2<float> bPosition0, Vec2<floa
 	bRect.position = bPosition0;
 	bRect.velocity = bVelocity;
 
-	CollisionResult<float> result = CheckCollisionBetweenRects(aRect, bRect, collisionTime);
+	CollisionResult result = CheckCollisionBetweenRects(aRect, bRect, collisionTime);
 
-	printf("actual collisionResult is %d\n", result.bRect.side);
+	printf("actual collisionResult is %d\n", result.collisions[0].side);
 	printf("expected collisionResult is %d\n", expectedCollisionResult);
 	printf("actual collisionTime is %f\n", result.time);
 	printf("expected collisionTime is %f\n", expectedCollisionTime);
-	assert(result.bRect.side == expectedCollisionResult);
+	assert(result.collisions[0].side == expectedCollisionResult);
 	assert(result.time == expectedCollisionTime);
 
 	if (expectedCollisionResult != None)
 	{
-		printf("actual collisionPosition.x is %f\n", result.bRect.position.x);
+		printf("actual collisionPosition.x is %f\n", result.collisions[0].position.x);
 		printf("expected collisionPosition.x is %f\n", expectedCollisionPosition.x);
-		printf("actual collisionPosition.y is %f\n\n", result.bRect.position.y);
+		printf("actual collisionPosition.y is %f\n\n", result.collisions[0].position.y);
 		printf("expected collisionPosition.y is %f\n", expectedCollisionPosition.y);
-		assert(result.bRect.position.x == expectedCollisionPosition.x);
-		assert(result.bRect.position.y == expectedCollisionPosition.y);
+		assert(result.collisions[0].position.x == expectedCollisionPosition.x);
+		assert(result.collisions[0].position.y == expectedCollisionPosition.y);
 	}
 }
 
@@ -67,23 +67,23 @@ void RunCheckCollisionBetweenMovingRectsTests(Vec2<float> aVelocity, Vec2<float>
 	bRect.position = bPosition0;
 	bRect.velocity = bVelocity;
 
-	CollisionResult<float> result = CheckCollisionBetweenRects(aRect, bRect, collisionTime);
+	CollisionResult result = CheckCollisionBetweenRects(aRect, bRect, collisionTime);
 
-	printf("actual collisionResult is %d\n", result.bRect.side);
+	printf("actual collisionResult is %d\n", result.collisions[0].side);
 	printf("expected collisionResult is %d\n", expectedCollisionResult);
 	printf("actual collisionTime is %f\n", result.time);
 	printf("expected collisionTime is %f\n", expectedCollisionTime);
-	assert(result.bRect.side == expectedCollisionResult);
+	assert(result.collisions[0].side == expectedCollisionResult);
 	assert(result.time == expectedCollisionTime);
 
 	if (expectedCollisionResult != None)
 	{
-		printf("actual collisionPosition.x is %f\n", result.bRect.position.x);
+		printf("actual collisionPosition.x is %f\n", result.collisions[0].position.x);
 		printf("expected collisionPosition.x is %f\n", expectedCollisionPosition.x);
-		printf("actual collisionPosition.y is %f\n\n", result.bRect.position.y);
+		printf("actual collisionPosition.y is %f\n\n", result.collisions[0].position.y);
 		printf("expected collisionPosition.y is %f\n", expectedCollisionPosition.y);
-		assert(result.bRect.position.x == expectedCollisionPosition.x);
-		assert(result.bRect.position.y == expectedCollisionPosition.y);
+		assert(result.collisions[0].position.x == expectedCollisionPosition.x);
+		assert(result.collisions[0].position.y == expectedCollisionPosition.y);
 	}
 }
 
@@ -96,27 +96,27 @@ void RunCheckRectAndXLineCollisionTest(Vec2<float> blockPosition0, Vec2<float> b
 	rect.halfSize = oneByOneHalfSize;
 	rect.position = blockPosition0;
 
-	CollisionResult<float> result = CheckRectAndXLineCollision(
+	CollisionResult result = CheckRectAndXLineCollision(
 		wallYPos,
 		rect,
 		collisionTime
 	);
 
-	printf("actual collisionResult is %d\n", result.aRect.side);
+	printf("actual collisionResult is %d\n", result.collisions[0].side);
 	printf("expected collisionResult is %d\n", expectedCollisionResult);
 	printf("actual collisionTime is %f\n", result.time);
 	printf("expected collisionTime is %f\n", expectedCollisionTime);
 	
-	assert(result.aRect.side == expectedCollisionResult);
+	assert(result.collisions[0].side == expectedCollisionResult);
 	assert(result.time == expectedCollisionTime);
 	if (expectedCollisionResult != None)
 	{
-		printf("actual collisionPosition.x is %f\n", result.aRect.position.x);
+		printf("actual collisionPosition.x is %f\n", result.collisions[0].position.x);
 		printf("expected collisionPosition.x is %f\n", expectedCollisionPosition.x);
-		printf("actual collisionPosition.y is %f\n", result.aRect.position.y);
+		printf("actual collisionPosition.y is %f\n", result.collisions[0].position.y);
 		printf("expected collisionPosition.y is %f\n", expectedCollisionPosition.y);
-		assert(result.aRect.position.x == expectedCollisionPosition.x);
-		assert(result.aRect.position.y == expectedCollisionPosition.y);
+		assert(result.collisions[0].position.x == expectedCollisionPosition.x);
+		assert(result.collisions[0].position.y == expectedCollisionPosition.y);
 	}
 	printf("\n");
 }
