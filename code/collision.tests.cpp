@@ -35,6 +35,7 @@ void RunCheckStaticAndMovingRectCollisionTests(Vec2<float> bPosition0, Vec2<floa
 
 	CollisionResult result = CheckCollisionBetweenRects(aRect, bRect, collisionTime);
 
+	printf("\n===== Static & Moving =====\n");
 	printf("actual collisionResult is %d\n", result.collisions[0].side);
 	printf("expected collisionResult is %d\n", expectedCollisionResult);
 	printf("actual collisionTime is %f\n", result.time);
@@ -46,7 +47,7 @@ void RunCheckStaticAndMovingRectCollisionTests(Vec2<float> bPosition0, Vec2<floa
 	{
 		printf("actual collisionPosition.x is %f\n", result.collisions[0].position.x);
 		printf("expected collisionPosition.x is %f\n", expectedCollisionPosition.x);
-		printf("actual collisionPosition.y is %f\n\n", result.collisions[0].position.y);
+		printf("actual collisionPosition.y is %f\n", result.collisions[0].position.y);
 		printf("expected collisionPosition.y is %f\n", expectedCollisionPosition.y);
 		assert(result.collisions[0].position.x == expectedCollisionPosition.x);
 		assert(result.collisions[0].position.y == expectedCollisionPosition.y);
@@ -69,21 +70,22 @@ void RunCheckCollisionBetweenMovingRectsTests(Vec2<float> aVelocity, Vec2<float>
 
 	CollisionResult result = CheckCollisionBetweenRects(aRect, bRect, collisionTime);
 
-	printf("actual collisionResult is %d\n", result.collisions[0].side);
+	printf("\n===== Moving & Moving =====\n");
+	printf("actual collisionResult is %d\n", result.collisions[1].side);
 	printf("expected collisionResult is %d\n", expectedCollisionResult);
 	printf("actual collisionTime is %f\n", result.time);
 	printf("expected collisionTime is %f\n", expectedCollisionTime);
-	assert(result.collisions[0].side == expectedCollisionResult);
+	assert(result.collisions[1].side == expectedCollisionResult);
 	assert(result.time == expectedCollisionTime);
 
 	if (expectedCollisionResult != None)
 	{
-		printf("actual collisionPosition.x is %f\n", result.collisions[0].position.x);
+		printf("actual collisionPosition.x is %f\n", result.collisions[1].position.x);
 		printf("expected collisionPosition.x is %f\n", expectedCollisionPosition.x);
-		printf("actual collisionPosition.y is %f\n\n", result.collisions[0].position.y);
+		printf("actual collisionPosition.y is %f\n\n", result.collisions[1].position.y);
 		printf("expected collisionPosition.y is %f\n", expectedCollisionPosition.y);
-		assert(result.collisions[0].position.x == expectedCollisionPosition.x);
-		assert(result.collisions[0].position.y == expectedCollisionPosition.y);
+		assert(result.collisions[1].position.x == expectedCollisionPosition.x);
+		assert(result.collisions[1].position.y == expectedCollisionPosition.y);
 	}
 }
 
@@ -102,6 +104,7 @@ void RunCheckRectAndXLineCollisionTest(Vec2<float> blockPosition0, Vec2<float> b
 		collisionTime
 	);
 
+	printf("\n===== Wall & Moving =====\n");
 	printf("actual collisionResult is %d\n", result.collisions[0].side);
 	printf("expected collisionResult is %d\n", expectedCollisionResult);
 	printf("actual collisionTime is %f\n", result.time);
@@ -212,13 +215,13 @@ void RunCollisionTests()
 	RunCheckStaticAndMovingRectCollisionTests(Vec2<float> { 0.0f, -2.0f }, movingDown, 0.0f, None, Vec2<float> { 0.0f, -2.0f });
 
 	/* Λ	Top Side collisions
-	* |
-	* B
-	* |
-	* V
-	*
-	* A
-	*/
+	 * |
+	 * B
+	 * |
+	 * V
+	 *
+	 * A
+	 */
 	// collision on y-axis
 	RunCheckStaticAndMovingRectCollisionTests(blockAboveOrigin, movingDown, 1, Top, Vec2<float> { 0.0f, 2.0f });
 
@@ -261,48 +264,48 @@ void RunCollisionTests()
 	RunCheckCollisionBetweenMovingRectsTests(Vec2<float> { 1.0f, 0.0f }, blockLeftOfOrigin, movingRight, 2.0f, Left, Vec2<float> { 0.0f, 0.0f });
 
 	/* A	Bottom Side collisions
-	* |
-	* V
-	*
-	* Λ
-	* |
-	* B
-	*/
+	 * |
+	 * V
+	 *
+	 * Λ
+	 * |
+	 * B
+	 */
 	// collision on y-axis
 	RunCheckCollisionBetweenMovingRectsTests(movingDown, blockBelowOrigin, movingUp, 0.5f, Bottom, Vec2<float> { 0.0f, -3.0f });
 
 	/* Λ	Bottom Side collisions
-	* |
-	* A
-	*
-	* Λ
-	* |
-	* |
-	* B
-	*/
+	 * |
+	 * A
+	 *
+	 * Λ
+	 * |
+	 * |
+	 * B
+	 */
 	// collision on y-axis
 	RunCheckCollisionBetweenMovingRectsTests(Vec2<float> { 0.0f, 1.0f }, blockBelowOrigin, movingUp, 2.0f, Bottom, Vec2<float> { 0.0f, 0.0f });
 
 	/* B	Top Side collisions
-	* |
-	* V
-	*
-	* Λ
-	* |
-	* A
-	*/
+	 * |
+	 * V
+	 *
+	 * Λ
+	 * |
+	 * A
+	 */
 	// collision on y-axis
 	RunCheckCollisionBetweenMovingRectsTests(movingUp, blockAboveOrigin, movingDown, 0.5f, Top, Vec2<float> { 0.0f, 3.0f });
 
 	/* B	Top Side collisions
-	* |
-	* |
-	* V
-	*
-	* A
-	* |
-	* V
-	*/
+	 * |
+	 * |
+	 * V
+	 *
+	 * A
+	 * |
+	 * V
+	 */
 	// collision on y-axis
 	RunCheckCollisionBetweenMovingRectsTests(Vec2<float> { 0.0f, -1.0f }, blockAboveOrigin, movingDown, 2.0f, Top, Vec2<float> { 0.0f, 0.0f });
 
@@ -313,10 +316,10 @@ void RunCollisionTests()
 	*/
 
 	/* B
-	* |
-	* V
-	*---
-	*/
+	 * |
+	 * V
+	 *---
+	 */
 	RunCheckRectAndXLineCollisionTest(Vec2<float> { 10.0f, 4.0f }, movingDown, 1.5f, Bottom, Vec2<float> { 10.0f, 1.0f });
 
 	/* B
@@ -350,33 +353,33 @@ void RunCollisionTests()
 	*/
 
 	/*---
-	* Λ
-	* |
-	* B
-	*/
+	 * Λ
+	 * |
+	 * B
+	 */
 	RunCheckRectAndXLineCollisionTest(Vec2<float> { 10.0f, -4.0f }, movingUp, 1.5f, Bottom, Vec2<float> { 10.0f, -1.0f });
 
 	/* Λ
-	* |
-	*---
-	* B
-	*/
+	 * |
+	 *---
+	 * B
+	 */
 	RunCheckRectAndXLineCollisionTest(Vec2<float> { -10.0f, -1.0f }, movingUp, 0.0f, Bottom, Vec2<float> { -10.0f, -1.0f });
 
 	/*---
-	* B
-	* |
-	* V
-	*/
+	 * B
+	 * |
+	 * V
+	 */
 	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, -1.0f }, movingDown, 0.0f, None, Vec2<float> { 0.0f, -1.0f });
 
 	/*------
-	*B-->
-	*/
+	 *B-->
+	 */
 	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, -1.0f }, movingRight, 0.0f, None, Vec2<float> { 0.0f, -1.0f });
 
 	/*------
-	* <--B
-	*/
+	 * <--B
+	 */
 	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, -1.0f }, movingLeft, 0.0f, None, Vec2<float> { 0.0f, -1.0f });
 }

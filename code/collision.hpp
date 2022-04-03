@@ -267,12 +267,16 @@ namespace gentle
 
 		CollisionResult result = CheckStaticAndMovingRectCollision(aHalfSize, aPosition0, bHalfSize, bPosition0, aRelBVelocity, maxCollisionTime);
 
-		// Translate bPosition1 from the co-ordinate system whose origin is on 'a' back to the static co-ordinate system
-		if (result.collisions[0].side != None)
+		// 'a' is the static rect and 'b' is the moving rect in the relative coordinate system, so shift the result so that
+		// collisions[0] refers to the 'a' rect
+		// collisions[1] refers to the 'b' rect
+		result.collisions[1] = result.collisions[0];
+		// Translate bPosition from the co-ordinate system whose origin is on 'a' back to the static co-ordinate system
+		if (result.collisions[1].side != None)
 		{
 			Vec2<float> deltaAPosition = MultiplyVectorByScalar(aVelocity, result.time);
-			result.collisions[0].position = AddVectors(deltaAPosition, result.collisions[0].position);
-			// TODO: set the collision result for aRect!
+			result.collisions[1].position = AddVectors(deltaAPosition, result.collisions[0].position);
+			// TODO: set the collision result for aRect in result.collisions[0]!
 		}
 		return result;
 	}
