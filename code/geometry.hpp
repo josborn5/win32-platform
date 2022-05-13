@@ -12,7 +12,6 @@ namespace gentle
 		Vec2<T> position;
 		Vec2<T> halfSize;
 		Vec2<T> velocity;
-		Vec2<T> prevPosition;
 	};
 
 	template<typename T>
