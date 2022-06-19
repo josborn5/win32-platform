@@ -275,7 +275,7 @@ namespace gentle
 		if (result.collisions[1].side != None)
 		{
 			Vec2<float> deltaAPosition = MultiplyVectorByScalar(aVelocity, result.time);
-			result.collisions[1].position = AddVectors(deltaAPosition, result.collisions[0].position);
+			result.collisions[1].position = AddVectors(deltaAPosition, result.collisions[1].position);
 			// TODO: set the collision result for aRect in result.collisions[0]!
 		}
 		return result;

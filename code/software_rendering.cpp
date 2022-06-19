@@ -207,6 +207,79 @@ namespace gentle
 		}
 	}
 
+	static int ClampInt(int min, int val, int max)
+	{
+		if (val < min) return min;
+		if (val > max) return max;
+		return val;
+	}
+
+	static int ConvertFloatToInt(float floatValue)
+	{
+		return (int)(floatValue + 0.5f);
+	}
+
+	static void DrawRectInPixels(const RenderBuffer &renderBuffer, uint32_t color, int x0, int y0, int x1, int y1)
+	{
+		// Make sure writing to the render buffer does not escape its bounds
+		x0 = ClampInt(1, x0, renderBuffer.width);
+		x1 = ClampInt(1, x1, renderBuffer.width);
+		y0 = ClampInt(1, y0, renderBuffer.height);
+		y1 = ClampInt(1, y1, renderBuffer.height);
+
+		for (int y = y0; y < y1; y++)
+		{
+			int positionStartOfRow = renderBuffer.width * y;
+			int positionStartOfX0InRow = positionStartOfRow + x0;
+			uint32_t* pixel = renderBuffer.pixels + positionStartOfX0InRow;
+			for (int x = x0; x < x1; x++)
+			{
+				*pixel = color;
+				pixel++;
+			}
+		}
+	}
+
+	void DrawRect(const RenderBuffer &renderBuffer, uint32_t color, const Rect<float> &rect)
+	{
+		int x0 = ConvertFloatToInt(rect.position.x - rect.halfSize.x);
+		int x1 = ConvertFloatToInt(rect.position.x + rect.halfSize.x);
+		int y0 = ConvertFloatToInt(rect.position.y - rect.halfSize.y);
+		int y1 = ConvertFloatToInt(rect.position.y + rect.halfSize.y);
+
+		DrawRectInPixels(renderBuffer, color, x0, y0, x1, y1);
+	}
+
+	void DrawSprite(const RenderBuffer &renderBuffer, char *sprite, const Vec2<float> &p, float blockHalfSize, uint32_t color)
+	{
+		Vec2<float> pCopy = Vec2<float> { p.x, p.y };
+
+		float blockSize = blockHalfSize * 2.0f;
+		Vec2<float> blockHalf = Vec2<float> { blockHalfSize, blockHalfSize };
+
+		while (*sprite)
+		{
+			if (*sprite == '\n')
+			{
+				pCopy.y -= blockSize;	// We're populating blocks in the sprint left to right, top to bottom. So y is decreasing.
+				pCopy.x = p.x; // reset cursor to start of next row
+			}
+			else
+			{
+				if (*sprite != ' ')
+				{
+					Rect<float> blockRect;
+					blockRect.position = pCopy;
+					blockRect.halfSize = blockHalf;
+					DrawRect(renderBuffer, color, blockRect);
+				}
+				pCopy.x += blockSize;
+			}
+			sprite++;
+		}
+	}
+
+
 	/*	p0------p1
 	 *	\       /	|
 	 *	 \     /	|

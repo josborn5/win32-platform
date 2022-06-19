@@ -28,6 +28,12 @@ namespace gentle
 	// Implemented with Bresenham's algorithm
 	void DrawLineInPixels(const RenderBuffer &renderBuffer, uint32_t color, const Vec2<int> &p0, const Vec2<int> &p1);
 
+	// Rects
+	void DrawRect(const RenderBuffer &renderBuffer, uint32_t color, const Rect<float> &rect);
+
+	void DrawSprite(const RenderBuffer &renderBuffer, char *sprite, const Vec2<float> &p, float blockHalfSize, uint32_t color);
+
+	// Triangles
 	void FillTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const Vec3<int> &p0, const Vec3<int> &p1, const Vec3<int> &p2, float z);
 
 
