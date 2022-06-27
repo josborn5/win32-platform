@@ -13,11 +13,12 @@ namespace gentle
 {
 	enum CollisionSide
 	{
+		None,
 		Top,
 		Right,
 		Bottom,
 		Left,
-		None
+		Overlap
 	};
 
 	struct Collision
@@ -32,127 +33,40 @@ namespace gentle
 		Collision collisions[2];
 	};
 
-	// Checks for collision with a horizontal (X) line for a rect moving with a positive vertical (Y) velocity
-	CollisionResult CheckRectAndXLineCollisionFromNegativeY(
-		float wallYPos,
-		const Vec2<float> &halfSize,
-		const Vec2<float> &position,
-		const Vec2<float> &velocity,
-		float maxCollisionTime
-	)
-	{
-		CollisionResult result = CollisionResult();
-		if (velocity.y <= 0) return result;
-
-		// Check for collision between ball and underside of wall
-		float yCollisionCheckPos = wallYPos - halfSize.y;
-
-		float tCollision = (yCollisionCheckPos - position.y) / velocity.y;
-		if (tCollision >= 0 && tCollision < maxCollisionTime)
-		{
-			result.time = tCollision;
-			Collision rectCollision = Collision();
-			rectCollision.side = Bottom;
-			float xCollisionPos = position.x + (tCollision * velocity.x);
-			rectCollision.position = Vec2<float> { xCollisionPos, yCollisionCheckPos };
-			result.collisions[0] = rectCollision;
-		}
-
-		return result;
-	}
-
-	// Checks for collision with a horizontal (X) line for a rect moving with a negative vertical (Y) velocity
-	CollisionResult CheckRectAndXLineCollisionFromPositiveY(
-		float wallYPos,
-		const Vec2<float> &halfSize,
-		const Vec2<float> &position,
-		const Vec2<float> &velocity,
-		float maxCollisionTime
-	)
-	{
-		CollisionResult result = CollisionResult();
-		if (velocity.y >= 0) return result;
-
-		// Check for collision between ball and topside of wall
-		float yCollisionCheckPos = wallYPos + halfSize.y;
-		float tCollision = (yCollisionCheckPos - position.y) / velocity.y;
-		if (tCollision >= 0 && tCollision < maxCollisionTime)
-		{
-			result.time = tCollision;
-			Collision rectCollision = Collision();
-			rectCollision.side = Bottom;
-			float xCollisionPos = position.x + (tCollision * velocity.x);
-			rectCollision.position = Vec2<float> { xCollisionPos, yCollisionCheckPos };
-			result.collisions[0] = rectCollision;
-		}
-		return result;
-	}
-
 	CollisionResult CheckRectAndXLineCollision(
 		float wallYPos,
+		float wallFaceDir, // +ve value means the wall faces upwards (in +ve y direction). -ve value means wall faces downwards in the -ve y direction.
 		const Rect<float> &rect,
 		float maxCollisionTime
 	)
 	{
-		if (rect.velocity.y > 0) {
-			return CheckRectAndXLineCollisionFromNegativeY(wallYPos, rect.halfSize, rect.position, rect.velocity, maxCollisionTime);
-		} else if (rect.velocity.y < 0) {
-			return CheckRectAndXLineCollisionFromPositiveY(wallYPos, rect.halfSize, rect.position, rect.velocity, maxCollisionTime);
-		}
-		return CollisionResult();
-	}
-
-	// Checks for collision with a veritcal (Y) line for a rect moving with a negative horizontal (X) velocity
-	CollisionResult CheckRectAndYLineCollisionFromPositiveX(
-		float wallXPos,
-		const Vec2<float> &halfSize,
-		const Vec2<float> &position,
-		const Vec2<float> &velocity,
-		float maxCollisionTime
-	)
-	{
 		CollisionResult result = CollisionResult();
-		if (velocity.x >= 0) return result;
+		float yCollisionCheckPos = (wallFaceDir < 0) ? wallYPos - rect.halfSize.y : wallYPos + rect.halfSize.y;
 
-		// Check for collision between ball and left wall
-		float xCollisionCheckPos = wallXPos + halfSize.x;
-
-		float tCollision = (xCollisionCheckPos - position.x) / velocity.x;
-		if (tCollision >= 0 && tCollision < maxCollisionTime)
-		{
-			result.time = tCollision;
+		// Check for overlap
+		if (((wallFaceDir >= 0) && (rect.position.y < yCollisionCheckPos))
+			|| ((wallFaceDir < 0) && (rect.position.y > yCollisionCheckPos))) {
+			result.time = 0.0f;
 			Collision rectCollision = Collision();
-			rectCollision.side = Right;
-			float yCollisionPos = position.y + (tCollision * velocity.y);
-			rectCollision.position = Vec2<float> { xCollisionCheckPos, yCollisionPos };
+			rectCollision.side = Overlap;
+			rectCollision.position = rect.position;
 			result.collisions[0] = rectCollision;
+			return result;
 		}
-		return result;
-	}
 
-	// Checks for collision with a vertical (Y) line for a rect moving with a positive horizontal (X) velocity
-	CollisionResult CheckRectAndYLineCollisionFromNegativeX(
-		float wallXPos,
-		Vec2<float> halfSize,
-		Vec2<float> position,
-		Vec2<float> velocity,
-		float maxCollisionTime
-	)
-	{
-		CollisionResult result = CollisionResult();
-		if (velocity.x <= 0) return result;
+		// Check if rect is moving toward the wall face
+		if (rect.velocity.y >= 0 && wallFaceDir >= 0) return result;
+		if (rect.velocity.y <= 0 && wallFaceDir < 0) return result;
 
-		// Check for collision between ball and right wall
-		float xCollisionCheckPos = wallXPos - halfSize.x;
-
-		float tCollision = (xCollisionCheckPos - position.x) / velocity.x;
+		// If the rect is moving toward the wall face, check for collision between ball and topside of wall
+		float tCollision = (yCollisionCheckPos - rect.position.y) / rect.velocity.y;
 		if (tCollision >= 0 && tCollision < maxCollisionTime)
 		{
 			result.time = tCollision;
 			Collision rectCollision = Collision();
-			rectCollision.side = Left;
-			float yCollisionPos = position.y + (tCollision * velocity.y);
-			rectCollision.position = Vec2<float> { xCollisionCheckPos, yCollisionPos };
+			rectCollision.side = (wallFaceDir < 0) ? Top : Bottom;
+			float xCollisionPos = rect.position.x + (tCollision * rect.velocity.x);
+			rectCollision.position = Vec2<float> { xCollisionPos, yCollisionCheckPos };
 			result.collisions[0] = rectCollision;
 		}
 		return result;
@@ -160,16 +74,41 @@ namespace gentle
 
 	CollisionResult CheckRectAndYLineCollision(
 		float wallXPos,
+		float wallFaceDir, // +ve value means the wall faces right (in +ve x direction). -ve value means wall faces left in the -ve x direction.
 		const Rect<float> &rect,
 		float maxCollisionTime
 	)
 	{
-		if (rect.velocity.x > 0) {
-			return CheckRectAndYLineCollisionFromNegativeX(wallXPos, rect.halfSize, rect.position, rect.velocity, maxCollisionTime);
-		} else if (rect.velocity.x < 0) {
-			return CheckRectAndYLineCollisionFromPositiveX(wallXPos, rect.halfSize, rect.position, rect.velocity, maxCollisionTime);
+		CollisionResult result = CollisionResult();
+		float xCollisionCheckPos = (wallFaceDir < 0) ? wallXPos - rect.halfSize.x : wallXPos + rect.halfSize.x;
+
+		// Check for overlap
+		if (((wallFaceDir >= 0) && (rect.position.x < xCollisionCheckPos))
+			|| ((wallFaceDir < 0) && (rect.position.x > xCollisionCheckPos))) {
+			result.time = 0.0f;
+			Collision rectCollision = Collision();
+			rectCollision.side = Overlap;
+			rectCollision.position = rect.position;
+			result.collisions[0] = rectCollision;
+			return result;
 		}
-		return CollisionResult();
+
+		// Check if rect is moving toward the wall face
+		if (rect.velocity.x >= 0 && wallFaceDir >= 0) return result;
+		if (rect.velocity.x <= 0 && wallFaceDir < 0) return result;
+
+		// If the rect is moving toward the wall face, check for collision between ball and topside of wall
+		float tCollision = (xCollisionCheckPos - rect.position.x) / rect.velocity.x;
+		if (tCollision >= 0 && tCollision < maxCollisionTime)
+		{
+			result.time = tCollision;
+			Collision rectCollision = Collision();
+			rectCollision.side = (wallFaceDir < 0) ? Top : Bottom;
+			float yCollisionPos = rect.position.y + (tCollision * rect.velocity.y);
+			rectCollision.position = Vec2<float> { xCollisionCheckPos, yCollisionPos };
+			result.collisions[0] = rectCollision;
+		}
+		return result;
 	}
 
 	CollisionResult CheckStaticAndMovingRectCollision(
@@ -186,6 +125,17 @@ namespace gentle
 		float blockBottomSide = staticRectPosition.y - staticRectHalfSize.y - movingRectHalfSize.y;
 		float blockLeftSide = staticRectPosition.x - staticRectHalfSize.x - movingRectHalfSize.x;
 		float blockRightSide = staticRectPosition.x + staticRectHalfSize.x + movingRectHalfSize.x;
+
+		// Check for overlap
+		if (movingRectPosition.y < blockTopSide && movingRectPosition.y > blockBottomSide
+			&& movingRectPosition.x < blockRightSide && movingRectPosition.x > blockRightSide)
+		{
+			result.time = 0.0f;
+			Collision movingRect = Collision();
+			movingRect.side = Overlap;
+			movingRect.position = movingRectPosition;
+			result.collisions[0] = movingRect;
+		}
 
 		// Check for collision between block side and ball path
 		// 1. Top/bottom side

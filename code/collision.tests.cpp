@@ -14,12 +14,20 @@ using namespace gentle;
 #define movingUp Vec2<float> { 0.0f, 2.0f }
 #define movingDown Vec2<float> { 0.0f, -2.0f }
 
+const float bottomWall = 1.0f;
+const float topWall = -1.0f;
+
 #define blockRightOfOrigin Vec2<float> { 4.0f, 0.0f }
 #define blockLeftOfOrigin Vec2<float> { -4.0f, 0.0f }
 #define blockAboveOrigin Vec2<float> { 0.0f, 4.0f }
 #define blockBelowOrigin Vec2<float> { 0.0f, -4.0f }
 
-void RunCheckStaticAndMovingRectCollisionTests(Vec2<float> bPosition0, Vec2<float> bVelocity, float expectedCollisionTime, CollisionSide expectedCollisionResult, Vec2<float> expectedCollisionPosition)
+void RunCheckStaticAndMovingRectCollisionTests(
+	Vec2<float> bPosition0,
+	Vec2<float> bVelocity,
+	float expectedCollisionTime,
+	CollisionSide expectedCollisionResult,
+	Vec2<float> expectedCollisionPosition)
 {
 	float collisionTime = originalCollisionTime;
 
@@ -89,7 +97,14 @@ void RunCheckCollisionBetweenMovingRectsTests(Vec2<float> aVelocity, Vec2<float>
 	}
 }
 
-void RunCheckRectAndXLineCollisionTest(Vec2<float> blockPosition0, Vec2<float> blockVelocity, float expectedCollisionTime, int expectedCollisionResult, Vec2<float> expectedCollisionPosition)
+void RunCheckRectAndXLineCollisionTest(
+	const char *name,
+	float wallFaceDir,
+	Vec2<float> blockPosition0,
+	Vec2<float> blockVelocity,
+	float expectedCollisionTime,
+	int expectedCollisionResult,
+	Vec2<float> expectedCollisionPosition)
 {
 	float wallYPos = 0.0f;
 	float collisionTime = originalCollisionTime;
@@ -100,11 +115,14 @@ void RunCheckRectAndXLineCollisionTest(Vec2<float> blockPosition0, Vec2<float> b
 
 	CollisionResult result = CheckRectAndXLineCollision(
 		wallYPos,
+		wallFaceDir,
 		rect,
 		collisionTime
 	);
 
 	printf("\n===== Wall & Moving =====\n");
+	printf(name);
+	printf("\n");
 	printf("actual collisionResult is %d\n", result.collisions[0].side);
 	printf("expected collisionResult is %d\n", expectedCollisionResult);
 	printf("actual collisionTime is %f\n", result.time);
@@ -320,31 +338,38 @@ void RunCollisionTests()
 	 * V
 	 *---
 	 */
-	RunCheckRectAndXLineCollisionTest(Vec2<float> { 10.0f, 4.0f }, movingDown, 1.5f, Bottom, Vec2<float> { 10.0f, 1.0f });
+	RunCheckRectAndXLineCollisionTest("1", bottomWall, Vec2<float> { 10.0f, 4.0f }, movingDown, 1.5f, Bottom, Vec2<float> { 10.0f, 1.0f });
 
 	/* B
 	 *---
 	 * |
 	 * V
 	 */
-	RunCheckRectAndXLineCollisionTest(Vec2<float> { -10.0f, 1.0f }, movingDown, 0.0f, Bottom, Vec2<float> { -10.0f, 1.0f });
+	RunCheckRectAndXLineCollisionTest("2", bottomWall, Vec2<float> { -10.0f, 1.0f }, movingDown, 0.0f, Bottom, Vec2<float> { -10.0f, 1.0f });
 
-	/* Λ
+	/*---
+	 * B
+	 * |
+	 * V
+	 */
+	RunCheckRectAndXLineCollisionTest("3", bottomWall, Vec2<float> { 10.0f, -1.0f }, movingDown, 0.0f, Overlap, Vec2<float> { 10.0f, -1.0f });
+
+	/* ^
 	 * |
 	 * B
 	 *---
 	 */
-	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, 1.0f }, movingUp, 0.0f, None, Vec2<float> { 0.0f, 1.0f });
+	RunCheckRectAndXLineCollisionTest("4", bottomWall, Vec2<float> { 0.0f, 1.0f }, movingUp, 0.0f, None, Vec2<float> { 0.0f, 1.0f });
 
 	/* B-->
 	 *------
 	 */
-	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, 1.0f }, movingRight, 0.0f, None, Vec2<float> { 0.0f, 1.0f });
+	RunCheckRectAndXLineCollisionTest("5", bottomWall, Vec2<float> { 0.0f, 1.0f }, movingRight, 0.0f, None, Vec2<float> { 0.0f, 1.0f });
 
 	/* <--B
 	 *------
 	 */
-	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, 1.0f }, movingLeft, 0.0f, None, Vec2<float> { 0.0f, 1.0f });
+	RunCheckRectAndXLineCollisionTest("6", bottomWall, Vec2<float> { 0.0f, 1.0f }, movingLeft, 0.0f, None, Vec2<float> { 0.0f, 1.0f });
 
 
 	/*
@@ -357,29 +382,36 @@ void RunCollisionTests()
 	 * |
 	 * B
 	 */
-	RunCheckRectAndXLineCollisionTest(Vec2<float> { 10.0f, -4.0f }, movingUp, 1.5f, Bottom, Vec2<float> { 10.0f, -1.0f });
+	RunCheckRectAndXLineCollisionTest("7", topWall, Vec2<float> { 10.0f, -4.0f }, movingUp, 1.5f, Top, Vec2<float> { 10.0f, -1.0f });
 
 	/* Λ
 	 * |
 	 *---
 	 * B
 	 */
-	RunCheckRectAndXLineCollisionTest(Vec2<float> { -10.0f, -1.0f }, movingUp, 0.0f, Bottom, Vec2<float> { -10.0f, -1.0f });
+	RunCheckRectAndXLineCollisionTest("8", topWall, Vec2<float> { -10.0f, -1.0f }, movingUp, 0.0f, Top, Vec2<float> { -10.0f, -1.0f });
+
+	/* Λ
+	 * |
+	 * B
+	 *---
+	 */
+	// RunCheckRectAndXLineCollisionTest("9", topWall, Vec2<float> { 10.0f, 1.0f }, movingUp, 0.0f, Overlap, Vec2<float> { -10.0f, 1.0f });
 
 	/*---
 	 * B
 	 * |
 	 * V
 	 */
-	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, -1.0f }, movingDown, 0.0f, None, Vec2<float> { 0.0f, -1.0f });
+	RunCheckRectAndXLineCollisionTest("10", topWall, Vec2<float> { 0.0f, -1.0f }, movingDown, 0.0f, None, Vec2<float> { 0.0f, -1.0f });
 
 	/*------
 	 *B-->
 	 */
-	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, -1.0f }, movingRight, 0.0f, None, Vec2<float> { 0.0f, -1.0f });
+	RunCheckRectAndXLineCollisionTest("11", topWall, Vec2<float> { 0.0f, -1.0f }, movingRight, 0.0f, None, Vec2<float> { 0.0f, -1.0f });
 
 	/*------
 	 * <--B
 	 */
-	RunCheckRectAndXLineCollisionTest(Vec2<float> { 0.0f, -1.0f }, movingLeft, 0.0f, None, Vec2<float> { 0.0f, -1.0f });
+	RunCheckRectAndXLineCollisionTest("12", topWall, Vec2<float> { 0.0f, -1.0f }, movingLeft, 0.0f, None, Vec2<float> { 0.0f, -1.0f });
 }
