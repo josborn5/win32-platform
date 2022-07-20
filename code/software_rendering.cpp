@@ -279,6 +279,52 @@ namespace gentle
 		}
 	}
 
+	void DrawSprite(
+		const RenderBuffer &renderBuffer,
+		char *sprite,
+		const Rect<float> &footPrint,
+		int xRes,
+		int yRes,
+		uint32_t color
+	) {
+		// Calculate the overall dimensions of the area over which to draw the sprite
+		float footPrintHeight = footPrint.halfSize.y * 2.0f;
+		float footPrintWidth = footPrint.halfSize.y * 2.0f;
+		// Calculate the dimensions of each 'pixel' block in the sprite
+		float blockHeight = footPrintHeight / (float)yRes;
+		float blockWidth = footPrintWidth / (float)xRes;
+		Vec2<float> blockHalfSize = Vec2<float> { blockHeight * 0.5f, blockWidth * 0.5f };
+
+		// Calculate the cursor area over which to position each block. Position is measured fro the center
+		// so apply an offset for the block size
+		Vec2<float> pCopy = Vec2<float>
+		{
+			footPrint.position.x - footPrint.halfSize.x + blockHalfSize.x,
+			footPrint.position.y + footPrint.halfSize.y - blockHalfSize.y
+		};
+
+		float xMinCursorPos = pCopy.x;
+		while (*sprite)
+		{
+			if (*sprite == '\n')
+			{
+				pCopy.y -= blockHeight;	// We're populating blocks in the sprint left to right, top to bottom. So y is decreasing.
+				pCopy.x = xMinCursorPos; // reset cursor to start of next row
+			}
+			else
+			{
+				if (*sprite != ' ')
+				{
+					Rect<float> blockRect;
+					blockRect.position = pCopy;
+					blockRect.halfSize = blockHalfSize;
+					DrawRect(renderBuffer, color, blockRect);
+				}
+				pCopy.x += blockWidth;
+			}
+			sprite++;
+		}
+	}
 
 	/*	p0------p1
 	 *	\       /	|

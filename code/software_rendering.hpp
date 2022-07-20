@@ -31,7 +31,18 @@ namespace gentle
 	// Rects
 	void DrawRect(const RenderBuffer &renderBuffer, uint32_t color, const Rect<float> &rect);
 
+	// Draw a sprite of a size determined by the given sprite string and blockHalfSize value
 	void DrawSprite(const RenderBuffer &renderBuffer, char *sprite, const Vec2<float> &p, float blockHalfSize, uint32_t color);
+
+	// Draw a sprite of a fixed size determined by the given footPrint value
+	void DrawSprite(
+		const RenderBuffer &renderBuffer,
+		char *sprite,
+		const Rect<float> &footPrint,
+		int xRes,
+		int yRes,
+		uint32_t color
+	);
 
 	// Triangles
 	void FillTriangleInPixels(const RenderBuffer &renderBuffer, uint32_t color, const Vec3<int> &p0, const Vec3<int> &p1, const Vec3<int> &p2, float z);
