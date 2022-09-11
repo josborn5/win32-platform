@@ -250,8 +250,8 @@ int Win32Main(HINSTANCE instance, const WindowSettings &settings = WindowSetting
 	windowClass.hInstance = instance;
 	windowClass.lpszClassName = "Window Class";
 
-	const int GameUpdateHz = 30;
-	float targetSecondsPerFrame = 1.0f / (float)GameUpdateHz;
+	int gameUpdateHz = (settings.targetFPS >= 10) ? settings.targetFPS : 30;
+	float targetSecondsPerFrame = 1.0f / (float)gameUpdateHz;
 
 	if(RegisterClassA(&windowClass))
 	{

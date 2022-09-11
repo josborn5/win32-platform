@@ -10,6 +10,7 @@ namespace gentle
 		int width;
 		int height;
 		char* title;
+		int targetFPS;
 	};
 
 	int Win32Main(HINSTANCE instance);
