@@ -232,7 +232,8 @@ inline float Win32_GetSecondsElapsed(LARGE_INTEGER Start, LARGE_INTEGER End)
 	return SecondsElapsedForWork;
 }
 
-int Win32Main(HINSTANCE instance)
+
+int Win32Main(HINSTANCE instance, const WindowSettings &settings = WindowSettings())
 {
 	LARGE_INTEGER PerfCounterFrequencyResult;
 	QueryPerformanceFrequency(&PerfCounterFrequencyResult);
@@ -254,10 +255,18 @@ int Win32Main(HINSTANCE instance)
 
 	if(RegisterClassA(&windowClass))
 	{
-		HWND window = CreateWindowExA(0, windowClass.lpszClassName, "Breakout Clone",
-									WS_VISIBLE|WS_OVERLAPPEDWINDOW,
-									CW_USEDEFAULT, CW_USEDEFAULT,
-									1280, 720, 0, 0, 0, 0);
+		HWND window = CreateWindowExA(
+			0,
+			windowClass.lpszClassName,
+			settings.title,
+			WS_VISIBLE|WS_OVERLAPPEDWINDOW,
+			CW_USEDEFAULT,
+			CW_USEDEFAULT,
+			settings.width,
+			settings.height,
+			0, 0, 0, 0
+		);
+
 		if(window)
 		{
 			IsRunning = true;
@@ -371,6 +380,14 @@ int Win32Main(HINSTANCE instance)
 	}
 
 	return (0);
+}
+
+int Win32Main(HINSTANCE instance)
+{
+	WindowSettings settings = {0};
+	settings.width = 1280;
+	settings.height = 720;
+	return Win32Main(instance, settings);
 }
 
 }

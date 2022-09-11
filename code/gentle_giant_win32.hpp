@@ -5,7 +5,16 @@
 
 namespace gentle
 {
+	struct WindowSettings
+	{
+		int width;
+		int height;
+		char* title;
+	};
+
 	int Win32Main(HINSTANCE instance);
+
+	int Win32Main(HINSTANCE instance, const WindowSettings &settings);
 }
 
 #endif
